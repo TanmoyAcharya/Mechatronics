@@ -6,7 +6,7 @@
 class ConstructionViewer {
     constructor() {
         this.currentComponent = 'stator';
-        this.assemblyProgress = 0;
+        this.assemblyProgress = 0.7; // Start with assembled machine
         this.autoRotate = false;
         this.rotation = 0;
         
@@ -61,18 +61,43 @@ class ConstructionViewer {
         this.ctx = this.canvas.getContext('2d');
         
         this.crossSectionCanvas = document.getElementById('cross-section-sync');
-        this.crossSectionCtx = this.crossSectionCanvas.getContext('2d');
+        this.crossSectionCtx = this.crossSectionCanvas ? this.crossSectionCanvas.getContext('2d') : null;
         
         this.inductionCrossCanvas = document.getElementById('cross-section-induction');
-        this.inductionCrossCtx = this.inductionCrossCanvas.getContext('2d');
+        this.inductionCrossCtx = this.inductionCrossCanvas ? this.inductionCrossCanvas.getContext('2d') : null;
         
         this.magneticFieldCanvas = document.getElementById('magnetic-field-viz');
-        this.magneticFieldCtx = this.magneticFieldCanvas.getContext('2d');
+        this.magneticFieldCtx = this.magneticFieldCanvas ? this.magneticFieldCanvas.getContext('2d') : null;
+        
+        // Set default canvas sizes if not set
+        if (this.canvas) {
+            if (this.canvas.width < 100) this.canvas.width = 800;
+            if (this.canvas.height < 100) this.canvas.height = 500;
+        }
+        if (this.crossSectionCanvas) {
+            if (this.crossSectionCanvas.width < 100) this.crossSectionCanvas.width = 400;
+            if (this.crossSectionCanvas.height < 100) this.crossSectionCanvas.height = 400;
+        }
+        if (this.inductionCrossCanvas) {
+            if (this.inductionCrossCanvas.width < 100) this.inductionCrossCanvas.width = 400;
+            if (this.inductionCrossCanvas.height < 100) this.inductionCrossCanvas.height = 400;
+        }
+        if (this.magneticFieldCanvas) {
+            if (this.magneticFieldCanvas.width < 100) this.magneticFieldCanvas.width = 400;
+            if (this.magneticFieldCanvas.height < 100) this.magneticFieldCanvas.height = 300;
+        }
         
         this.setupControls();
         this.resize();
         
         window.addEventListener('resize', () => this.resize());
+        
+        // Start animation by default
+        this.autoRotate = true;
+        this.animateRotation();
+        this.drawCrossSections();
+        this.drawMagneticField();
+        this.draw();
     }
     
     resize() {
@@ -140,6 +165,12 @@ class ConstructionViewer {
     
     start() {
         this.updateComponentInfo();
+        // Start animation when page is shown
+        this.autoRotate = true;
+        this.animateRotation();
+        this.drawCrossSections();
+        this.drawMagneticField();
+        this.draw();
     }
     
     animateAssembly(targetProgress) {

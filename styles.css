@@ -493,6 +493,42 @@ main {
     height: 100%;
 }
 
+/* Transformer Visualization Grid */
+.transformer-viz-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+}
+
+.viz-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+}
+
+.viz-card h4 {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: var(--space-sm);
+    font-weight: 500;
+}
+
+.viz-card canvas {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+}
+
+/* Transformer specific layout */
+#transformer-page .sim-main {
+    gap: var(--space-md);
+}
+
+#transformer-page .simulation-view {
+    height: 400px;
+}
+
 .sim-overlay {
     position: absolute;
     top: var(--space-md);

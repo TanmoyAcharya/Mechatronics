@@ -536,32 +536,85 @@
         <section id="transformer-page" class="page">
             <div class="page-header">
                 <h1>Transformer Simulator</h1>
-                <p>Interactive simulation of power transformers</p>
+                <p>Interactive simulation of power transformers with phasor diagrams, waveforms, and equivalent circuit</p>
             </div>
             <div class="simulator-container">
                 <div class="sim-main">
                     <div class="simulation-view">
                         <canvas id="transformer-canvas" width="800" height="400"></canvas>
                     </div>
+                    <!-- Additional Transformer Visualizations -->
+                    <div class="transformer-viz-grid">
+                        <div class="viz-card">
+                            <h4>Voltage & Current Waveforms</h4>
+                            <canvas id="transformer-wave-viz" width="380" height="220"></canvas>
+                        </div>
+                        <div class="viz-card">
+                            <h4>Phasor Diagram</h4>
+                            <canvas id="transformer-phasor-viz" width="380" height="220"></canvas>
+                        </div>
+                    </div>
+                    <div class="transformer-viz-grid">
+                        <div class="viz-card">
+                            <h4>Equivalent Circuit</h4>
+                            <canvas id="transformer-circuit-viz" width="780" height="280"></canvas>
+                        </div>
+                    </div>
                 </div>
                 <div class="controls-panel">
                     <div class="control-section">
-                        <h3>Parameters</h3>
+                        <h3>Input Parameters</h3>
                         <div class="control-group">
-                            <label>Primary Voltage: <span class="value" id="trans-v1-value">230</span> V</label>
+                            <label>Primary Voltage (V<sub>1</sub>): <span class="value" id="trans-v1-value">230</span> V</label>
                             <input type="range" id="trans-v1-slider" min="100" max="400" value="230">
                         </div>
                         <div class="control-group">
-                            <label>Load Resistance: <span class="value" id="trans-load-value">10</span> Ω</label>
+                            <label>Supply Frequency: <span class="value" id="trans-freq-value">50</span> Hz</label>
+                            <input type="range" id="trans-freq-slider" min="50" max="60" value="50">
+                        </div>
+                        <div class="control-group">
+                            <label>Turns Ratio (N<sub>1</sub>/N<sub>2</sub>): <span class="value" id="trans-ratio-value">2:1</span></label>
+                            <input type="range" id="trans-ratio-slider" min="1" max="4" value="2" step="0.5">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Load Parameters</h3>
+                        <div class="control-group">
+                            <label>Load Resistance (R<sub>L</sub>): <span class="value" id="trans-load-value">10</span> Ω</label>
                             <input type="range" id="trans-load-slider" min="1" max="50" value="10">
+                        </div>
+                        <div class="control-group">
+                            <label>Load Type:</label>
+                            <select id="trans-load-type">
+                                <option value="resistive">Resistive</option>
+                                <option value="inductive">Inductive</option>
+                                <option value="capacitive">Capacitive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Transformer Parameters</h3>
+                        <div class="control-group">
+                            <label>Primary Resistance (R<sub>1</sub>): <span class="value" id="trans-r1-value">2</span> Ω</label>
+                            <input type="range" id="trans-r1-slider" min="0.5" max="10" value="2" step="0.5">
+                        </div>
+                        <div class="control-group">
+                            <label>Secondary Resistance (R<sub>2</sub>): <span class="value" id="trans-r2-value">0.5</span> Ω</label>
+                            <input type="range" id="trans-r2-slider" min="0.1" max="5" value="0.5" step="0.1">
+                        </div>
+                        <div class="control-group">
+                            <label>Magnetizing Current: <span class="value" id="trans-xm-value">5</span>%</label>
+                            <input type="range" id="trans-xm-slider" min="1" max="15" value="5">
                         </div>
                     </div>
                     <div class="readings-panel">
-                        <h3>Readings</h3>
+                        <h3>Measured Values</h3>
                         <div class="reading"><span class="reading-label">Secondary V:</span><span class="reading-value" id="trans-v2-reading">0 V</span></div>
                         <div class="reading"><span class="reading-label">Primary I:</span><span class="reading-value" id="trans-i1-reading">0 A</span></div>
                         <div class="reading"><span class="reading-label">Secondary I:</span><span class="reading-value" id="trans-i2-reading">0 A</span></div>
                         <div class="reading"><span class="reading-label">Efficiency:</span><span class="reading-value" id="trans-eff-reading">0%</span></div>
+                        <div class="reading"><span class="reading-label">Power:</span><span class="reading-value" id="trans-power-reading">0 VA</span></div>
+                        <div class="reading"><span class="reading-label">Voltage Regulation:</span><span class="reading-value" id="trans-vr-reading">0%</span></div>
                     </div>
                 </div>
             </div>
@@ -606,7 +659,7 @@
                     <button class="anim-btn" id="anim-rotate">Auto Rotate</button>
                 </div>
                 <div class="animation-progress">
-                    <input type="range" id="assembly-progress" min="0" max="100" value="0">
+                    <input type="range" id="assembly-progress" min="0" max="100" value="70">
                 </div>
             </div>
 

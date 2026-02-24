@@ -17,6 +17,7 @@ class TransformerSimulator {
         this.X2 = 1.25;         // Secondary reactance (Ohm)
         this.Rc = 2000;         // Core loss resistance (Ohm)
         this.Xm = 1000;         // Magnetizing reactance (Ohm)
+        this.XmPercent = 5;     // Magnetizing current as percentage
         
         // Load parameters
         this.loadResistance = 10; // Load resistance (Ohm)
@@ -27,6 +28,7 @@ class TransformerSimulator {
         this.I2 = 0;            // Secondary current (A)
         this.efficiency = 0;    // Efficiency (%)
         this.power = 0;         // Power (VA)
+        this.voltageRegulation = 0; // Voltage regulation (%)
         
         // Animation
         this.time = 0;
@@ -53,6 +55,11 @@ class TransformerSimulator {
             this.phasorCtx = this.phasorCanvas.getContext('2d');
         }
         
+        this.circuitCanvas = document.getElementById('transformer-circuit-viz');
+        if (this.circuitCanvas) {
+            this.circuitCtx = this.circuitCanvas.getContext('2d');
+        }
+        
         this.setupControls();
         
         // Set canvas size
@@ -61,29 +68,58 @@ class TransformerSimulator {
             this.canvas.height = 400;
         }
         if (this.waveCanvas && this.waveCanvas.width === 0) {
-            this.waveCanvas.width = 350;
-            this.waveCanvas.height = 180;
+            this.waveCanvas.width = 380;
+            this.waveCanvas.height = 220;
         }
         if (this.phasorCanvas && this.phasorCanvas.width === 0) {
-            this.phasorCanvas.width = 350;
-            this.phasorCanvas.height = 180;
+            this.phasorCanvas.width = 380;
+            this.phasorCanvas.height = 220;
+        }
+        if (this.circuitCanvas && this.circuitCanvas.width === 0) {
+            this.circuitCanvas.width = 780;
+            this.circuitCanvas.height = 280;
         }
         
         this.calculate();
     }
     
     setupControls() {
+        // Primary voltage
         const v1Slider = document.getElementById('trans-v1-slider');
         const v1Value = document.getElementById('trans-v1-value');
         if (v1Slider && v1Value) {
             v1Slider.addEventListener('input', (e) => {
                 this.V1 = parseFloat(e.target.value);
-                this.V2 = this.V1 * (this.N2 / this.N1);
                 v1Value.textContent = this.V1;
                 this.calculate();
             });
         }
         
+        // Frequency
+        const freqSlider = document.getElementById('trans-freq-slider');
+        const freqValue = document.getElementById('trans-freq-value');
+        if (freqSlider && freqValue) {
+            freqSlider.addEventListener('input', (e) => {
+                this.f = parseFloat(e.target.value);
+                freqValue.textContent = this.f;
+                this.calculate();
+            });
+        }
+        
+        // Turns ratio
+        const ratioSlider = document.getElementById('trans-ratio-slider');
+        const ratioValue = document.getElementById('trans-ratio-value');
+        if (ratioSlider && ratioValue) {
+            ratioSlider.addEventListener('input', (e) => {
+                const ratio = parseFloat(e.target.value);
+                this.N1 = 1000;
+                this.N2 = Math.round(1000 / ratio);
+                ratioValue.textContent = `${ratio}:1`;
+                this.calculate();
+            });
+        }
+        
+        // Load resistance
         const loadSlider = document.getElementById('trans-load-slider');
         const loadValue = document.getElementById('trans-load-value');
         if (loadSlider && loadValue) {
@@ -94,32 +130,89 @@ class TransformerSimulator {
             });
         }
         
-        const typeButtons = document.querySelectorAll('#transformer-page .load-type-btn');
-        typeButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                typeButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.loadType = btn.dataset.type;
+        // Load type
+        const loadTypeSelect = document.getElementById('trans-load-type');
+        if (loadTypeSelect) {
+            loadTypeSelect.addEventListener('change', (e) => {
+                this.loadType = e.target.value;
                 this.calculate();
             });
-        });
+        }
+        
+        // Primary resistance
+        const r1Slider = document.getElementById('trans-r1-slider');
+        const r1Value = document.getElementById('trans-r1-value');
+        if (r1Slider && r1Value) {
+            r1Slider.addEventListener('input', (e) => {
+                this.R1 = parseFloat(e.target.value);
+                r1Value.textContent = this.R1;
+                this.calculate();
+            });
+        }
+        
+        // Secondary resistance
+        const r2Slider = document.getElementById('trans-r2-slider');
+        const r2Value = document.getElementById('trans-r2-value');
+        if (r2Slider && r2Value) {
+            r2Slider.addEventListener('input', (e) => {
+                this.R2 = parseFloat(e.target.value);
+                r2Value.textContent = this.R2;
+                this.calculate();
+            });
+        }
+        
+        // Magnetizing reactance
+        const xmSlider = document.getElementById('trans-xm-slider');
+        const xmValue = document.getElementById('trans-xm-value');
+        if (xmSlider && xmValue) {
+            xmSlider.addEventListener('input', (e) => {
+                this.XmPercent = parseFloat(e.target.value);
+                xmValue.textContent = this.XmPercent;
+                // Update Xm based on rated impedance
+                const Zbase = (this.V1 * this.V1) / 1000; // Assume 1kVA base
+                this.Xm = Zbase * (this.XmPercent / 100);
+                this.calculate();
+            });
+        }
     }
     
     calculate() {
         // Turns ratio
         const a = this.N1 / this.N2;
         
-        // Secondary voltage (approximate)
-        this.V2 = this.V1 / a;
+        // Load angle based on load type
+        let loadAngle = 0;
+        if (this.loadType === 'inductive') loadAngle = -Math.PI / 6; // -30 degrees
+        if (this.loadType === 'capacitive') loadAngle = Math.PI / 6; // +30 degrees
         
-        // Load current
+        // Secondary voltage (ideal, no load)
+        const V2_ideal = this.V1 / a;
+        
+        // Calculate load impedance magnitude
+        const Z_load = this.loadResistance;
+        
+        // Simplified voltage regulation calculation
+        // VR = (I1*R_eq*cos(φ) + I1*X_eq*sin(φ)) / V2 * 100
+        const Req = this.R1 + this.R2 / (a * a);
+        const Xeq = this.X1 + this.X2 / (a * a);
+        const I1_approx = V2_ideal / (Z_load / (a * a));
+        const powerFactor = Math.cos(loadAngle);
+        
+        // Voltage regulation
+        this.voltageRegulation = (I1_approx * (Req * powerFactor + Xeq * Math.sin(Math.abs(loadAngle)))) / V2_ideal * 100;
+        this.voltageRegulation = Math.max(-20, Math.min(30, this.voltageRegulation));
+        
+        // Actual secondary voltage under load
+        this.V2 = V2_ideal * (1 - this.voltageRegulation / 100);
+        
+        // Secondary current
         this.I2 = this.V2 / this.loadResistance;
         
-        // Primary current (approximate, neglecting losses)
+        // Primary current
         this.I1 = this.I2 / a;
         
         // Power
-        this.power = this.V2 * this.I2;
+        this.power = this.V2 * this.I2 * Math.cos(loadAngle);
         
         // Copper losses
         const P_cu = this.I1 * this.I1 * this.R1 + this.I2 * this.I2 * this.R2;
@@ -150,9 +243,13 @@ class TransformerSimulator {
         const powerReading = document.getElementById('trans-power-reading');
         if (powerReading) powerReading.textContent = this.power.toFixed(1) + ' VA';
         
+        const vrReading = document.getElementById('trans-vr-reading');
+        if (vrReading) vrReading.textContent = this.voltageRegulation.toFixed(1) + '%';
+        
         this.draw();
         if (this.waveCanvas) this.drawWaveforms();
         if (this.phasorCanvas) this.drawPhasors();
+        if (this.circuitCanvas) this.drawCircuit();
     }
     
     start() {
@@ -174,6 +271,7 @@ class TransformerSimulator {
         
         if (this.waveCanvas) this.drawWaveforms();
         if (this.phasorCanvas) this.drawPhasors();
+        if (this.circuitCanvas) this.drawCircuit();
         
         this.animationId = requestAnimationFrame(() => this.animate());
     }
@@ -354,12 +452,189 @@ class TransformerSimulator {
         ctx.strokeStyle = '#44ff44';
         ctx.stroke();
         
+        // I1 phasor (with angle based on load)
+        let loadAngle = 0;
+        if (this.loadType === 'inductive') loadAngle = -Math.PI / 6;
+        if (this.loadType === 'capacitive') loadAngle = Math.PI / 6;
+        
+        const i1Mag = 40;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(
+            centerX + i1Mag * Math.cos(loadAngle - Math.PI/2),
+            centerY + i1Mag * Math.sin(loadAngle - Math.PI/2)
+        );
+        ctx.strokeStyle = '#4488ff';
+        ctx.setLineDash([5, 3]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
         // Labels
         ctx.fillStyle = '#ff4444';
         ctx.font = '10px JetBrains Mono';
         ctx.fillText('V1', centerX + v1Mag + 5, centerY - 5);
         ctx.fillStyle = '#44ff44';
         ctx.fillText('V2', centerX - v2Mag - 15, centerY - 5);
+        ctx.fillStyle = '#4488ff';
+        ctx.fillText('I1', centerX + 5, centerY - i1Mag - 5);
+    }
+    
+    drawCircuit() {
+        const ctx = this.circuitCtx;
+        const canvas = this.circuitCanvas;
+        const w = canvas.width;
+        const h = canvas.height;
+        
+        ctx.fillStyle = '#0a0a12';
+        ctx.fillRect(0, 0, w, h);
+        
+        const a = this.N1 / this.N2;
+        
+        // Draw equivalent circuit diagram
+        ctx.strokeStyle = '#888899';
+        ctx.fillStyle = '#ccccdd';
+        ctx.lineWidth = 2;
+        ctx.font = '12px JetBrains Mono';
+        
+        // Primary side
+        const y = h / 2;
+        const x1 = 50;
+        const x2 = 200;
+        const x3 = 350;
+        const x4 = 500;
+        const x5 = 650;
+        
+        // Input terminals
+        ctx.beginPath();
+        ctx.arc(x1, y - 30, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff4444';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x1, y + 30, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff4444';
+        ctx.fill();
+        
+        // Primary voltage source
+        ctx.fillStyle = '#ff4444';
+        ctx.fillText('V1', x1 - 15, y - 45);
+        ctx.fillText(`${this.V1.toFixed(0)}V`, x1 - 25, y + 50);
+        
+        // Primary resistance R1
+        ctx.strokeStyle = '#ffaa44';
+        ctx.beginPath();
+        ctx.moveTo(x1 + 30, y - 30);
+        ctx.lineTo(x2 - 20, y - 30);
+        ctx.stroke();
+        // Zigzag for resistor
+        ctx.beginPath();
+        ctx.moveTo(x2 - 20, y - 30);
+        ctx.lineTo(x2 - 10, y - 35);
+        ctx.lineTo(x2 - 10, y - 25);
+        ctx.lineTo(x2, y - 30);
+        ctx.lineTo(x2 - 10, y - 35);
+        ctx.stroke();
+        ctx.fillStyle = '#ffaa44';
+        ctx.fillText(`R1=${this.R1}Ω`, x1 + 60, y - 40);
+        
+        // Primary reactance X1
+        ctx.strokeStyle = '#44aaff';
+        ctx.beginPath();
+        ctx.moveTo(x2 + 20, y - 30);
+        ctx.lineTo(x3 - 20, y - 30);
+        ctx.stroke();
+        ctx.fillStyle = '#44aaff';
+        ctx.fillText(`X1=${this.X1}Ω`, x2 + 30, y - 45);
+        
+        // Magnetizing branch (Rc || Xm)
+        ctx.strokeStyle = '#aaaa44';
+        ctx.beginPath();
+        ctx.moveTo(x3, y - 30);
+        ctx.lineTo(x3, y - 80);
+        ctx.lineTo(x3 + 100, y - 80);
+        ctx.lineTo(x3 + 100, y - 30);
+        ctx.stroke();
+        
+        // Rc
+        ctx.beginPath();
+        ctx.moveTo(x3 + 20, y - 80);
+        ctx.lineTo(x3 + 30, y - 85);
+        ctx.lineTo(x3 + 30, y - 75);
+        ctx.lineTo(x3 + 40, y - 80);
+        ctx.stroke();
+        ctx.fillStyle = '#aaaa44';
+        ctx.fillText(`Rc=${this.Rc}Ω`, x3 + 10, y - 95);
+        
+        // Xm
+        ctx.beginPath();
+        ctx.moveTo(x3 + 60, y - 80);
+        ctx.lineTo(x3 + 70, y - 85);
+        ctx.lineTo(x3 + 70, y - 75);
+        ctx.lineTo(x3 + 80, y - 80);
+        ctx.stroke();
+        ctx.fillStyle = '#44aaaa';
+        ctx.fillText(`Xm=${this.Xm.toFixed(0)}Ω`, x3 + 55, y - 95);
+        
+        // Ideal transformer (circled X)
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(x3 + 150, y, 25, 40, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('Ideal', x3 + 130, y + 55);
+        ctx.fillText(`a=${a.toFixed(1)}`, x3 + 135, y - 55);
+        
+        // Secondary side (referred)
+        const x2s = x4;
+        
+        // R2' (referred)
+        ctx.strokeStyle = '#ffaa44';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x4 + 30, y - 30);
+        ctx.lineTo(x2s - 20, y - 30);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x2s - 20, y - 30);
+        ctx.lineTo(x2s - 10, y - 35);
+        ctx.lineTo(x2s - 10, y - 25);
+        ctx.lineTo(x2s, y - 30);
+        ctx.stroke();
+        ctx.fillStyle = '#ffaa44';
+        ctx.fillText(`R2'=${(this.R2*a*a).toFixed(1)}Ω`, x4 + 35, y - 40);
+        
+        // X2' (referred)
+        ctx.strokeStyle = '#44aaff';
+        ctx.beginPath();
+        ctx.moveTo(x2s + 20, y - 30);
+        ctx.lineTo(x5 - 20, y - 30);
+        ctx.stroke();
+        ctx.fillStyle = '#44aaff';
+        ctx.fillText(`X2'=${(this.X2*a*a).toFixed(1)}Ω`, x2s + 25, y - 45);
+        
+        // Load
+        ctx.strokeStyle = '#44ff44';
+        ctx.beginPath();
+        ctx.moveTo(x5 + 20, y - 30);
+        ctx.lineTo(x5 + 60, y - 30);
+        ctx.lineTo(x5 + 60, y + 30);
+        ctx.lineTo(x5 + 20, y + 30);
+        ctx.stroke();
+        ctx.fillStyle = '#44ff44';
+        ctx.fillText(`RL=${this.loadResistance}Ω`, x5 + 15, y - 40);
+        ctx.fillText(`${this.loadType}`, x5 + 15, y + 50);
+        
+        // Output terminals
+        ctx.beginPath();
+        ctx.arc(x5 + 60, y - 30, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#44ff44';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x5 + 60, y + 30, 5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = '#44ff44';
+        ctx.fillText(`V2=${this.V2.toFixed(1)}V`, x5 + 40, y + 55);
     }
 }
 
