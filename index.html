@@ -1020,6 +1020,120 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Quiz Section -->
+                <div class="learn-section quiz-section">
+                    <h2>📝 Knowledge Quiz</h2>
+                    <p class="quiz-intro">Test your understanding of electrical machines!</p>
+                    
+                    <div class="quiz-container">
+                        <!-- Quiz 1 -->
+                        <div class="quiz-card" data-quiz="dc-machine">
+                            <div class="quiz-question">
+                                <span class="quiz-number">1</span>
+                                <h4>What is the EMF equation of a DC machine?</h4>
+                            </div>
+                            <div class="quiz-options">
+                                <label class="quiz-option"><input type="radio" name="q1" value="wrong"> E = V + IaR</label>
+                                <label class="quiz-option"><input type="radio" name="q1" value="correct"> E = kΦn</label>
+                                <label class="quiz-option"><input type="radio" name="q1" value="wrong"> E = V - IaR</label>
+                                <label class="quiz-option"><input type="radio" name="q1" value="wrong"> E = P/ω</label>
+                            </div>
+                            <button class="quiz-submit" onclick="checkQuiz(this)">Submit Answer</button>
+                            <div class="quiz-result"></div>
+                        </div>
+                        
+                        <!-- Quiz 2 -->
+                        <div class="quiz-card" data-quiz="induction">
+                            <div class="quiz-question">
+                                <span class="quiz-number">2</span>
+                                <h4>What is the synchronous speed formula for a 50Hz, 4-pole motor?</h4>
+                            </div>
+                            <div class="quiz-options">
+                                <label class="quiz-option"><input type="radio" name="q2" value="wrong"> 3000 RPM</label>
+                                <label class="quiz-option"><input type="radio" name="q2" value="correct"> 1500 RPM</label>
+                                <label class="quiz-option"><input type="radio" name="q2" value="wrong"> 1000 RPM</label>
+                                <label class="quiz-option"><input type="radio" name="q2" value="wrong"> 750 RPM</label>
+                            </div>
+                            <button class="quiz-submit" onclick="checkQuiz(this)">Submit Answer</button>
+                            <div class="quiz-result"></div>
+                        </div>
+                        
+                        <!-- Quiz 3 -->
+                        <div class="quiz-card" data-quiz="sync">
+                            <div class="quiz-question">
+                                <span class="quiz-number">3</span>
+                                <h4>In synchronous machines, what happens if the load angle (δ) exceeds 90°?</h4>
+                            </div>
+                            <div class="quiz-options">
+                                <label class="quiz-option"><input type="radio" name="q3" value="wrong"> Speed increases</label>
+                                <label class="quiz-option"><input type="radio" name="q3" value="correct"> Machine loses synchronism</label>
+                                <label class="quiz-option"><input type="radio" name="q3" value="wrong"> Voltage increases</label>
+                                <label class="quiz-option"><input type="radio" name="q3" value="wrong"> Power factor improves</label>
+                            </div>
+                            <button class="quiz-submit" onclick="checkQuiz(this)">Submit Answer</button>
+                            <div class="quiz-result"></div>
+                        </div>
+                        
+                        <!-- Quiz 4 -->
+                        <div class="quiz-card" data-quiz="pmsm">
+                            <div class="quiz-question">
+                                <span class="quiz-number">4</span>
+                                <h4>What is the main advantage of PMSM over induction motors?</h4>
+                            </div>
+                            <div class="quiz-options">
+                                <label class="quiz-option"><input type="radio" name="q4" value="wrong"> Lower cost</label>
+                                <label class="quiz-option"><input type="radio" name="q4" value="wrong"> Simpler construction</label>
+                                <label class="quiz-option"><input type="radio" name="q4" value="correct"> Higher efficiency and power density</label>
+                                <label class="quiz-option"><input type="radio" name="q4" value="wrong"> No need for inverter</label>
+                            </div>
+                            <button class="quiz-submit" onclick="checkQuiz(this)">Submit Answer</button>
+                            <div class="quiz-result"></div>
+                        </div>
+                        
+                        <!-- Quiz 5 -->
+                        <div class="quiz-card" data-quiz="transformer">
+                            <div class="quiz-question">
+                                <span class="quiz-number">5</span>
+                                <h4>What happens to the core losses in a transformer when frequency increases?</h4>
+                            </div>
+                            <div class="quiz-options">
+                                <label class="quiz-option"><input type="radio" name="q5" value="wrong"> Decrease</label>
+                                <label class="quiz-option"><input type="radio" name="q5" value="correct"> Increase</label>
+                                <label class="quiz-option"><input type="radio" name="q5" value="wrong"> Stay the same</label>
+                                <label class="quiz-option"><input type="radio" name="q5" value="wrong"> Become zero</label>
+                            </div>
+                            <button class="quiz-submit" onclick="checkQuiz(this)">Submit Answer</button>
+                            <div class="quiz-result"></div>
+                        </div>
+                        
+                        <!-- Quiz 6 -->
+                        <div class="quiz-card" data-quiz="solar">
+                            <div class="quiz-question">
+                                <span class="quiz-number">6</span>
+                                <h4>What is the typical efficiency of commercial silicon solar cells?</h4>
+                            </div>
+                            <div class="quiz-options">
+                                <label class="quiz-option"><input type="radio" name="q6" value="wrong"> 5-10%</label>
+                                <label class="quiz-option"><input type="radio" name="q6" value="wrong"> 50-60%</label>
+                                <label class="quiz-option"><input type="radio" name="q6" value="correct"> 15-22%</label>
+                                <label class="quiz-option"><input type="radio" name="q6" value="wrong"> 80-90%</label>
+                            </div>
+                            <button class="quiz-submit" onclick="checkQuiz(this)">Submit Answer</button>
+                            <div class="quiz-result"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-score-panel">
+                        <h3>Your Quiz Progress</h3>
+                        <div class="score-display">
+                            <span class="score-number" id="quiz-correct">0</span>
+                            <span class="score-divider">/</span>
+                            <span class="score-total">6</span>
+                            <span class="score-label">Correct</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
