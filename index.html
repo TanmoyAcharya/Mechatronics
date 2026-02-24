@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectroMachines Lab | Learn and Enjoy the World of Machines</title>
+    <meta name="description" content="Interactive electrical machines simulations - learn and enjoy the world of machines">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="20" cy="20" r="8" fill="currentColor"/>
+                        <path d="M20 2V8M20 32V38M2 20H8M32 20H38" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </div>
+                <span class="logo-text">ElectroMachines<span class="logo-accent">Lab</span></span>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn active" data-page="home">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                        <polyline points="9,22 9,12 15,12 15,22"/>
+                    </svg>
+                    Home
+                </button>
+                <button class="nav-btn" data-page="synchronous">Synchronous</button>
+                <button class="nav-btn" data-page="induction">Induction</button>
+                <button class="nav-btn" data-page="dc-motor">DC Motor</button>
+                <button class="nav-btn" data-page="transformer">Transformer</button>
+                <button class="nav-btn" data-page="construction">Construction</button>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <!-- Home Page -->
+        <section id="home-page" class="page active">
+            <div class="hero">
+                <div class="hero-bg"></div>
+                <div class="hero-content">
+                    <h1 class="hero-title">Master <span class="gradient-text">Electrical Machines</span></h1>
+                    <p class="hero-subtitle">Interactive simulations for understanding electrical machines - Learn and Enjoy!</p>
+                    <div class="hero-cta">
+                        <button class="cta-btn primary" data-goto="synchronous">Start Learning</button>
+                        <button class="cta-btn secondary" data-goto="induction">Explore Induction</button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <canvas id="hero-canvas" width="500" height="400"></canvas>
+                </div>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card" data-page="synchronous">
+                    <div class="feature-icon sync">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="M12 2v4M12 18v4"/>
+                        </svg>
+                    </div>
+                    <h3>Synchronous Machines</h3>
+                    <p>Explore synchronous motors and generators with field excitation control, phasor diagrams, and power factor correction</p>
+                    <div class="feature-tags">
+                        <span>Motor</span>
+                        <span>Generator</span>
+                        <span>Phasors</span>
+                    </div>
+                </div>
+
+                <div class="feature-card" data-page="induction">
+                    <div class="feature-icon induction">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <h3>Induction Machines</h3>
+                    <p>Deep dive into asynchronous motors and generators with slip analysis, torque curves, and rotor dynamics</p>
+                    <div class="feature-tags">
+                        <span>Asynchronous</span>
+                        <span>Squirrel Cage</span>
+                        <span>Torque-Speed</span>
+                    </div>
+                </div>
+
+                <div class="feature-card" data-page="construction">
+                    <div class="feature-icon construction">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12,2 2,7 12,12 22,7"/>
+                            <polyline points="2,17 12,22 22,17"/>
+                            <polyline points="2,12 12,17 22,12"/>
+                        </svg>
+                    </div>
+                    <h3>Machine Construction</h3>
+                    <p>Visualize the internal construction, windings, magnetic circuits, and mechanical assembly of electrical machines</p>
+                    <div class="feature-tags">
+                        <span>Stator</span>
+                        <span>Rotor</span>
+                        <span>Windings</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="learning-paths">
+                <h2>Learning Paths</h2>
+                <div class="paths-container">
+                    <div class="path-card">
+                        <div class="path-header">
+                            <span class="path-level">Beginner</span>
+                            <h4>Fundamentals</h4>
+                        </div>
+                        <ul class="path-topics">
+                            <li>Magnetic circuits basics</li>
+                            <li>Electromagnetic induction</li>
+                            <li>AC fundamentals</li>
+                            <li>Power in AC systems</li>
+                        </ul>
+                    </div>
+                    <div class="path-card">
+                        <div class="path-header">
+                            <span class="path-level">Intermediate</span>
+                            <h4>Machine Theory</h4>
+                        </div>
+                        <ul class="path-topics">
+                            <li>Rotating magnetic fields</li>
+                            <li>Equivalent circuits</li>
+                            <li>Performance characteristics</li>
+                            <li>Testing methods</li>
+                        </ul>
+                    </div>
+                    <div class="path-card advanced">
+                        <div class="path-header">
+                            <span class="path-level">PhD Level</span>
+                            <h4>Advanced Analysis</h4>
+                        </div>
+                        <ul class="path-topics">
+                            <li>Finite element analysis</li>
+                            <li>Harmonic analysis</li>
+                            <li>Thermal modeling</li>
+                            <li>Fault diagnosis</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Synchronous Machine Page -->
+        <section id="synchronous-page" class="page">
+            <div class="page-header">
+                <h1>Synchronous Machine Simulator</h1>
+                <p>Interactive simulation of synchronous motors and generators with real-time parameter control</p>
+            </div>
+
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="sync-machine-canvas" width="800" height="450"></canvas>
+                        <div class="sim-overlay">
+                            <div class="machine-status">
+                                <span class="status-label">Mode:</span>
+                                <span id="sync-mode-display">Motor</span>
+                            </div>
+                            <div class="machine-status">
+                                <span class="status-label">Speed:</span>
+                                <span id="sync-speed-display">1500 RPM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="visualization-panels">
+                        <div class="viz-panel wide">
+                            <h4>Terminal Voltage V<sub>t</sub> (3-Phase Waveforms)</h4>
+                            <canvas id="sync-voltage-viz" width="350" height="180"></canvas>
+                        </div>
+                        <div class="viz-panel wide">
+                            <h4>Phasor Diagram (V, E, I)</h4>
+                            <canvas id="sync-phasor-viz" width="350" height="180"></canvas>
+                        </div>
+                        <div class="viz-panel wide">
+                            <h4>Power Factor Indicator</h4>
+                            <canvas id="sync-pf-viz" width="350" height="180"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>Machine Parameters</h3>
+                        <div class="control-group">
+                            <label>Terminal Voltage (V<sub>t</sub>): <span class="value" id="vt-value">400</span> V</label>
+                            <input type="range" id="vt-slider" min="200" max="500" value="400" step="10">
+                        </div>
+                        <div class="control-group">
+                            <label>Field Current (I<sub>f</sub>): <span class="value" id="if-value">5</span> A</label>
+                            <input type="range" id="if-slider" min="1" max="10" value="5" step="0.1">
+                        </div>
+                        <div class="control-group">
+                            <label>Load Torque (T): <span class="value" id="torque-value">50</span> Nm</label>
+                            <input type="range" id="torque-slider" min="0" max="100" value="50" step="1">
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <h3>Operation Mode</h3>
+                        <div class="toggle-group">
+                            <button class="toggle-btn active" data-mode="motor">Motor</button>
+                            <button class="toggle-btn" data-mode="generator">Generator</button>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <h3>Power Factor Control</h3>
+                        <div class="toggle-group pf-control">
+                            <button class="toggle-btn pf-btn active" data-pf="leading">Leading</button>
+                            <button class="toggle-btn pf-btn" data-pf="lagging">Lagging</button>
+                            <button class="toggle-btn pf-btn" data-pf="unity">Unity</button>
+                        </div>
+                    </div>
+
+                    <div class="readings-panel">
+                        <h3>Measured Values</h3>
+                        <div class="reading">
+                            <span class="reading-label">Armature Current (I<sub>a</sub>):</span>
+                            <span class="reading-value" id="ia-reading">0 A</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Power Factor (cos φ):</span>
+                            <span class="reading-value" id="pf-reading">0.8</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Mechanical Power:</span>
+                            <span class="reading-value" id="pmech-reading">0 W</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Internal EMF (E):</span>
+                            <span class="reading-value" id="emf-reading">0 V</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theory-panel">
+                <div class="theory-tabs">
+                    <button class="theory-tab active" data-theory="operation">Operation</button>
+                    <button class="theory-tab" data-theory="equations">Equations</button>
+                    <button class="theory-tab" data-theory="construction">Construction</button>
+                    <button class="theory-tab" data-theory="circuit">Equivalent Circuit</button>
+                </div>
+                <div class="theory-content" id="sync-theory">
+                    <div class="theory-panel-content active" data-content="operation">
+                        <h4>Synchronous Machine Operation</h4>
+                        <p>A synchronous machine operates on the principle of electromagnetic induction. When a three-phase stator winding is supplied with balanced AC voltages, a rotating magnetic field is produced at synchronous speed:</p>
+                        <div class="equation">n<sub>s</sub> = 120f / P</div>
+                        <p>where <em>f</em> is the supply frequency and <em>P</em> is the number of poles.</p>
+                        <p>The rotor, equipped with field windings, produces a constant magnetic field when DC excitation is applied. When the rotor field locks with the rotating stator field, the machine operates at synchronous speed - neither slipping nor lagging.</p>
+                        <div class="key-concept">
+                            <strong>Key Insight:</strong> Synchronous machines can operate at exactly synchronous speed only. If the mechanical load exceeds the stability limit, the machine loses synchronism and stalls.
+                        </div>
+                    </div>
+                    <div class="theory-panel-content" data-content="equations">
+                        <h4>Synchronous Machine Equations</h4>
+                        <div class="equation-block">
+                            <h5>Phasor Equation (Motor Mode)</h5>
+                            <div class="equation">E = V<sub>t</sub> + I<sub>a</sub>(R<sub>a</sub> + jX<sub>s</sub>)</div>
+                            <p>where E is the induced EMF, V<sub>t</sub> is terminal voltage, I<sub>a</sub> is armature current, R<sub>a</sub> is armature resistance, and X<sub>s</sub> is synchronous reactance.</p>
+                        </div>
+                        <div class="equation-block">
+                            <h5>Power Equations</h5>
+                            <div class="equation">P = √3 V<sub>t</sub> I<sub>a</sub> cos(φ)</div>
+                            <div class="equation">P<sub>mech</sub> = √3 V<sub>t</sub> I<sub>a</sub> cos(φ) - 3I<sub>a</sub>²R<sub>a</sub></div>
+                        </div>
+                        <div class="equation-block">
+                            <h5>Torque</h5>
+                            <div class="equation">T = P<sub>mech</sub> / ω<sub>s</sub></div>
+                        </div>
+                    </div>
+                    <div class="theory-panel-content" data-content="construction">
+                        <h4>Synchronous Machine Construction</h4>
+                        <div class="construction-details">
+                            <h5>Stator (Armature Winding)</h5>
+                            <ul>
+                                <li>Laminated silicon steel core to minimize eddy current losses</li>
+                                <li>Three-phase distributed winding (usually 60° or 120° phase spread)</li>
+                                <li>Double-layer winding for better harmonic distribution</li>
+                            </ul>
+                            <h5>Rotor (Field Winding)</h5>
+                            <ul>
+                                <li><strong>Salient Pole:</strong> Used for low-speed machines (hydro generators)</li>
+                                <li><strong>Cylindrical Rotor:</strong> Used for high-speed machines (turbo generators)</li>
+                                <li>Field winding supplied with DC through slip rings or brushless exciter</li>
+                            </ul>
+                            <h5>Excitation System</h5>
+                            <ul>
+                                <li>DC exciter mounted on the same shaft</li>
+                                <li>Automatic Voltage Regulator (AVR) for voltage control</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="theory-panel-content" data-content="circuit">
+                        <h4>Per-Phase Equivalent Circuit</h4>
+                        <div class="equation-block">
+                            <h5>Synchronous Impedance</h5>
+                            <div class="equation">Z<sub>s</sub> = R<sub>a</sub> + jX<sub>s</sub></div>
+                            <p>X<sub>s</sub> = X<sub>l</sub> + X<sub>a</sub></p>
+                        </div>
+                        <div class="equation-block">
+                            <h5>Power-Angle</h5>
+                            <div class="equation">P = (EV/X<sub>s</sub>) sin(δ)</div>
+                        </div>
+                        <div class="key-concept"><strong>PhD:</strong> Xd determines stability</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Induction Machine Page -->
+        <section id="induction-page" class="page">
+            <div class="page-header">
+                <h1>Induction Machine Simulator</h1>
+                <p>Explore asynchronous motors and generators with slip analysis and torque-speed characteristics</p>
+            </div>
+
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="induction-machine-canvas" width="800" height="450"></canvas>
+                        <div class="sim-overlay">
+                            <div class="machine-status">
+                                <span class="status-label">Slip:</span>
+                                <span id="induction-slip-display">0%</span>
+                            </div>
+                            <div class="machine-status">
+                                <span class="status-label">Speed:</span>
+                                <span id="induction-speed-display">0 RPM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="visualization-panels">
+                        <div class="viz-panel wide">
+                            <h4>Torque-Speed Characteristic</h4>
+                            <canvas id="torque-speed-viz" width="750" height="180"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>Machine Parameters</h3>
+                        <div class="control-group">
+                            <label>Supply Voltage (V): <span class="value" id="ind-vt-value">400</span> V</label>
+                            <input type="range" id="ind-vt-slider" min="200" max="500" value="400" step="10">
+                        </div>
+                        <div class="control-group">
+                            <label>Supply Frequency (f): <span class="value" id="ind-freq-value">50</span> Hz</label>
+                            <input type="range" id="ind-freq-slider" min="50" max="60" value="50" step="1">
+                        </div>
+                        <div class="control-group">
+                            <label>Stator Resistance (R<sub>1</sub>): <span class="value" id="r1-value">0.5</span> Ω</label>
+                            <input type="range" id="r1-slider" min="0.1" max="2" value="0.5" step="0.1">
+                        </div>
+                        <div class="control-group">
+                            <label>Rotor Resistance (R<sub>2</sub>): <span class="value" id="r2-value">0.3</span> Ω</label>
+                            <input type="range" id="r2-slider" min="0.1" max="2" value="0.3" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <h3>Operation Control</h3>
+                        <div class="control-group">
+                            <label>Applied Load Torque: <span class="value" id="ind-torque-value">50</span> Nm</label>
+                            <input type="range" id="ind-torque-slider" min="0" max="150" value="50" step="1">
+                        </div>
+                        <div class="control-group">
+                            <label>Rotor Resistance (External): <span class="value" id="ext-r-value">0</span> Ω</label>
+                            <input type="range" id="ext-r-slider" min="0" max="2" value="0" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <h3>Rotor Type</h3>
+                        <div class="toggle-group rotor-type">
+                            <button class="toggle-btn rotor-btn active" data-rotor="squirrel-cage">Squirrel Cage</button>
+                            <button class="toggle-btn rotor-btn" data-rotor="wound">Wound Rotor</button>
+                        </div>
+                    </div>
+
+                    <div class="readings-panel">
+                        <h3>Calculated Values</h3>
+                        <div class="reading">
+                            <span class="reading-label">Synchronous Speed:</span>
+                            <span class="reading-value" id="ns-reading">1500 RPM</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Actual Speed:</span>
+                            <span class="reading-value" id="nr-reading">0 RPM</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Slip (s):</span>
+                            <span class="reading-value" id="s-reading">0%</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Developed Torque:</span>
+                            <span class="reading-value" id="tdev-reading">0 Nm</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Efficiency:</span>
+                            <span class="reading-value" id="eff-reading">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theory-panel">
+                <div class="theory-tabs">
+                    <button class="theory-tab active" data-theory="ind-operation">Operation Principle</button>
+                    <button class="theory-tab" data-theory="ind-equations">Governing Equations</button>
+                    <button class="theory-tab" data-theory="ind-starting">Starting Methods</button>
+                </div>
+                <div class="theory-content" id="ind-theory">
+                    <div class="theory-panel-content active" data-content="ind-operation">
+                        <h4>Induction Machine Operation</h4>
+                        <p>The induction machine operates on the principle of <strong>transformer action</strong> with rotating parts. The stator winding creates a rotating magnetic field (RMF) that rotates at synchronous speed:</p>
+                        <div class="equation">n<sub>s</sub> = 120f / P</div>
+                        <p>The rotating magnetic field induces currents in the rotor conductors, which then create their own magnetic field. The interaction between the stator and rotor fields produces torque.</p>
+                        <p><strong>Key Concept - Slip:</strong> The rotor always rotates at a speed less than synchronous speed. The difference is expressed as slip:</p>
+                        <div class="equation">s = (n<sub>s</sub> - n<sub>r</sub>) / n<sub>s</sub></div>
+                        <p>When s = 0 (n<sub>r</sub> = n<sub>s</sub>), no relative motion exists between the RMF and rotor, so no EMF is induced - the machine acts as a synchronous machine.</p>
+                        <div class="key-concept">
+                            <strong>PhD Insight:</strong> In the generating mode (negative slip), the rotor is driven above synchronous speed, causing the induced rotor currents to reverse, and the machine delivers electrical power to the grid.
+                        </div>
+                    </div>
+                    <div class="theory-panel-content" data-content="ind-equations">
+                        <h4>Induction Machine Equations</h4>
+                        <div class="equation-block">
+                            <h5>Equivalent Circuit (Per Phase)</h5>
+                            <p>The induction machine is modeled as a transformer with the rotor represented as a short-circuited secondary. The slip appears as a variable resistance in the rotor circuit:</p>
+                            <div class="equation">R<sub>2</sub>/s = R<sub>2</sub> + R<sub>2</sub>(1-s)/s</div>
+                            <p>The second term represents the mechanical load converted to electrical resistance.</p>
+                        </div>
+                        <div class="equation-block">
+                            <h5>Torque Equation</h5>
+                            <div class="equation">T = (3 × V<sub>1</sub>² × R<sub>2</sub>/s) / (ω<sub>s</sub> × [(R<sub>1</sub> + R<sub>2</sub>/s)² + (X<sub>1</sub> + X<sub>2</sub>)²])</div>
+                            <p>The torque-slip characteristic shows:</p>
+                            <ul>
+                                <li>Starting torque at s = 1</li>
+                                <li>Pull-out (maximum) torque at s = R<sub>2</sub>/√((R<sub>1</sub>+R<sub>2</sub>)² + (X<sub>1</sub>+X<sub>2</sub>)²)</li>
+                                <li>Stable operating region for 0 < s < s<sub>max</sub></li>
+                            </ul>
+                        </div>
+                        <div class="equation-block">
+                            <h5>Power Flow</h5>
+                            <div class="equation">P<sub>air-gap</sub> = P<sub>mech</sub> / (1-s)</div>
+                            <div class="equation">P<sub>rotor-cu</sub> = s × P<sub>air-gap</sub></div>
+                            <p>The slip directly represents the fraction of air-gap power converted to rotor copper losses.</p>
+                        </div>
+                    </div>
+                    <div class="theory-panel-content" data-content="ind-starting">
+                        <h4>Starting Methods for Induction Motors</h4>
+                        <p>Induction motors draw 5-7 times rated current at starting. Various methods are used to reduce starting current:</p>
+                        <div class="method-cards">
+                            <div class="method-card">
+                                <h5>Direct On-Line (DOL)</h5>
+                                <p>Simplest method - full voltage applied directly. High starting current but maximum torque.</p>
+                            </div>
+                            <div class="method-card">
+                                <h5>Star-Delta</h5>
+                                <p>Stator winding connected in star during start (reduced voltage), then switched to delta.</p>
+                            </div>
+                            <div class="method-card">
+                                <h5>Auto-Transformer</h5>
+                                <p>Reduced voltage applied via autotransformer, with taps at 50%, 65%, or 80% voltage.</p>
+                            </div>
+                            <div class="method-card">
+                                <h5>Soft Starter</h5>
+                                <p>Thyristor-controlled voltage ramp for smooth starting with current limit.</p>
+                            </div>
+                            <div class="method-card">
+                                <h5>Variable Frequency Drive (VFD)</h5>
+                                <p>Best method - controls voltage and frequency simultaneously for optimal starting performance.</p>
+                            </div>
+                            <div class="method-card">
+                                <h5>Wound Rotor - External Resistance</h5>
+                                <p>Adding external resistance to rotor circuit increases starting torque and reduces starting current.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DC Motor Page -->
+        <section id="dc-motor-page" class="page">
+            <div class="page-header">
+                <h1>DC Motor Simulator</h1>
+                <p>Interactive simulation of DC motors - shunt, series, and compound</p>
+            </div>
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="dc-motor-canvas" width="800" height="450"></canvas>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>Motor Parameters</h3>
+                        <div class="control-group">
+                            <label>Voltage: <span class="value" id="dc-vt-value">220</span> V</label>
+                            <input type="range" id="dc-vt-slider" min="50" max="300" value="220">
+                        </div>
+                        <div class="control-group">
+                            <label>Load Torque: <span class="value" id="dc-torque-value">0</span> Nm</label>
+                            <input type="range" id="dc-torque-slider" min="0" max="50" value="0">
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>Readings</h3>
+                        <div class="reading"><span class="reading-label">Speed:</span><span class="reading-value" id="dc-n-reading">0 RPM</span></div>
+                        <div class="reading"><span class="reading-label">Armature Current:</span><span class="reading-value" id="dc-ia-reading">0 A</span></div>
+                        <div class="reading"><span class="reading-label">Back EMF:</span><span class="reading-value" id="dc-emf-reading">0 V</span></div>
+                        <div class="reading"><span class="reading-label">Efficiency:</span><span class="reading-value" id="dc-eff-reading">0%</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transformer Page -->
+        <section id="transformer-page" class="page">
+            <div class="page-header">
+                <h1>Transformer Simulator</h1>
+                <p>Interactive simulation of power transformers</p>
+            </div>
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="transformer-canvas" width="800" height="400"></canvas>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>Parameters</h3>
+                        <div class="control-group">
+                            <label>Primary Voltage: <span class="value" id="trans-v1-value">230</span> V</label>
+                            <input type="range" id="trans-v1-slider" min="100" max="400" value="230">
+                        </div>
+                        <div class="control-group">
+                            <label>Load Resistance: <span class="value" id="trans-load-value">10</span> Ω</label>
+                            <input type="range" id="trans-load-slider" min="1" max="50" value="10">
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>Readings</h3>
+                        <div class="reading"><span class="reading-label">Secondary V:</span><span class="reading-value" id="trans-v2-reading">0 V</span></div>
+                        <div class="reading"><span class="reading-label">Primary I:</span><span class="reading-value" id="trans-i1-reading">0 A</span></div>
+                        <div class="reading"><span class="reading-label">Secondary I:</span><span class="reading-value" id="trans-i2-reading">0 A</span></div>
+                        <div class="reading"><span class="reading-label">Efficiency:</span><span class="reading-value" id="trans-eff-reading">0%</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Construction Page -->
+        <section id="construction-page" class="page">
+            <div class="page-header">
+                <h1>Machine Construction & Anatomy</h1>
+                <p>Interactive exploration of electrical machine components and their assembly</p>
+            </div>
+
+            <div class="construction-container">
+                <div class="construction-viewer">
+                    <canvas id="construction-canvas" width="800" height="500"></canvas>
+                    <div class="component-info">
+                        <h4 id="component-name">Hover over components</h4>
+                        <p id="component-desc">Explore the internal construction of electrical machines</p>
+                    </div>
+                </div>
+
+                <div class="component-selector">
+                    <h3>Select Component</h3>
+                    <div class="component-buttons">
+                        <button class="component-btn active" data-component="stator">Stator Core</button>
+                        <button class="component-btn" data-component="stator-winding">Stator Winding</button>
+                        <button class="component-btn" data-component="rotor-synchronous">Rotor (Salient Pole)</button>
+                        <button class="component-btn" data-component="rotor-induction">Squirrel Cage Rotor</button>
+                        <button class="component-btn" data-component="shaft">Shaft</button>
+                        <button class="component-btn" data-component="bearings">Bearings</button>
+                        <button class="component-btn" data-component="housing">Housing</button>
+                        <button class="component-btn" data-component="cooling">Cooling System</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-controls">
+                <h3>Construction Animation</h3>
+                <div class="animation-buttons">
+                    <button class="anim-btn" id="anim-assembly">Assembly</button>
+                    <button class="anim-btn" id="anim-disassemble">Disassemble</button>
+                    <button class="anim-btn" id="anim-rotate">Auto Rotate</button>
+                </div>
+                <div class="animation-progress">
+                    <input type="range" id="assembly-progress" min="0" max="100" value="0">
+                </div>
+            </div>
+
+            <div class="cross-section-view">
+                <h3>Cross-Section Views</h3>
+                <div class="cross-section-grid">
+                    <div class="cross-section-card">
+                        <canvas id="cross-section-sync" width="300" height="200"></canvas>
+                        <h4>Synchronous Machine</h4>
+                    </div>
+                    <div class="cross-section-card">
+                        <canvas id="cross-section-induction" width="300" height="200"></canvas>
+                        <h4>Induction Machine</h4>
+                    </div>
+                    <div class="cross-section-card">
+                        <canvas id="magnetic-field-viz" width="300" height="200"></canvas>
+                        <h4>Magnetic Field Distribution</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>ElectroMachines Lab - Interactive Electrical Machines Education Platform</p>
+            <p class="footer-note">Designed for PhD-level understanding with interactive simulations</p>
+        </div>
+    </footer>
+
+    <script src="js/synchronous.js"></script>
+    <script src="js/induction.js"></script>
+    <script src="js/dc-motor.js"></script>
+    <script src="js/transformer.js"></script>
+    <script src="js/construction.js"></script>
+    <script src="js/visualizations.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

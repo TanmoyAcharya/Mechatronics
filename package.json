@@ -1,0 +1,19 @@
+{
+  "name": "electromachines-lab",
+  "version": "1.0.0",
+  "description": "Interactive electrical machines simulation and learning platform",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve",
+    "dev": "npx serve"
+  },
+  "keywords": [
+    "electrical-machines",
+    "simulation",
+    "synchronous-motor",
+    "induction-motor",
+    "education"
+  ],
+  "author": "",
+  "license": "MIT"
+}
