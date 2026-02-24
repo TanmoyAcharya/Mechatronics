@@ -118,6 +118,10 @@
                     <div class="dropdown-menu">
                         <button class="dropdown-item" data-page="communication">📡 Communication Protocols</button>
                         <button class="dropdown-item" data-page="ledlighting">💡 LED Lighting</button>
+                        <button class="dropdown-item" data-page="circuitbreaker">🔌 Circuit Breaker</button>
+                        <button class="dropdown-item" data-page="bldcfan">🌀 BLDC Fan</button>
+                        <button class="dropdown-item" data-page="compressor">🔧 Compressor</button>
+                        <button class="dropdown-item" data-page="lift">🏢 Lift/Elevator</button>
                     </div>
                 </div>
             </nav>
@@ -231,6 +235,30 @@
                 </button>
                 <button class="sidebar-link" data-page="communication">
                     <span class="link-icon">📡</span> Communication Protocols
+                </button>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <button class="sidebar-section-title" onclick="toggleSidebarSection(this)">
+                <span class="section-icon">🏠</span> Systems & Apps
+                <span class="section-arrow">▼</span>
+            </button>
+            <div class="sidebar-section-content">
+                <button class="sidebar-link" data-page="ledlighting">
+                    <span class="link-icon">💡</span> LED Lighting
+                </button>
+                <button class="sidebar-link" data-page="circuitbreaker">
+                    <span class="link-icon">🔌</span> Circuit Breaker
+                </button>
+                <button class="sidebar-link" data-page="bldcfan">
+                    <span class="link-icon">🌀</span> BLDC Fan
+                </button>
+                <button class="sidebar-link" data-page="compressor">
+                    <span class="link-icon">🔧</span> Compressor
+                </button>
+                <button class="sidebar-link" data-page="lift">
+                    <span class="link-icon">🏢</span> Lift/Elevator
                 </button>
             </div>
         </div>
@@ -1805,47 +1833,40 @@
             <div class="simulator-container">
                 <div class="sim-main">
                     <div class="simulation-view">
-                        <canvas id="solar-canvas" width="800" height="400"></canvas>
+                        <canvas id="solar-canvas" width="900" height="450"></canvas>
                     </div>
                     <div class="transformer-viz-grid">
-                        <div class="viz-card">
-                            <h4>IV Curve</h4>
-                            <canvas id="solar-iv-curve" width="380" height="200"></canvas>
+                        <div class="viz-card graph-wide">
+                            <h4><span class="param-info" data-tip="The I-V curve shows the relationship between current (I) and voltage (V) of the solar panel. The knee point is where maximum power is extracted (MPP).">📈 IV Curve</span></h4>
+                            <canvas id="solar-iv-curve" width="430" height="250"></canvas>
                         </div>
-                        <div class="viz-card">
-                            <h4>Power Curve</h4>
-                            <canvas id="solar-power-curve" width="380" height="200"></canvas>
+                        <div class="viz-card graph-wide">
+                            <h4><span class="param-info" data-tip="Power curve shows power output vs voltage. The peak represents Maximum Power Point (MPP) where the inverter operates.">📊 Power Curve</span></h4>
+                            <canvas id="solar-power-curve" width="430" height="250"></canvas>
                     </div>
                 </div>
                 <div class="controls-panel">
                     <div class="control-section">
-                        <h3>Solar Conditions</h3>
+                        <h3>☀️ Solar Conditions</h3>
                         <div class="control-group">
-                            <label>Irradiance: <span class="value" id="solar-irradiance-value">1000</span> W/m²</label>
+                            <label><span class="param-info" data-tip="Solar irradiance is the power per unit area received from the Sun. Standard test condition (STC) is 1000 W/m². Higher irradiance = more power.">Irradiance:</span> <span class="value" id="solar-irradiance-value">1000</span> W/m²</label>
                             <input type="range" id="solar-irradiance-slider" min="0" max="1200" value="1000">
                         </div>
                         <div class="control-group">
-                            <label>Sun Elevation: <span class="value" id="solar-sun-value">45</span>°</label>
+                            <label><span class="param-info" data-tip="Sun elevation angle affects how much sunlight hits the panel. 90° = noon (maximum), 0° = sunrise/sunset (minimum).">Sun Elevation:</span> <span class="value" id="solar-sun-value">45</span>°</label>
                             <input type="range" id="solar-sun-slider" min="0" max="90" value="45">
                         </div>
                         <div class="control-group">
-                            <label>Temperature: <span class="value" id="solar-temp-value">25</span>°C</label>
+                            <label><span class="param-info" data-tip="Cell temperature affects efficiency. Higher temp = lower voltage. Standard test condition (STC) is 25°C. Panels lose ~0.4% efficiency per °C above 25°C.">Temperature:</span> <span class="value" id="solar-temp-value">25</span>°C</label>
                             <input type="range" id="solar-temp-slider" min="0" max="60" value="25">
                         </div>
                         <div class="control-group">
-                            <label>Panel Tilt: <span class="value" id="solar-tilt-value">30</span>°</label>
+                            <label><span class="param-info" data-tip="Panel tilt angle optimizes for your latitude. At latitude 30°, a 30° tilt gives best annual output. Adjust seasonally - higher in winter, lower in summer.">Panel Tilt:</span> <span class="value" id="solar-tilt-value">30</span>°</label>
                             <input type="range" id="solar-tilt-slider" min="0" max="90" value="30">
                         </div>
                         <div class="control-group">
-                            <label>Cloud Cover: <span class="value" id="solar-cloud-value">0</span>%</label>
+                            <label><span class="param-info" data-tip="Cloud cover blocks sunlight. 0% = clear sky, 100% = fully overcast. Even on cloudy days, panels produce ~10-20% of rated power from diffuse light.">Cloud Cover:</span> <span class="value" id="solar-cloud-value">0</span>%</label>
                             <input type="range" id="solar-cloud-slider" min="0" max="100" value="0">
-                        </div>
-                    </div>
-                    <div class="control-section">
-                        <h3>Panel Setup</h3>
-                        <div class="control-group">
-                            <label>Panel Tilt: <span class="value" id="solar-tilt-value">30</span>°</label>
-                            <input type="range" id="solar-tilt-slider" min="0" max="90" value="30">
                         </div>
                     </div>
                     <div class="readings-panel">
@@ -1863,60 +1884,89 @@
         <!-- Construction Page -->
         <section id="construction-page" class="page">
             <div class="page-header">
-                <h1>Machine Construction & Anatomy</h1>
-                <p>Interactive exploration of electrical machine components and their assembly</p>
+                <h1>🔧 Machine Construction & Anatomy</h1>
+                <p>Interactive exploration of electrical machine components - click parts to learn how they're assembled</p>
             </div>
 
             <div class="construction-container">
                 <div class="construction-viewer">
                     <canvas id="construction-canvas" width="800" height="500"></canvas>
                     <div class="component-info">
-                        <h4 id="component-name">Hover over components</h4>
-                        <p id="component-desc">Explore the internal construction of electrical machines</p>
+                        <h4 id="component-name">👆 Click buttons below to explore</h4>
+                        <p id="component-desc">Select a component to see what it does and how it's built</p>
                     </div>
                 </div>
 
                 <div class="component-selector">
-                    <h3>Select Component</h3>
+                    <h3>🔍 Select Component to Learn</h3>
+                    <p class="help-text">Click a component to highlight it and learn what it does</p>
                     <div class="component-buttons">
-                        <button class="component-btn active" data-component="stator">Stator Core</button>
-                        <button class="component-btn" data-component="stator-winding">Stator Winding</button>
-                        <button class="component-btn" data-component="rotor-synchronous">Rotor (Salient Pole)</button>
-                        <button class="component-btn" data-component="rotor-induction">Squirrel Cage Rotor</button>
-                        <button class="component-btn" data-component="shaft">Shaft</button>
-                        <button class="component-btn" data-component="bearings">Bearings</button>
-                        <button class="component-btn" data-component="housing">Housing</button>
-                        <button class="component-btn" data-component="cooling">Cooling System</button>
+                        <button class="component-btn active" data-component="stator">🧱 Stator Core</button>
+                        <button class="component-btn" data-component="stator-winding">🔌 Stator Winding</button>
+                        <button class="component-btn" data-component="rotor-synchronous">🧲 Rotor (Salient Pole)</button>
+                        <button class="component-btn" data-component="rotor-induction">🐿️ Squirrel Cage Rotor</button>
+                        <button class="component-btn" data-component="shaft">⚙️ Shaft</button>
+                        <button class="component-btn" data-component="bearings">🔩 Bearings</button>
+                        <button class="component-btn" data-component="housing">🏠 Housing</button>
+                        <button class="component-btn" data-component="cooling">❄️ Cooling System</button>
                     </div>
                 </div>
             </div>
 
             <div class="animation-controls">
-                <h3>Construction Animation</h3>
+                <h3>🎬 Build Animation</h3>
+                <p class="help-text">Use the slider to see how the machine is assembled from parts</p>
                 <div class="animation-buttons">
-                    <button class="anim-btn" id="anim-assembly">Assembly</button>
-                    <button class="anim-btn" id="anim-disassemble">Disassemble</button>
-                    <button class="anim-btn" id="anim-rotate">Auto Rotate</button>
+                    <button class="anim-btn" id="anim-assembly">🔨 Assemble</button>
+                    <button class="anim-btn" id="anim-disassemble">💥 Disassemble</button>
+                    <button class="anim-btn active" id="anim-rotate">🔄 Auto Rotate</button>
                 </div>
                 <div class="animation-progress">
+                    <label>Assembly Progress: <span id="assembly-percent">70%</span></label>
                     <input type="range" id="assembly-progress" min="0" max="100" value="70">
                 </div>
             </div>
 
             <div class="cross-section-view">
-                <h3>Cross-Section Views</h3>
+                <h3>🔬 Cross-Section Views - See Inside!</h3>
+                <p class="help-text">These show a slice through the machine so you can see all the parts</p>
                 <div class="cross-section-grid">
                     <div class="cross-section-card">
-                        <canvas id="cross-section-sync" width="300" height="200"></canvas>
-                        <h4>Synchronous Machine</h4>
+                        <canvas id="cross-section-sync" width="400" height="300"></canvas>
+                        <h4>🔄 Synchronous Machine</h4>
+                        <p class="section-desc">DC-excited rotor creates constant magnetic field</p>
                     </div>
                     <div class="cross-section-card">
-                        <canvas id="cross-section-induction" width="300" height="200"></canvas>
-                        <h4>Induction Machine</h4>
+                        <canvas id="cross-section-induction" width="400" height="300"></canvas>
+                        <h4>🌀 Induction Machine</h4>
+                        <p class="section-desc">Rotor induced current creates magnetic field</p>
                     </div>
                     <div class="cross-section-card">
-                        <canvas id="magnetic-field-viz" width="300" height="200"></canvas>
-                        <h4>Magnetic Field Distribution</h4>
+                        <canvas id="magnetic-field-viz" width="400" height="300"></canvas>
+                        <h4>🧲 Rotating Magnetic Field</h4>
+                        <p class="section-desc">3-phase AC creates rotating field at synchronous speed</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="construction-help">
+                <h3>📖 How Machines Work</h3>
+                <div class="help-grid">
+                    <div class="help-card">
+                        <h4>1. Stator</h4>
+                        <p>The stationary outer ring with copper windings. When 3-phase AC flows through it, creates a rotating magnetic field.</p>
+                    </div>
+                    <div class="help-card">
+                        <h4>2. Rotor</h4>
+                        <p>The rotating part inside. In induction motors, the rotating field induces current in rotor bars, creating its own magnetic field that follows the stator field.</p>
+                    </div>
+                    <div class="help-card">
+                        <h4>3. Air Gap</h4>
+                        <p>The small gap between stator and rotor (0.3-1mm). The magnetic field passes through this gap to transfer energy.</p>
+                    </div>
+                    <div class="help-card">
+                        <h4>4. Speed</h4>
+                        <p>Induction motors run at <b>slightly less</b> than synchronous speed (slip). Synchronous motors run at <b>exact</b> synchronous speed.</p>
                     </div>
                 </div>
             </div>
@@ -2137,6 +2187,176 @@
                 </div>
             </div>
         </section>
+
+        <!-- Circuit Breaker Page -->
+        <section id="circuitbreaker-page" class="page">
+            <div class="page-header">
+                <h1>🔌 Circuit Breaker Simulator</h1>
+                <p>Learn how circuit breakers protect electrical systems from overcurrents</p>
+            </div>
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="circuitbreaker-canvas" width="800" height="450"></canvas>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>⚡ Circuit Parameters</h3>
+                        <div class="control-group">
+                            <label>Current: <span class="value" id="cb-current-value">10</span> A</label>
+                            <input type="range" id="cb-current-slider" min="1" max="100" value="10">
+                        </div>
+                        <div class="control-group">
+                            <label>Voltage: <span class="value" id="cb-voltage-value">230</span> V</label>
+                            <input type="range" id="cb-voltage-slider" min="110" max="415" value="230">
+                        </div>
+                        <div class="control-group">
+                            <label>Breaker Rating: <span class="value" id="cb-rating-value">20</span> A</label>
+                            <input type="range" id="cb-rating-slider" min="5" max="63" value="20">
+                        </div>
+                        <div class="control-group">
+                            <label>Fault Type:</label>
+                            <select id="cb-fault-select">
+                                <option value="none">No Fault</option>
+                                <option value="short">Short Circuit</option>
+                                <option value="overload">Overload</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>📊 Status</h3>
+                        <div class="reading"><span class="reading-label">Status:</span><span class="reading-value" id="cb-status-reading">ON</span></div>
+                        <div class="reading"><span class="reading-label">Power:</span><span class="reading-value" id="cb-power-reading">2.3 kW</span></div>
+                        <div class="reading"><span class="reading-label">Trip Time:</span><span class="reading-value" id="cb-trip-reading">--</span></div>
+                    </div>
+                    <button class="btn-primary" id="cb-reset-btn">🔄 Reset Breaker</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- BLDC Fan Page -->
+        <section id="bldcfan-page" class="page">
+            <div class="page-header">
+                <h1>🌀 BLDC Fan Simulator</h1>
+                <p>Brushless DC fan - understand electronic commutation and speed control</p>
+            </div>
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="bldcfan-canvas" width="800" height="450"></canvas>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>🎚️ Speed Control</h3>
+                        <div class="control-group">
+                            <label>Fan Speed: <span class="value" id="bldc-speed-value">50</span>%</label>
+                            <input type="range" id="bldc-speed-slider" min="0" max="100" value="50">
+                        </div>
+                        <div class="control-group">
+                            <label>Voltage: <span class="value" id="bldc-voltage-value">12</span> V</label>
+                            <input type="range" id="bldc-voltage-slider" min="5" max="24" value="12">
+                        </div>
+                        <div class="control-group">
+                            <label>Propeller Size: <span class="value" id="bldc-size-value">4</span> inch</label>
+                            <input type="range" id="bldc-size-slider" min="2" max="12" value="4">
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>📊 Output</h3>
+                        <div class="reading"><span class="reading-label">RPM:</span><span class="reading-value" id="bldc-rpm-reading">1500</span></div>
+                        <div class="reading"><span class="reading-label">Airflow:</span><span class="reading-value" id="bldc-airflow-reading">50 CFM</span></div>
+                        <div class="reading"><span class="reading-label">Power:</span><span class="reading-value" id="bldc-power-reading">5 W</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Compressor Page -->
+        <section id="compressor-page" class="page">
+            <div class="page-header">
+                <h1>🔧 Compressor Simulator</h1>
+                <p>Learn about reciprocating and scroll compressors in HVAC systems</p>
+            </div>
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="compressor-canvas" width="800" height="450"></canvas>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>⚙️ Compressor Settings</h3>
+                        <div class="control-group">
+                            <label>Compressor Type:</label>
+                            <select id="comp-type-select">
+                                <option value="reciprocating">Reciprocating</option>
+                                <option value="scroll">Scroll</option>
+                                <option value="scroll">Screw</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Load: <span class="value" id="comp-load-value">75</span>%</label>
+                            <input type="range" id="comp-load-slider" min="25" max="100" value="75">
+                        </div>
+                        <div class="control-group">
+                            <label>Suction Pressure: <span class="value" id="comp-suction-value">100</span> PSI</label>
+                            <input type="range" id="comp-suction-slider" min="50" max="150" value="100">
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>📊 Performance</h3>
+                        <div class="reading"><span class="reading-label">Discharge P:</span><span class="reading-value" id="comp-discharge-reading">250 PSI</span></div>
+                        <div class="reading"><span class="reading-label">Power:</span><span class="reading-value" id="comp-power-reading">2.5 HP</span></div>
+                        <div class="reading"><span class="reading-label">COP:</span><span class="reading-value" id="comp-cop-reading">3.2</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lift Page -->
+        <section id="lift-page" class="page">
+            <div class="page-header">
+                <h1>🏢 Lift/Elevator Simulator</h1>
+                <p>Understand elevator control systems, speed profiles, and safety mechanisms</p>
+            </div>
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="lift-canvas" width="800" height="450"></canvas>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>🎛️ Elevator Control</h3>
+                        <div class="control-group">
+                            <label>Current Floor: <span class="value" id="lift-floor-value">1</span></label>
+                            <input type="range" id="lift-floor-slider" min="1" max="10" value="1">
+                        </div>
+                        <div class="control-group">
+                            <label>Target Floor: <span class="value" id="lift-target-value">5</span></label>
+                            <input type="range" id="lift-target-slider" min="1" max="10" value="5">
+                        </div>
+                        <div class="control-group">
+                            <label>Speed: <span class="value" id="lift-speed-value">1.0</span> m/s</label>
+                            <input type="range" id="lift-speed-slider" min="0.5" max="2.5" value="1" step="0.1">
+                        </div>
+                        <div class="control-group">
+                            <label>Load: <span class="value" id="lift-load-value">50</span>%</label>
+                            <input type="range" id="lift-load-slider" min="0" max="100" value="50">
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>📊 Status</h3>
+                        <div class="reading"><span class="reading-label">Status:</span><span class="reading-value" id="lift-status-reading">Idle</span></div>
+                        <div class="reading"><span class="reading-label">Travel Time:</span><span class="reading-value" id="lift-time-reading">4.0s</span></div>
+                        <div class="reading"><span class="reading-label">Motor Power:</span><span class="reading-value" id="lift-power-reading">5 kW</span></div>
+                    </div>
+                    <button class="btn-primary" id="lift-go-btn">▶️ Go to Floor</button>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer class="footer">
@@ -2161,6 +2381,11 @@
     <script src="js/widebandgap.js"></script>
     <script src="js/communication.js"></script>
     <script src="js/ledlighting.js"></script>
+    <script src="js/circuitbreaker.js"></script>
+    <script src="js/bldcfan.js"></script>
+    <script src="js/compressor.js"></script>
+    <script src="js/lift.js"></script>
+    <script src="js/catfollower.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
 </body>

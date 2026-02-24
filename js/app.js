@@ -86,6 +86,22 @@ class App {
                     window.ledLightingSimulator = new LEDLightingSimulator();
                     console.log('LEDLightingSimulator created');
                 }
+                if (typeof CircuitBreakerSimulator === 'function') {
+                    window.circuitBreakerSimulator = new CircuitBreakerSimulator();
+                    console.log('CircuitBreakerSimulator created');
+                }
+                if (typeof BLDCFanSimulator === 'function') {
+                    window.bldcFanSimulator = new BLDCFanSimulator();
+                    console.log('BLDCFanSimulator created');
+                }
+                if (typeof CompressorSimulator === 'function') {
+                    window.compressorSimulator = new CompressorSimulator();
+                    console.log('CompressorSimulator created');
+                }
+                if (typeof LiftSimulator === 'function') {
+                    window.liftSimulator = new LiftSimulator();
+                    console.log('LiftSimulator created');
+                }
                 
                 // Start the simulation for the current page
                 this.onPageChange(this.currentPage);
@@ -235,6 +251,34 @@ class App {
                         window.ledLightingSimulator.resize();
                         window.ledLightingSimulator.start();
                         if (window.authSystem) window.authSystem.markComplete('ledlighting');
+                    }
+                    break;
+                case 'circuitbreaker':
+                    if (window.circuitBreakerSimulator) {
+                        window.circuitBreakerSimulator.calculate();
+                        window.circuitBreakerSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('circuitbreaker');
+                    }
+                    break;
+                case 'bldcfan':
+                    if (window.bldcFanSimulator) {
+                        window.bldcFanSimulator.calculate();
+                        window.bldcFanSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('bldcfan');
+                    }
+                    break;
+                case 'compressor':
+                    if (window.compressorSimulator) {
+                        window.compressorSimulator.calculate();
+                        window.compressorSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('compressor');
+                    }
+                    break;
+                case 'lift':
+                    if (window.liftSimulator) {
+                        window.liftSimulator.calculate();
+                        window.liftSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('lift');
                     }
                     break;
             }

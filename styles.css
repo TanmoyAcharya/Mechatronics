@@ -1652,6 +1652,45 @@ main {
     font-weight: 600;
 }
 
+/* Parameter Info Tooltips */
+.param-info {
+    border-bottom: 1px dashed #00d4ff;
+    cursor: help;
+    position: relative;
+}
+
+.param-info:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 20, 40, 0.95);
+    border: 1px solid #00d4ff;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    max-width: 280px;
+    white-space: normal;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+/* Larger Graph Cards */
+.graph-wide {
+    flex: 1;
+    min-width: 400px;
+}
+
+.graph-wide canvas {
+    width: 100% !important;
+    max-width: 100%;
+}
+
 /* ================================================
    Theory Panel
    ================================================ */
@@ -1975,13 +2014,84 @@ main {
 
 .cross-section-card canvas {
     width: 100%;
-    height: 200px;
+    height: 280px;
     margin-bottom: var(--space-md);
+    border-radius: var(--radius-md);
 }
 
 .cross-section-card h4 {
-    font-size: 0.95rem;
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.section-desc {
+    font-size: 0.85rem;
     color: var(--text-secondary);
+    margin-top: var(--space-xs);
+}
+
+/* Construction Help Section */
+.construction-help {
+    margin: var(--space-2xl) auto;
+    max-width: 1400px;
+    padding: 0 var(--space-2xl);
+}
+
+.construction-help h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+}
+
+.help-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-lg);
+}
+
+.help-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+}
+
+.help-card h4 {
+    color: #00d4ff;
+    margin-bottom: var(--space-sm);
+    font-size: 1rem;
+}
+
+.help-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.help-card p b {
+    color: #2ed573;
+}
+
+/* Help text */
+.help-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+    font-style: italic;
+}
+
+/* Animation progress label */
+.animation-progress label {
+    display: block;
+    margin-bottom: var(--space-sm);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+#assembly-percent {
+    color: #00d4ff;
+    font-weight: bold;
 }
 
 /* ================================================

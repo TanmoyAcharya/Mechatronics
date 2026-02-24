@@ -86,16 +86,16 @@ class SolarPanelSimulator {
         this.setupControls();
         
         if (this.canvas.width === 0) {
-            this.canvas.width = 800;
+            this.canvas.width = 900;
             this.canvas.height = 450;
         }
         if (this.ivCanvas && this.ivCanvas.width === 0) {
-            this.ivCanvas.width = 380;
-            this.ivCanvas.height = 200;
+            this.ivCanvas.width = 430;
+            this.ivCanvas.height = 250;
         }
         if (this.powerCanvas && this.powerCanvas.width === 0) {
-            this.powerCanvas.width = 380;
-            this.powerCanvas.height = 200;
+            this.powerCanvas.width = 430;
+            this.powerCanvas.height = 250;
         }
         
         this.calculate();
@@ -265,92 +265,173 @@ class SolarPanelSimulator {
         
         let skyGradient;
         
+        // Adjust sky based on cloud cover - darker when cloudy
+        const cloudDarkening = this.cloudCover / 100 * 0.4;
+        
         if (this.cloudCover > 70) {
-            // Overcast sky
+            // Overcast sky - gray with slight blue tint
             skyGradient = ctx.createLinearGradient(0, 0, 0, h);
-            skyGradient.addColorStop(0, '#4a5568');
-            skyGradient.addColorStop(0.5, '#718096');
-            skyGradient.addColorStop(1, '#a0aec0');
+            skyGradient.addColorStop(0, `rgb(${Math.floor(74 - cloudDarkening * 50)}, ${Math.floor(90 - cloudDarkening * 30)}, ${Math.floor(104 - cloudDarkening * 20)})`);
+            skyGradient.addColorStop(0.4, `rgb(${Math.floor(113 - cloudDarkening * 50)}, ${Math.floor(130 - cloudDarkening * 30)}, ${Math.floor(150 - cloudDarkening * 20)})`);
+            skyGradient.addColorStop(0.7, `rgb(${Math.floor(140 - cloudDarkening * 40)}, ${Math.floor(160 - cloudDarkening * 30)}, ${Math.floor(180 - cloudDarkening * 20)})`);
+            skyGradient.addColorStop(1, `rgb(${Math.floor(176 - cloudDarkening * 30)}, ${Math.floor(190 - cloudDarkening * 20)}, ${Math.floor(208 - cloudDarkening * 10)})`);
         } else if (isDawn || isDusk) {
-            // Golden hour
+            // Golden hour - warm colors
+            const dawnFactor = isDawn ? (15 - this.sunAngle) / 15 : (this.sunAngle - 85) / 15;
             skyGradient = ctx.createLinearGradient(0, 0, 0, h);
-            skyGradient.addColorStop(0, '#1a202c');
-            skyGradient.addColorStop(0.3, '#553c9a');
-            skyGradient.addColorStop(0.6, '#ed8936');
-            skyGradient.addColorStop(1, '#f6e05e');
+            skyGradient.addColorStop(0, `rgb(${Math.floor(26 + dawnFactor * 20)}, ${Math.floor(32 + dawnFactor * 20)}, ${Math.floor(44 + dawnFactor * 30)})`);
+            skyGradient.addColorStop(0.25, `rgb(${Math.floor(60 + dawnFactor * 30)}, ${Math.floor(40 + dawnFactor * 30)}, ${Math.floor(80 + dawnFactor * 40)})`);
+            skyGradient.addColorStop(0.5, `rgb(${Math.floor(85 + dawnFactor * 50)}, ${Math.floor(60 + dawnFactor * 40)}, ${Math.floor(100 + dawnFactor * 30)})`);
+            skyGradient.addColorStop(0.75, `rgb(${Math.floor(237 - dawnFactor * 50)}, ${Math.floor(137 - dawnFactor * 30)}, ${Math.floor(54 - dawnFactor * 20)})`);
+            skyGradient.addColorStop(1, `rgb(${Math.floor(246 - dawnFactor * 30)}, ${Math.floor(224 - dawnFactor * 50)}, ${Math.floor(94 - dawnFactor * 30)})`);
         } else {
-            // Clear blue sky
+            // Clear blue sky - adjust for cloud cover
+            const baseBlue = 1 - cloudDarkening;
             skyGradient = ctx.createLinearGradient(0, 0, 0, h);
-            skyGradient.addColorStop(0, '#1e3a5f');
-            skyGradient.addColorStop(0.4, '#3182ce');
-            skyGradient.addColorStop(0.7, '#63b3ed');
-            skyGradient.addColorStop(1, '#bee3f8');
+            skyGradient.addColorStop(0, `rgb(${Math.floor(30 * baseBlue)}, ${Math.floor(58 * baseBlue)}, ${Math.floor(95 * baseBlue)})`);
+            skyGradient.addColorStop(0.35, `rgb(${Math.floor(49 * baseBlue)}, ${Math.floor(129 * baseBlue)}, ${Math.floor(206 * baseBlue)})`);
+            skyGradient.addColorStop(0.6, `rgb(${Math.floor(99 * baseBlue)}, ${Math.floor(179 * baseBlue)}, ${Math.floor(237 * baseBlue)})`);
+            skyGradient.addColorStop(1, `rgb(${Math.floor(190 * baseBlue)}, ${Math.floor(227 * baseBlue)}, ${Math.floor(248 * baseBlue)})`);
         }
         
         ctx.fillStyle = skyGradient;
         ctx.fillRect(0, 0, w, h);
+        
+        // Add subtle atmospheric haze near horizon
+        const hazeGrad = ctx.createLinearGradient(0, h * 0.6, 0, h);
+        hazeGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        hazeGrad.addColorStop(1, `rgba(255, 255, 255, ${0.1 + this.cloudCover / 500})`);
+        ctx.fillStyle = hazeGrad;
+        ctx.fillRect(0, h * 0.6, w, h * 0.4);
     }
     
     drawSun(ctx, w, h) {
-        const sunX = w * 0.7;
+        const sunX = w * 0.75;
         const sunY = h - 100 - (this.sunAngle / 90) * (h - 150);
         
-        // Sun corona (outer glow)
-        const coronaGradient = ctx.createRadialGradient(sunX, sunY, 20, sunX, sunY, 150);
-        coronaGradient.addColorStop(0, 'rgba(255, 236, 179, 0.8)');
-        coronaGradient.addColorStop(0.3, 'rgba(255, 193, 7, 0.4)');
-        coronaGradient.addColorStop(1, 'rgba(255, 152, 0, 0)');
+        // Sun corona (outer glow) - more intense
+        const coronaGradient = ctx.createRadialGradient(sunX, sunY, 20, sunX, sunY, 200);
+        coronaGradient.addColorStop(0, 'rgba(255, 255, 200, 0.9)');
+        coronaGradient.addColorStop(0.15, 'rgba(255, 220, 100, 0.6)');
+        coronaGradient.addColorStop(0.4, 'rgba(255, 180, 50, 0.3)');
+        coronaGradient.addColorStop(1, 'rgba(255, 150, 0, 0)');
         
         ctx.fillStyle = coronaGradient;
         ctx.beginPath();
-        ctx.arc(sunX, sunY, 150, 0, Math.PI * 2);
+        ctx.arc(sunX, sunY, 200, 0, Math.PI * 2);
         ctx.fill();
         
-        // Sun core
-        const sunGradient = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 45);
-        sunGradient.addColorStop(0, '#fff');
-        sunGradient.addColorStop(0.5, '#ffeb3b');
+        // Multiple glow layers for realism
+        for (let i = 3; i > 0; i--) {
+            const glowGradient = ctx.createRadialGradient(sunX, sunY, 30, sunX, sunY, 30 + i * 25);
+            glowGradient.addColorStop(0, `rgba(255, 255, 255, ${0.3 / i})`);
+            glowGradient.addColorStop(1, 'rgba(255, 200, 100, 0)');
+            ctx.fillStyle = glowGradient;
+            ctx.beginPath();
+            ctx.arc(sunX, sunY, 30 + i * 25, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Sun core - bright white-yellow
+        const sunGradient = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 50);
+        sunGradient.addColorStop(0, '#ffffff');
+        sunGradient.addColorStop(0.3, '#fffde7');
+        sunGradient.addColorStop(0.6, '#ffeb3b');
+        sunGradient.addColorStop(0.85, '#ffc107');
         sunGradient.addColorStop(1, '#ff9800');
         
         ctx.fillStyle = sunGradient;
         ctx.beginPath();
-        ctx.arc(sunX, sunY, 40, 0, Math.PI * 2);
+        ctx.arc(sunX, sunY, 45, 0, Math.PI * 2);
         ctx.fill();
         
-        // Sun rays animation
-        ctx.strokeStyle = 'rgba(255, 235, 59, 0.4)';
-        ctx.lineWidth = 2;
-        for (let i = 0; i < 12; i++) {
-            const angle = (i / 12) * Math.PI * 2 + this.time * 0.5;
+        // Lens flare effect
+        ctx.globalCompositeOperation = 'screen';
+        const flarePositions = [0.3, 0.5, 0.7, 1.2, 1.5];
+        const flareSizes = [8, 15, 6, 20, 12];
+        const flareColors = ['rgba(255,255,200,0.4)', 'rgba(255,200,100,0.3)', 'rgba(255,150,50,0.2)', 'rgba(200,255,255,0.2)', 'rgba(255,220,180,0.3)'];
+        
+        for (let i = 0; i < flarePositions.length; i++) {
+            const angle = Math.atan2(h/2 - sunY, w/2 - sunX);
+            const dist = Math.sqrt((w/2 - sunX)**2 + (h/2 - sunY)**2);
+            const flareX = sunX + Math.cos(angle) * dist * flarePositions[i];
+            const flareY = sunY + Math.sin(angle) * dist * flarePositions[i];
+            
+            const flareGrad = ctx.createRadialGradient(flareX, flareY, 0, flareX, flareY, flareSizes[i]);
+            flareGrad.addColorStop(0, flareColors[i]);
+            flareGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = flareGrad;
             ctx.beginPath();
-            ctx.moveTo(sunX + Math.cos(angle) * 50, sunY + Math.sin(angle) * 50);
-            ctx.lineTo(sunX + Math.cos(angle) * 80, sunY + Math.sin(angle) * 80);
+            ctx.arc(flareX, flareY, flareSizes[i], 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.globalCompositeOperation = 'source-over';
+        
+        // Sun rays - animated
+        ctx.strokeStyle = 'rgba(255, 245, 157, 0.5)';
+        ctx.lineWidth = 2;
+        const rayTime = this.time * 0.3;
+        for (let i = 0; i < 16; i++) {
+            const angle = (i / 16) * Math.PI * 2 + rayTime;
+            const rayLength = 40 + Math.sin(this.time * 2 + i) * 10;
+            ctx.beginPath();
+            ctx.moveTo(sunX + Math.cos(angle) * 55, sunY + Math.sin(angle) * 55);
+            ctx.lineTo(sunX + Math.cos(angle) * (55 + rayLength), sunY + Math.sin(angle) * (55 + rayLength));
             ctx.stroke();
         }
     }
     
     drawClouds(ctx, w, h) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        if (this.cloudCover < 10) return; // Skip drawing if clear sky
+        
+        const cloudOpacity = this.cloudCover / 100 * 0.9;
+        const cloudBrightness = 255 - this.cloudCover * 0.5;
         
         this.clouds.forEach(cloud => {
             cloud.x += cloud.speed;
-            if (cloud.x > w + 100) cloud.x = -150;
+            if (cloud.x > w + 150) cloud.x = -200;
             
-            // Draw fluffy cloud shape
+            // Draw fluffy cloud with multiple overlapping circles
+            const baseColor = `rgba(${cloudBrightness}, ${cloudBrightness}, ${cloudBrightness}, ${cloudOpacity})`;
+            const shadowColor = `rgba(${cloudBrightness * 0.7}, ${cloudBrightness * 0.7}, ${cloudBrightness * 0.75}, ${cloudOpacity})`;
+            const highlightColor = `rgba(${Math.min(255, cloudBrightness + 20)}, ${Math.min(255, cloudBrightness + 20)}, ${Math.min(255, cloudBrightness + 25)}, ${cloudOpacity})`;
+            
+            // Cloud shadow/base
+            ctx.fillStyle = shadowColor;
+            ctx.beginPath();
+            ctx.arc(cloud.x + 10, cloud.y + 20, cloud.size * 0.45, 0, Math.PI * 2);
+            ctx.arc(cloud.x + cloud.size * 0.5, cloud.y + 22, cloud.size * 0.4, 0, Math.PI * 2);
+            ctx.arc(cloud.x + cloud.size * 0.9, cloud.y + 18, cloud.size * 0.35, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Cloud main body
+            ctx.fillStyle = baseColor;
             ctx.beginPath();
             ctx.arc(cloud.x, cloud.y, cloud.size * 0.5, 0, Math.PI * 2);
-            ctx.arc(cloud.x + cloud.size * 0.4, cloud.y - cloud.size * 0.1, cloud.size * 0.4, 0, Math.PI * 2);
-            ctx.arc(cloud.x + cloud.size * 0.8, cloud.y, cloud.size * 0.35, 0, Math.PI * 2);
-            ctx.arc(cloud.x + cloud.size * 0.3, cloud.y + cloud.size * 0.2, cloud.size * 0.3, 0, Math.PI * 2);
+            ctx.arc(cloud.x + cloud.size * 0.4, cloud.y - cloud.size * 0.15, cloud.size * 0.45, 0, Math.PI * 2);
+            ctx.arc(cloud.x + cloud.size * 0.85, cloud.y, cloud.size * 0.4, 0, Math.PI * 2);
+            ctx.arc(cloud.x + cloud.size * 0.3, cloud.y + cloud.size * 0.2, cloud.size * 0.35, 0, Math.PI * 2);
+            ctx.arc(cloud.x + cloud.size * 0.6, cloud.y + cloud.size * 0.15, cloud.size * 0.3, 0, Math.PI * 2);
             ctx.fill();
             
-            // Darker bottom
-            ctx.fillStyle = 'rgba(200, 200, 210, 0.9)';
+            // Cloud highlights
+            ctx.fillStyle = highlightColor;
             ctx.beginPath();
-            ctx.arc(cloud.x + 10, cloud.y + 15, cloud.size * 0.4, 0, Math.PI);
+            ctx.arc(cloud.x + cloud.size * 0.2, cloud.y - cloud.size * 0.15, cloud.size * 0.25, 0, Math.PI * 2);
+            ctx.arc(cloud.x + cloud.size * 0.5, cloud.y - cloud.size * 0.2, cloud.size * 0.2, 0, Math.PI * 2);
             ctx.fill();
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
         });
+        
+        // Add ambient cloud layer when overcast
+        if (this.cloudCover > 50) {
+            ctx.fillStyle = `rgba(${cloudBrightness * 0.9}, ${cloudBrightness * 0.9}, ${cloudBrightness * 0.95}, ${cloudOpacity * 0.5})`;
+            for (let i = 0; i < 3; i++) {
+                const x = (w * 0.2 + i * w * 0.3 + this.time * 20) % (w + 200) - 100;
+                ctx.beginPath();
+                ctx.ellipse(x, 60 + i * 30, 150, 40, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
     }
     
     drawParticles(ctx, w, h) {
@@ -366,175 +447,348 @@ class SolarPanelSimulator {
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fill();
         });
+        
+        // Draw birds in sky (only when clear enough)
+        if (this.cloudCover < 60) {
+            const birdCount = 3;
+            const time = this.time;
+            
+            for (let i = 0; i < birdCount; i++) {
+                const birdX = (w * 0.2 + i * w * 0.25 + time * 15 * (0.8 + i * 0.1)) % (w + 100) - 50;
+                const birdY = 80 + i * 40 + Math.sin(time * 2 + i) * 15;
+                const wingFlap = Math.sin(time * 8 + i * 2) * 4;
+                
+                ctx.strokeStyle = '#2a2a2a';
+                ctx.lineWidth = 1.5;
+                ctx.lineCap = 'round';
+                
+                // Bird body
+                ctx.beginPath();
+                ctx.moveTo(birdX - 8, birdY);
+                ctx.quadraticCurveTo(birdX - 4, birdY - 3 + wingFlap, birdX, birdY);
+                ctx.quadraticCurveTo(birdX + 4, birdY - 3 - wingFlap, birdX + 8, birdY);
+                ctx.stroke();
+            }
+        }
     }
     
     drawGround(ctx, w, h) {
         const groundY = h - 80;
         
-        // Grass gradient
+        // Multiple grass layers for depth
+        // Far grass
+        const farGrassGrad = ctx.createLinearGradient(0, groundY - 20, 0, h);
+        farGrassGrad.addColorStop(0, '#3d6b4f');
+        farGrassGrad.addColorStop(1, '#2d5a3d');
+        ctx.fillStyle = farGrassGrad;
+        ctx.fillRect(0, groundY - 20, w, 100);
+        
+        // Grass texture - random patches
+        for (let i = 0; i < w; i += 15) {
+            const patchBrightness = 0.8 + Math.random() * 0.4;
+            ctx.fillStyle = `rgba(${Math.floor(74 * patchBrightness)}, ${Math.floor(124 * patchBrightness)}, ${Math.floor(89 * patchBrightness)}, 0.3)`;
+            ctx.beginPath();
+            ctx.ellipse(i + Math.random() * 10, groundY + 10 + Math.random() * 20, 8 + Math.random() * 8, 4 + Math.random() * 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Main grass gradient
         const grassGradient = ctx.createLinearGradient(0, groundY, 0, h);
-        grassGradient.addColorStop(0, '#4a7c59');
-        grassGradient.addColorStop(0.5, '#3d6b4f');
+        grassGradient.addColorStop(0, '#5a8c69');
+        grassGradient.addColorStop(0.3, '#4a7c59');
+        grassGradient.addColorStop(0.7, '#3d6b4f');
         grassGradient.addColorStop(1, '#2d5a3d');
         
         ctx.fillStyle = grassGradient;
         ctx.fillRect(0, groundY, w, 80);
         
-        // Grass blades
-        ctx.strokeStyle = '#5a8c69';
-        ctx.lineWidth = 1;
-        for (let i = 0; i < w; i += 8) {
-            const bladeHeight = 5 + Math.sin(i * 0.1 + this.time) * 3;
+        // Grass blades - foreground
+        ctx.strokeStyle = '#6a9c79';
+        ctx.lineWidth = 1.5;
+        for (let i = 0; i < w; i += 6) {
+            const bladeHeight = 8 + Math.sin(i * 0.15 + this.time * 0.5) * 4 + Math.random() * 3;
             ctx.beginPath();
             ctx.moveTo(i, groundY);
-            ctx.quadraticCurveTo(i + 2, groundY - bladeHeight / 2, i + 1, groundY - bladeHeight);
+            ctx.quadraticCurveTo(i + 3, groundY - bladeHeight / 2, i + 2, groundY - bladeHeight);
             ctx.stroke();
         }
         
-        // Path
-        ctx.fillStyle = '#8b7355';
+        // Add small stones/rocks
+        ctx.fillStyle = '#6a6a6a';
+        const stones = [
+            {x: w * 0.15, y: groundY + 35, r: 6},
+            {x: w * 0.18, y: groundY + 40, r: 4},
+            {x: w * 0.72, y: groundY + 25, r: 5},
+            {x: w * 0.75, y: groundY + 30, r: 3},
+        ];
+        stones.forEach(stone => {
+            ctx.beginPath();
+            ctx.ellipse(stone.x, stone.y, stone.r, stone.r * 0.6, Math.random(), 0, Math.PI * 2);
+            ctx.fillStyle = `rgb(${Math.floor(90 + Math.random() * 30)}, ${Math.floor(90 + Math.random() * 30)}, ${Math.floor(90 + Math.random() * 30)})`;
+            ctx.fill();
+        });
+        
+        // Dirt path
+        const pathGrad = ctx.createLinearGradient(w * 0.3, h, w * 0.5, groundY);
+        pathGrad.addColorStop(0, '#6b5344');
+        pathGrad.addColorStop(0.5, '#8b7355');
+        pathGrad.addColorStop(1, '#7a6548');
+        ctx.fillStyle = pathGrad;
         ctx.beginPath();
-        ctx.moveTo(w * 0.3, h);
-        ctx.quadraticCurveTo(w * 0.35, groundY, w * 0.4, groundY + 20);
-        ctx.lineTo(w * 0.45, groundY + 25);
-        ctx.quadraticCurveTo(w * 0.5, groundY, w * 0.55, h);
+        ctx.moveTo(w * 0.28, h);
+        ctx.quadraticCurveTo(w * 0.33, groundY - 10, w * 0.38, groundY + 15);
+        ctx.lineTo(w * 0.48, groundY + 20);
+        ctx.quadraticCurveTo(w * 0.53, groundY - 5, w * 0.58, h);
         ctx.fill();
+        
+        // Path texture - small pebbles
+        ctx.fillStyle = 'rgba(100, 80, 60, 0.4)';
+        for (let i = 0; i < 20; i++) {
+            const px = w * 0.35 + Math.random() * w * 0.2;
+            const py = groundY + 15 + Math.random() * 50;
+            ctx.beginPath();
+            ctx.arc(px, py, 1 + Math.random() * 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
     
     drawRealisticPanels(ctx, w, h) {
         const groundY = h - 80;
-        const rackX = w / 2 - 200;
+        const rackX = w / 2 - 220;
         const rackY = groundY;
         
         // Panel configuration: 3 rows of 4 panels
-        const panelWidth = 70;
-        const panelHeight = 45;
-        const panelGap = 5;
+        const panelWidth = 80;
+        const panelHeight = 50;
+        const panelGap = 6;
         const rows = 3;
         const cols = 4;
         
-        // Draw support structure
-        ctx.fillStyle = '#3d3d4d';
-        // Vertical poles
-        ctx.fillRect(rackX - 10, rackY - 120, 15, 120);
-        ctx.fillRect(rackX + cols * (panelWidth + panelGap) + 5, rackY - 120, 15, 120);
+        // Draw support structure - aluminum mounting rails
+        ctx.fillStyle = '#5a5a6a';
+        // Vertical poles - galvanized steel
+        const poleGrad = ctx.createLinearGradient(rackX - 10, 0, rackX + 5, 0);
+        poleGrad.addColorStop(0, '#4a4a5a');
+        poleGrad.addColorStop(0.5, '#6a6a7a');
+        poleGrad.addColorStop(1, '#4a4a5a');
+        ctx.fillStyle = poleGrad;
+        ctx.fillRect(rackX - 12, rackY - 140, 14, 140);
+        ctx.fillRect(rackX + cols * (panelWidth + panelGap) + 2, rackY - 140, 14, 140);
         
-        // Cross beams
-        ctx.fillStyle = '#4a4a5a';
-        ctx.fillRect(rackX - 15, rackY - 120, cols * (panelWidth + panelGap) + 25, 10);
+        // Cross beams - mounting rails
+        ctx.fillStyle = '#5a5a6a';
+        ctx.fillRect(rackX - 18, rackY - 140, cols * (panelWidth + panelGap) + 30, 12);
+        
+        // Ground mount base - concrete pads
+        ctx.fillStyle = '#7a7a7a';
+        ctx.beginPath();
+        ctx.ellipse(rackX - 5, rackY + 5, 25, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(rackX + cols * (panelWidth + panelGap) + 9, rackY + 5, 25, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
         
         // Calculate effective irradiance based on tilt and angle
         const incidenceAngle = Math.abs(this.panelTilt - this.sunAngle);
         const angleLoss = Math.cos(incidenceAngle * Math.PI / 180);
         const effectiveIrradiance = this.solarIrradiance * angleLoss * (1 - this.cloudCover / 100);
         
-        // Draw each panel
+        // Draw each panel with realistic details
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < cols; col++) {
                 const panelX = rackX + col * (panelWidth + panelGap);
-                const panelY = rackY - 120 - row * (panelHeight + panelGap);
+                const panelY = rackY - 140 - row * (panelHeight + panelGap);
                 
-                // Panel shadow
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-                ctx.fillRect(panelX + 4, panelY + 4, panelWidth, panelHeight);
+                // Panel shadow - dynamic based on sun position
+                const shadowOffsetX = (w * 0.75 - panelX) * 0.05;
+                const shadowOffsetY = 6;
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+                ctx.beginPath();
+                ctx.roundRect(panelX + shadowOffsetX, panelY + shadowOffsetY, panelWidth, panelHeight, 3);
+                ctx.fill();
                 
-                // Panel frame
-                ctx.fillStyle = '#2a2a3a';
-                ctx.fillRect(panelX - 2, panelY - 2, panelWidth + 4, panelHeight + 4);
+                // Panel frame - anodized aluminum
+                const frameGrad = ctx.createLinearGradient(panelX - 3, panelY - 3, panelX + panelWidth + 3, panelY + panelHeight + 3);
+                frameGrad.addColorStop(0, '#3a3a4a');
+                frameGrad.addColorStop(0.3, '#5a5a6a');
+                frameGrad.addColorStop(0.7, '#4a4a5a');
+                frameGrad.addColorStop(1, '#2a2a3a');
+                ctx.fillStyle = frameGrad;
+                ctx.beginPath();
+                ctx.roundRect(panelX - 3, panelY - 3, panelWidth + 6, panelHeight + 6, 4);
+                ctx.fill();
                 
-                // Panel background (dark blue)
+                // Frame highlight
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.roundRect(panelX - 2, panelY - 2, panelWidth + 4, 2, 2);
+                ctx.stroke();
+                
+                // Panel background - dark blue PV cells
+                const brightness = 0.2 + (effectiveIrradiance / 1000) * 0.8;
                 const panelGrad = ctx.createLinearGradient(panelX, panelY, panelX, panelY + panelHeight);
-                panelGrad.addColorStop(0, '#0a1628');
-                panelGrad.addColorStop(0.5, '#0d2140');
-                panelGrad.addColorStop(1, '#0a1628');
+                panelGrad.addColorStop(0, `rgb(${Math.floor(10 * brightness)}, ${Math.floor(25 * brightness)}, ${Math.floor(80 * brightness)})`);
+                panelGrad.addColorStop(0.5, `rgb(${Math.floor(15 * brightness)}, ${Math.floor(40 * brightness)}, ${Math.floor(110 * brightness)})`);
+                panelGrad.addColorStop(1, `rgb(${Math.floor(8 * brightness)}, ${Math.floor(20 * brightness)}, ${Math.floor(60 * brightness)})`);
                 ctx.fillStyle = panelGrad;
                 ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
                 
-                // Draw solar cells (6x10 grid per panel)
-                const cellWidth = (panelWidth - 10) / 10;
-                const cellHeight = (panelHeight - 8) / 6;
+                // Draw solar cells (6x10 grid per panel) with busbars
+                const cellWidth = (panelWidth - 12) / 10;
+                const cellHeight = (panelHeight - 10) / 6;
                 
                 for (let r = 0; r < 6; r++) {
                     for (let c = 0; c < 10; c++) {
-                        const cellX = panelX + 5 + c * cellWidth;
-                        const cellY = panelY + 4 + r * cellHeight;
+                        const cellX = panelX + 6 + c * cellWidth;
+                        const cellY = panelY + 5 + r * cellHeight;
                         
-                        // Cell color varies with irradiance
-                        const brightness = 0.3 + (effectiveIrradiance / 1000) * 0.7;
+                        // Cell gradient - multi-layer for depth
+                        const cellBrightness = brightness * (0.9 + Math.random() * 0.2);
                         const cellGrad = ctx.createLinearGradient(cellX, cellY, cellX + cellWidth, cellY + cellHeight);
-                        cellGrad.addColorStop(0, `rgb(${Math.floor(20 * brightness)}, ${Math.floor(40 * brightness)}, ${Math.floor(100 * brightness)})`);
-                        cellGrad.addColorStop(0.5, `rgb(${Math.floor(30 * brightness)}, ${Math.floor(60 * brightness)}, ${Math.floor(140 * brightness)})`);
-                        cellGrad.addColorStop(1, `rgb(${Math.floor(20 * brightness)}, ${Math.floor(40 * brightness)}, ${Math.floor(100 * brightness)})`);
+                        cellGrad.addColorStop(0, `rgb(${Math.floor(15 * cellBrightness)}, ${Math.floor(35 * cellBrightness)}, ${Math.floor(90 * cellBrightness)})`);
+                        cellGrad.addColorStop(0.4, `rgb(${Math.floor(25 * cellBrightness)}, ${Math.floor(55 * cellBrightness)}, ${Math.floor(130 * cellBrightness)})`);
+                        cellGrad.addColorStop(0.6, `rgb(${Math.floor(20 * cellBrightness)}, ${Math.floor(45 * cellBrightness)}, ${Math.floor(110 * cellBrightness)})`);
+                        cellGrad.addColorStop(1, `rgb(${Math.floor(10 * cellBrightness)}, ${Math.floor(30 * cellBrightness)}, ${Math.floor(80 * cellBrightness)})`);
                         
                         ctx.fillStyle = cellGrad;
                         ctx.fillRect(cellX, cellY, cellWidth - 1, cellHeight - 1);
                         
-                        // Cell grid lines
-                        ctx.strokeStyle = 'rgba(100, 100, 150, 0.5)';
-                        ctx.lineWidth = 0.5;
+                        // Busbar lines (silver contacts)
+                        ctx.strokeStyle = `rgba(180, 180, 200, ${0.3 + brightness * 0.3})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(cellX + cellWidth/2, cellY);
+                        ctx.lineTo(cellX + cellWidth/2, cellY + cellHeight - 1);
+                        ctx.stroke();
+                        
+                        // Cell grid lines - very subtle
+                        ctx.strokeStyle = 'rgba(60, 60, 100, 0.3)';
+                        ctx.lineWidth = 0.4;
                         ctx.strokeRect(cellX, cellY, cellWidth - 1, cellHeight - 1);
                     }
                 }
                 
-                // Reflection on panel (glass effect)
-                const reflectionGrad = ctx.createLinearGradient(panelX, panelY, panelX + panelWidth, panelY + panelHeight);
-                reflectionGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
-                reflectionGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
-                reflectionGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-                ctx.fillStyle = reflectionGrad;
+                // Anti-reflective coating effect
+                const arcGrad = ctx.createRadialGradient(
+                    panelX + panelWidth * 0.3, panelY + panelHeight * 0.3, 0,
+                    panelX + panelWidth * 0.5, panelY + panelHeight * 0.5, panelWidth * 0.8
+                );
+                arcGrad.addColorStop(0, 'rgba(255, 255, 255, 0.18)');
+                arcGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.08)');
+                arcGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                ctx.fillStyle = arcGrad;
                 ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+                
+                // Glass reflection diagonal
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(panelX, panelY, panelWidth, panelHeight);
+                ctx.clip();
+                
+                const reflectGrad = ctx.createLinearGradient(panelX, panelY + panelHeight, panelX + panelWidth, panelY);
+                reflectGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+                reflectGrad.addColorStop(0.4, 'rgba(255, 255, 255, 0.05)');
+                reflectGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.12)');
+                reflectGrad.addColorStop(0.6, 'rgba(255, 255, 255, 0.05)');
+                reflectGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                ctx.fillStyle = reflectGrad;
+                ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+                ctx.restore();
             }
         }
         
-        // Panel efficiency glow
+        // Panel efficiency glow effect
         if (this.power > 0.5) {
-            const glowIntensity = this.power / this.systemCapacity;
+            const glowIntensity = Math.min(this.power / this.systemCapacity, 1);
             ctx.shadowColor = '#00d4ff';
-            ctx.shadowBlur = 20 * glowIntensity;
-            ctx.strokeStyle = `rgba(0, 212, 255, ${glowIntensity * 0.5})`;
-            ctx.lineWidth = 2;
-            ctx.strokeRect(rackX - 20, rackY - 130, cols * (panelWidth + panelGap) + 15, rows * (panelHeight + panelGap) + 20);
+            ctx.shadowBlur = 25 * glowIntensity;
+            ctx.strokeStyle = `rgba(0, 212, 255, ${glowIntensity * 0.6})`;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.roundRect(rackX - 22, rackY - 150, cols * (panelWidth + panelGap) + 18, rows * (panelHeight + panelGap) + 18, 6);
+            ctx.stroke();
             ctx.shadowBlur = 0;
         }
+        
+        // Add junction box on first panel
+        const jbX = rackX + panelWidth * 0.7;
+        const jbY = rackY - 140 + panelHeight * 0.7;
+        ctx.fillStyle = '#2a2a3a';
+        ctx.beginPath();
+        ctx.roundRect(jbX, jbY, 15, 10, 2);
+        ctx.fill();
+        ctx.fillStyle = '#1a1a2a';
+        ctx.fillRect(jbX + 3, jbY + 3, 4, 4);
     }
     
     drawPowerDisplay(ctx, w, h) {
-        // Power output box
+        // Power output box - glassmorphism style
         const boxX = 20;
         const boxY = 20;
         
-        ctx.fillStyle = 'rgba(10, 20, 40, 0.9)';
+        // Background with blur effect simulation
+        ctx.fillStyle = 'rgba(10, 20, 40, 0.85)';
         ctx.strokeStyle = '#00d4ff';
         ctx.lineWidth = 2;
         
         ctx.beginPath();
-        ctx.roundRect(boxX, boxY, 200, 100, 10);
+        ctx.roundRect(boxX, boxY, 220, 130, 12);
         ctx.fill();
         ctx.stroke();
         
-        // Power value
-        ctx.fillStyle = '#00d4ff';
-        ctx.font = 'bold 32px Arial';
-        ctx.textAlign = 'left';
-        ctx.fillText(this.power.toFixed(2), boxX + 15, boxY + 45);
+        // Inner glow
+        const innerGlow = ctx.createLinearGradient(boxX, boxY, boxX, boxY + 130);
+        innerGlow.addColorStop(0, 'rgba(0, 212, 255, 0.15)');
+        innerGlow.addColorStop(1, 'rgba(0, 212, 255, 0)');
+        ctx.fillStyle = innerGlow;
+        ctx.beginPath();
+        ctx.roundRect(boxX + 2, boxY + 2, 216, 126, 10);
+        ctx.fill();
         
-        ctx.font = '14px Arial';
+        // Power value - large and prominent
+        ctx.fillStyle = '#00d4ff';
+        ctx.font = 'bold 36px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText(this.power.toFixed(2), boxX + 18, boxY + 50);
+        
+        // Unit
+        ctx.font = '16px Arial';
         ctx.fillStyle = '#888';
-        ctx.fillText('kW', boxX + 120, boxY + 45);
+        ctx.fillText('kW', boxX + 135, boxY + 45);
         
         // System capacity
         ctx.fillStyle = '#2ed573';
-        ctx.font = '16px Arial';
-        ctx.fillText(`of ${this.systemCapacity} kWp`, boxX + 15, boxY + 70);
+        ctx.font = '14px Arial';
+        ctx.fillText(`of ${this.systemCapacity} kWp system`, boxX + 18, boxY + 72);
         
-        // Efficiency
+        // Efficiency bar
         const eff = (this.power / (this.systemCapacity * this.solarIrradiance / 1000)) * 100;
+        const effClamped = Math.min(eff, 100);
+        
         ctx.fillStyle = '#ffa502';
-        ctx.fillText(`Efficiency: ${eff.toFixed(1)}%`, boxX + 15, boxY + 90);
+        ctx.font = '12px Arial';
+        ctx.fillText(`Performance: ${effClamped.toFixed(1)}%`, boxX + 18, boxY + 92);
+        
+        // Efficiency bar background
+        ctx.fillStyle = '#333';
+        ctx.beginPath();
+        ctx.roundRect(boxX + 18, boxY + 98, 120, 8, 4);
+        ctx.fill();
+        
+        // Efficiency bar fill
+        const effBarGrad = ctx.createLinearGradient(boxX + 18, 0, boxX + 138, 0);
+        effBarGrad.addColorStop(0, '#ff6b6b');
+        effBarGrad.addColorStop(0.5, '#ffa502');
+        effBarGrad.addColorStop(1, '#2ed573');
+        ctx.fillStyle = effBarGrad;
+        ctx.beginPath();
+        ctx.roundRect(boxX + 18, boxY + 98, Math.max(0, effClamped * 1.2), 8, 4);
+        ctx.fill();
         
         // Real-time indicators
-        this.drawIndicator(ctx, boxX + 140, boxY + 75, 'I', this.current, 50);
-        this.drawIndicator(ctx, boxX + 165, boxY + 75, 'V', this.voltage, 400);
+        this.drawIndicator(ctx, boxX + 150, boxY + 60, 'I', this.current, 60);
+        this.drawIndicator(ctx, boxX + 178, boxY + 60, 'V', this.voltage, 500);
     }
     
     drawIndicator(ctx, x, y, label, value, max) {
@@ -686,11 +940,11 @@ class SolarPanelSimulator {
         }
         if (this.ivCanvas) {
             this.ivCanvas.width = this.ivCanvas.parentElement.clientWidth;
-            this.ivCanvas.height = 200;
+            this.ivCanvas.height = 250;
         }
         if (this.powerCanvas) {
             this.powerCanvas.width = this.powerCanvas.parentElement.clientWidth;
-            this.powerCanvas.height = 200;
+            this.powerCanvas.height = 250;
         }
         this.calculate();
     }

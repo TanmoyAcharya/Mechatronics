@@ -92,11 +92,11 @@ class ConstructionViewer {
         }
         if (this.crossSectionCanvas) {
             if (this.crossSectionCanvas.width < 100) this.crossSectionCanvas.width = 400;
-            if (this.crossSectionCanvas.height < 100) this.crossSectionCanvas.height = 400;
+            if (this.crossSectionCanvas.height < 100) this.crossSectionCanvas.height = 300;
         }
         if (this.inductionCrossCanvas) {
             if (this.inductionCrossCanvas.width < 100) this.inductionCrossCanvas.width = 400;
-            if (this.inductionCrossCanvas.height < 100) this.inductionCrossCanvas.height = 400;
+            if (this.inductionCrossCanvas.height < 100) this.inductionCrossCanvas.height = 300;
         }
         if (this.magneticFieldCanvas) {
             if (this.magneticFieldCanvas.width < 100) this.magneticFieldCanvas.width = 400;
@@ -232,6 +232,8 @@ class ConstructionViewer {
         const progressSlider = document.getElementById('assembly-progress');
         progressSlider?.addEventListener('input', (e) => {
             this.assemblyProgress = parseFloat(e.target.value) / 100;
+            const percentDisplay = document.getElementById('assembly-percent');
+            if (percentDisplay) percentDisplay.textContent = Math.round(this.assemblyProgress * 100) + '%';
             this.draw();
         });
     }
@@ -274,6 +276,8 @@ class ConstructionViewer {
             this.assemblyProgress = startProgress + (targetProgress - startProgress) * eased;
             
             document.getElementById('assembly-progress').value = this.assemblyProgress * 100;
+            const percentDisplay = document.getElementById('assembly-percent');
+            if (percentDisplay) percentDisplay.textContent = Math.round(this.assemblyProgress * 100) + '%';
             
             this.draw();
             
