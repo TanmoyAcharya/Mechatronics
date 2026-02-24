@@ -144,56 +144,72 @@ class App {
                     if (window.syncSimulator) {
                         window.syncSimulator.resize();
                         window.syncSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('synchronous');
                     }
                     break;
                 case 'induction':
                     if (window.inductionSimulator) {
                         window.inductionSimulator.resize();
                         window.inductionSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('induction');
                     }
                     break;
                 case 'dc-motor':
                     if (window.dcMotorSimulator) {
                         window.dcMotorSimulator.calculate();
                         window.dcMotorSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('dcMotor');
                     }
                     break;
                 case 'transformer':
                     if (window.transformerSimulator) {
                         window.transformerSimulator.calculate();
                         window.transformerSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('transformer');
                     }
                     break;
                 case 'pmsm':
                     if (window.pmsmSimulator) {
                         window.pmsmSimulator.calculate();
                         window.pmsmSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('pmsm');
                     }
                     break;
                 case 'windturbine':
                     if (window.windTurbineSimulator) {
                         window.windTurbineSimulator.calculate();
                         window.windTurbineSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('windTurbine');
                     }
                     break;
                 case 'solarpanel':
                     if (window.solarPanelSimulator) {
                         window.solarPanelSimulator.calculate();
                         window.solarPanelSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('solarPanel');
                     }
                     break;
                 case 'v2g':
                     if (window.v2gSimulator) {
                         window.v2gSimulator.calculate();
                         window.v2gSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('v2g');
                     }
                     break;
                 case 'construction':
                     if (window.constructionViewer) {
                         window.constructionViewer.resize();
                         window.constructionViewer.start();
+                        if (window.authSystem) window.authSystem.markComplete('construction');
                     }
                     break;
+                case 'learn':
+                    if (window.authSystem) window.authSystem.markComplete('learn');
+                    break;
+            }
+            // Update dashboard after marking complete
+            if (window.authSystem) {
+                window.authSystem.updateDashboard();
             }
         }, 50);
     }
