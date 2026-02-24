@@ -60,6 +60,71 @@ function calculateEfficiency() {
     document.getElementById('calc-eff-result').innerHTML = result;
 }
 
+// Quiz System
+let quizScore = 0;
+const answeredQuizzes = new Set();
+
+function checkQuiz(button) {
+    const quizCard = button.closest('.quiz-card');
+    const options = quizCard.querySelectorAll('input[type="radio"]');
+    const resultDiv = quizCard.querySelector('.quiz-result');
+    const quizId = quizCard.dataset.quiz;
+    
+    // Find selected answer
+    let selectedValue = null;
+    options.forEach(opt => {
+        if (opt.checked) selectedValue = opt.value;
+    });
+    
+    if (!selectedValue) {
+        resultDiv.innerHTML = '<span class="quiz-error">Please select an answer!</span>';
+        resultDiv.className = 'quiz-result error';
+        return;
+    }
+    
+    // Check if already answered
+    if (answeredQuizzes.has(quizId)) {
+        resultDiv.innerHTML = '<span class="quiz-info">You already answered this question!</span>';
+        resultDiv.className = 'quiz-result info';
+        return;
+    }
+    
+    // Mark as answered
+    answeredQuizzes.add(quizId);
+    
+    if (selectedValue === 'correct') {
+        quizScore++;
+        resultDiv.innerHTML = '<span class="quiz-correct">✅ Correct! Well done!</span>';
+        resultDiv.className = 'quiz-result correct';
+        quizCard.classList.add('correct');
+    } else {
+        resultDiv.innerHTML = '<span class="quiz-incorrect">❌ Incorrect. Try reviewing the related topic!</span>';
+        resultDiv.className = 'quiz-result incorrect';
+        quizCard.classList.add('incorrect');
+    }
+    
+    // Disable all options after answering
+    options.forEach(opt => opt.disabled = true);
+    
+    // Update score display
+    document.getElementById('quiz-correct').textContent = quizScore;
+    
+    // Save to user progress if logged in
+    if (window.authSystem && window.authSystem.currentUser) {
+        const quizProgress = window.authSystem.currentUser.quizScore || 0;
+        window.authSystem.currentUser.quizScore = quizScore;
+        
+        // Save to localStorage
+        const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
+        const userIndex = users.findIndex(u => u.username === window.authSystem.currentUser.username);
+        if (userIndex >= 0) {
+            users[userIndex].quizScore = quizScore;
+            localStorage.setItem('emlab_users', JSON.stringify(users));
+            localStorage.setItem('emlab_user', JSON.stringify(window.authSystem.currentUser));
+        }
+    }
+}
+
 // Topic accordion toggle
 document.addEventListener('DOMContentLoaded', function() {
     const topicHeaders = document.querySelectorAll('.topic-header');
