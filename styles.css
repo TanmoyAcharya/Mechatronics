@@ -96,7 +96,7 @@ body::before {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: rgba(10, 10, 15, 0.85);
+    background: rgba(10, 10, 15, 0.95);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border-color);
 }
@@ -2501,6 +2501,15 @@ main {
         padding: 10px 15px;
     }
     
+    /* Fix header overlap - ensure content is below header */
+    main {
+        padding-top: 70px !important;
+    }
+    
+    .page {
+        padding-top: 10px;
+    }
+    
     .logo {
         font-size: 1rem;
     }
@@ -2570,6 +2579,11 @@ main {
     
     .controls-panel, .readings-panel {
         width: 100%;
+    }
+    
+    /* Make simulation canvas smaller on mobile */
+    .simulation-view canvas {
+        max-height: 250px;
     }
 }
 
