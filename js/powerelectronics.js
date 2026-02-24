@@ -616,3 +616,6 @@ class PowerElectronicsSimulator {
         this.calculate();
     }
 }
+
+// Initialize
+window.PowerElectronicsSimulator = PowerElectronicsSimulator;

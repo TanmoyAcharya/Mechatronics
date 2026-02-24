@@ -76,27 +76,165 @@
                     </svg>
                     Home
                 </button>
-                <button class="nav-btn" data-page="synchronous">Synchronous</button>
-                <button class="nav-btn" data-page="induction">Induction</button>
-                <button class="nav-btn" data-page="dc-motor">DC Motor</button>
-                <button class="nav-btn" data-page="transformer">Transformer</button>
-                <button class="nav-btn" data-page="pmsm">PMSM</button>
-                <button class="nav-btn" data-page="windturbine">Wind Turbine</button>
-                <button class="nav-btn" data-page="solarpanel">Solar Panel</button>
-                <button class="nav-btn" data-page="v2g">V2G</button>
-                <button class="nav-btn" data-page="learn">Learn</button>
-                <button class="nav-btn" data-page="construction">Construction</button>
+                <div class="dropdown">
+                    <button class="nav-btn dropdown-toggle">AC Machines ▾</button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" data-page="synchronous">⚙️ Synchronous</button>
+                        <button class="dropdown-item" data-page="induction">🌀 Induction</button>
+                        <button class="dropdown-item" data-page="pmsm">🧲 PMSM</button>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="nav-btn dropdown-toggle">DC & Transformer ▾</button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" data-page="dc-motor">🔌 DC Motor</button>
+                        <button class="dropdown-item" data-page="transformer">🔄 Transformer</button>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="nav-btn dropdown-toggle">Energy ▾</button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" data-page="windturbine">💨 Wind Turbine</button>
+                        <button class="dropdown-item" data-page="solarpanel">☀️ Solar Panel</button>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="nav-btn dropdown-toggle">Power ▾</button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" data-page="powerelec">📊 Power Electronics</button>
+                        <button class="dropdown-item" data-page="widebandgap">⚡ Widebandgap</button>
+                        <button class="dropdown-item" data-page="v2g">🚗 V2G</button>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="nav-btn dropdown-toggle">Learn ▾</button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" data-page="construction">🏗️ Construction</button>
+                        <button class="dropdown-item" data-page="learn">📚 Learn & Quiz</button>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="nav-btn dropdown-toggle">Systems ▾</button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" data-page="communication">📡 Communication Protocols</button>
+                        <button class="dropdown-item" data-page="ledlighting">💡 LED Lighting</button>
+                    </div>
+                </div>
             </nav>
-            <div id="auth-buttons">
-                <button class="auth-btn" onclick="authSystem.openModal('login-modal')">Login</button>
-                <button class="auth-btn" onclick="authSystem.openModal('register-modal')">Register</button>
-            </div>
-            <div id="user-info">
-                <span class="username" id="display-username"></span>
-                <button class="auth-btn" id="logout-btn">Logout</button>
-            </div>
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18"/>
+                </svg>
+                Menu
+            </button>
         </div>
     </header>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">⚡ Explore Machines</span>
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="sidebar-section">
+            <button class="sidebar-section-title" onclick="toggleSidebarSection(this)">
+                <span class="section-icon">🔄</span> AC Machines
+                <span class="section-arrow">▼</span>
+            </button>
+            <div class="sidebar-section-content">
+                <button class="sidebar-link" data-page="synchronous">
+                    <span class="link-icon">⚙️</span> Synchronous Motor/Generator
+                </button>
+                <button class="sidebar-link" data-page="induction">
+                    <span class="link-icon">🌀</span> Induction Motor/Generator
+                </button>
+                <button class="sidebar-link" data-page="pmsm">
+                    <span class="link-icon">🧲</span> PMSM (Permanent Magnet)
+                </button>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <button class="sidebar-section-title" onclick="toggleSidebarSection(this)">
+                <span class="section-icon">⚡</span> DC Machines
+                <span class="section-arrow">▼</span>
+            </button>
+            <div class="sidebar-section-content">
+                <button class="sidebar-link" data-page="dc-motor">
+                    <span class="link-icon">🔌</span> DC Motor
+                </button>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <button class="sidebar-section-title" onclick="toggleSidebarSection(this)">
+                <span class="section-icon">🔩</span> Transformers
+                <span class="section-arrow">▼</span>
+            </button>
+            <div class="sidebar-section-content">
+                <button class="sidebar-link" data-page="transformer">
+                    <span class="link-icon">🔄</span> Transformer
+                </button>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <button class="sidebar-section-title" onclick="toggleSidebarSection(this)">
+                <span class="section-icon">🌱</span> Renewable Energy
+                <span class="section-arrow">▼</span>
+            </button>
+            <div class="sidebar-section-content">
+                <button class="sidebar-link" data-page="windturbine">
+                    <span class="link-icon">💨</span> Wind Turbine
+                </button>
+                <button class="sidebar-link" data-page="solarpanel">
+                    <span class="link-icon">☀️</span> Solar Panel
+                </button>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <button class="sidebar-section-title" onclick="toggleSidebarSection(this)">
+                <span class="section-icon">🔋</span> Power & Electronics
+                <span class="section-arrow">▼</span>
+            </button>
+            <div class="sidebar-section-content">
+                <button class="sidebar-link" data-page="powerelectronics">
+                    <span class="link-icon">📊</span> Power Electronics
+                </button>
+                <button class="sidebar-link" data-page="widebandgap">
+                    <span class="link-icon">⚡</span> Widebandgap (SiC/GaN)
+                </button>
+                <button class="sidebar-link" data-page="v2g">
+                    <span class="link-icon">🚗</span> V2G (Vehicle to Grid)
+                </button>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <button class="sidebar-section-title" onclick="toggleSidebarSection(this)">
+                <span class="section-icon">🛠️</span> Learning Tools
+                <span class="section-arrow">▼</span>
+            </button>
+            <div class="sidebar-section-content">
+                <button class="sidebar-link" data-page="construction">
+                    <span class="link-icon">🏗️</span> Machine Construction
+                </button>
+                <button class="sidebar-link" data-page="learn">
+                    <span class="link-icon">📚</span> Learn & Quiz
+                </button>
+                <button class="sidebar-link" data-page="communication">
+                    <span class="link-icon">📡</span> Communication Protocols
+                </button>
+            </div>
+        </div>
+    </nav>
 
     <main id="main-content">
         <!-- Home Page -->
@@ -112,7 +250,7 @@
                     </div>
                 </div>
                 <div class="hero-visual">
-                    <canvas id="hero-canvas" width="500" height="400"></canvas>
+                    <canvas id="hero-canvas" width="700" height="500"></canvas>
                 </div>
             </div>
 
@@ -1196,6 +1334,324 @@
             </div>
         </section>
 
+        <!-- Widebandgap Page -->
+        <section id="widebandgap-page" class="page">
+            <div class="page-header">
+                <h1>Widebandgap Semiconductors</h1>
+                <p>SiC & GaN Power Devices - Next Generation Power Electronics</p>
+            </div>
+            
+            <div class="material-selector">
+                <button class="material-btn active" data-material="sic">
+                    <span class="mat-icon">⚡</span>
+                    <span class="mat-name">Silicon Carbide (SiC)</span>
+                    <span class="mat-spec">3.26eV • 1700V</span>
+                </button>
+                <button class="material-btn" data-material="gan">
+                    <span class="mat-icon">💎</span>
+                    <span class="mat-name">Gallium Nitride (GaN)</span>
+                    <span class="mat-spec">3.4eV • 650V</span>
+                </button>
+            </div>
+            
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="widebandgap-canvas" width="800" height="400"></canvas>
+                    </div>
+                    <div class="waveform-view">
+                        <canvas id="widebandgap-waveform" width="800" height="150"></canvas>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>Operating Conditions</h3>
+                        <div class="control-group">
+                            <label>Temperature: <span class="value" id="temperature-value">25°C</span></label>
+                            <input type="range" id="temperature-slider" min="-40" max="200" value="25">
+                        </div>
+                        <div class="control-group">
+                            <label>Voltage: <span class="value" id="voltage-value">600V</span></label>
+                            <input type="range" id="voltage-slider" min="100" max="1200" value="600">
+                        </div>
+                        <div class="control-group">
+                            <label>Current: <span class="value" id="current-value">10A</span></label>
+                            <input type="range" id="current-slider" min="1" max="50" value="10">
+                        </div>
+                        <div class="control-group">
+                            <label>Switching Frequency: <span class="value" id="frequency-value">100kHz</span></label>
+                            <input type="range" id="frequency-slider" min="10000" max="500000" value="100000" step="10000">
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>Performance Metrics</h3>
+                        <div class="reading">
+                            <span class="reading-label">Efficiency:</span>
+                            <span class="reading-value highlight" id="efficiency-display">98.5%</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Total Loss:</span>
+                            <span class="reading-value" id="loss-display">15.2W</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Conduction Loss:</span>
+                            <span class="reading-value" id="cond-loss-display">5.0W</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Switching Loss:</span>
+                            <span class="reading-value" id="sw-loss-display">10.2W</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Junction Temp:</span>
+                            <span class="reading-value" id="temp-display">25°C</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Safe Operating:</span>
+                            <span class="reading-value" id="safe-display">✓ Safe</span>
+                        </div>
+                    </div>
+                    <div class="theory-panel">
+                        <h3>📖 About WBG Semiconductors</h3>
+                        <div class="theory-tabs">
+                            <button class="theory-tab active" data-tab="advantages">Advantages</button>
+                            <button class="theory-tab" data-tab="applications">Applications</button>
+                            <button class="theory-tab" data-tab="comparison">Si vs SiC vs GaN</button>
+                            <button class="theory-tab" data-tab="papers">📄 Papers</button>
+                        </div>
+                        <div class="theory-content">
+                            <div class="theory-tab-content active" id="advantages">
+                                <ul>
+                                    <li><strong>Higher Bandgap:</strong> 3x+ compared to silicon</li>
+                                    <li><strong>Higher Breakdown Voltage:</strong> 10x higher than Si</li>
+                                    <li><strong>Lower Switching Losses:</strong> Up to 90% reduction</li>
+                                    <li><strong>Higher Operating Temps:</strong> Up to 200°C</li>
+                                    <li><strong>Better Thermal Conductivity:</strong> SiC beats Si</li>
+                                </ul>
+                            </div>
+                            <div class="theory-tab-content" id="applications">
+                                <ul>
+                                    <li><strong>EV Inverters:</strong> Main propulsion drive</li>
+                                    <li><strong>DC-DC Converters:</strong> On-board chargers</li>
+                                    <li><strong>Renewable Inverters:</strong> Solar & wind</li>
+                                    <li><strong>Industrial Drives:</strong> Motor controls</li>
+                                    <li><strong>Data Centers:</strong> Power supply units</li>
+                                </ul>
+                            </div>
+                            <div class="theory-tab-content" id="comparison">
+                                <table class="comparison-table">
+                                    <tr><th>Property</th><th>Si</th><th>SiC</th><th>GaN</th></tr>
+                                    <tr><td>Bandgap</td><td>1.1 eV</td><td>3.3 eV</td><td>3.4 eV</td></tr>
+                                    <tr><td>Breakdown</td><td>650V</td><td>1700V</td><td>650V</td></tr>
+                                    <tr><td>RDS(on)</td><td>High</td><td>Low</td><td>Very Low</td></tr>
+                                    <tr><td>Freq Limit</td><td>20kHz</td><td>100kHz</td><td>1MHz</td></tr>
+                                    <tr><td>Cost</td><td>Low</td><td>Medium</td><td>High</td></tr>
+                                </table>
+                            </div>
+                            <div class="theory-tab-content" id="papers">
+                                <h4>Recommended Research Papers</h4>
+                                <ul class="paper-links">
+                                    <li>
+                                        <a href="https://ieeexplore.ieee.org/document/8096101" target="_blank" class="paper-link">
+                                            <span class="paper-icon">📄</span>
+                                            <span class="paper-title">Wide Bandgap Semiconductor Devices for Power Electronics</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://ieeexplore.ieee.org/document/8940509" target="_blank" class="paper-link">
+                                            <span class="paper-icon">📄</span>
+                                            <span class="paper-title">SiC Power Devices: Properties and Applications</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://ieeexplore.ieee.org/document/8356380" target="_blank" class="paper-link">
+                                            <span class="paper-icon">📄</span>
+                                            <span class="paper-title">GaN HEMTs for High-Frequency Power Conversion</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.researchgate.net/publication/320228356_Comparison_Between_Si_SiC_and_GaN_Power_Devices" target="_blank" class="paper-link">
+                                            <span class="paper-icon">📄</span>
+                                            <span class="paper-title">Comparative Analysis: Si vs SiC vs GaN</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Communication Page -->
+        <section id="communication-page" class="page">
+            <div class="page-header">
+                <h1>Communication Protocols</h1>
+                <p>Industrial Communication Networks - Modbus, CAN, Ethernet, Profibus</p>
+            </div>
+            
+            <div class="protocol-selector">
+                <button class="protocol-btn active" data-protocol="modbus">
+                    <span class="proto-icon">📡</span>
+                    <span class="proto-name">Modbus RTU</span>
+                </button>
+                <button class="protocol-btn" data-protocol="can">
+                    <span class="proto-icon">🚗</span>
+                    <span class="proto-name">CAN Bus</span>
+                </button>
+                <button class="protocol-btn" data-protocol="ethernet">
+                    <span class="proto-icon">🌐</span>
+                    <span class="proto-name">Industrial Ethernet</span>
+                </button>
+                <button class="protocol-btn" data-protocol="profibus">
+                    <span class="proto-icon">🔧</span>
+                    <span class="proto-name">Profibus DP</span>
+                </button>
+            </div>
+            
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="comm-canvas" width="800" height="400"></canvas>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>Protocol Parameters</h3>
+                        <div class="control-group">
+                            <label>Baud Rate: <span class="value" id="baud-value">9.6 kbps</span></label>
+                            <input type="range" id="baud-slider" min="1200" max="115200" value="9600">
+                        </div>
+                        <div class="control-group">
+                            <label>Packet Size: <span class="value" id="packet-value">8 bytes</span></label>
+                            <input type="range" id="packet-slider" min="1" max="256" value="8">
+                        </div>
+                        <div class="control-group">
+                            <label>Transmission Rate: <span class="value" id="rate-value">50 pps</span></label>
+                            <input type="range" id="rate-slider" min="1" max="200" value="50">
+                        </div>
+                        <div class="control-group">
+                            <label>Noise Level: <span class="value" id="noise-value">5%</span></label>
+                            <input type="range" id="noise-slider" min="0" max="50" value="5">
+                        </div>
+                        <div class="control-group">
+                            <label>Parity:</label>
+                            <select id="parity-select">
+                                <option value="none">None</option>
+                                <option value="even">Even</option>
+                                <option value="odd">Odd</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>Network Statistics</h3>
+                        <div class="reading">
+                            <span class="reading-label">Protocol:</span>
+                            <span class="reading-value" id="protocol-name">Modbus RTU</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Type:</span>
+                            <span class="reading-value" id="protocol-type">Serial</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Max Baud:</span>
+                            <span class="reading-value" id="protocol-baud">115.2 kbps</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Topology:</span>
+                            <span class="reading-value" id="protocol-topology">Bus</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Max Distance:</span>
+                            <span class="reading-value" id="protocol-distance">1200m</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Throughput:</span>
+                            <span class="reading-value highlight" id="throughput-display">0 B/s</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Latency:</span>
+                            <span class="reading-value" id="latency-display">0 ms</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Error Rate:</span>
+                            <span class="reading-value" id="error-display">0%</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Packets Sent:</span>
+                            <span class="reading-value" id="sent-display">0</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Packets Received:</span>
+                            <span class="reading-value" id="recv-display">0</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Errors:</span>
+                            <span class="reading-value" id="errors-count-display">0</span>
+                        </div>
+                        <div class="reading">
+                            <span class="reading-label">Status:</span>
+                            <span class="reading-value" id="safe-op-display">✓ Healthy</span>
+                        </div>
+                    </div>
+                    <div class="theory-panel">
+                        <h3>📖 Communication Protocols</h3>
+                        <div class="theory-tabs">
+                            <button class="theory-tab active" data-tab="comm-intro">Introduction</button>
+                            <button class="theory-tab" data-tab="comm-applications">Applications</button>
+                            <button class="theory-tab" data-tab="comm-papers">📄 Papers</button>
+                        </div>
+                        <div class="theory-content">
+                            <div class="theory-tab-content active" id="comm-intro">
+                                <ul>
+                                    <li><strong>Modbus RTU:</strong> Simple serial protocol, widely used in industrial automation</li>
+                                    <li><strong>CAN Bus:</strong> Robust automotive/industrial protocol with error detection</li>
+                                    <li><strong>Industrial Ethernet:</strong> High-speed real-time communication</li>
+                                    <li><strong>Profibus:</strong> German fieldbus standard for factory automation</li>
+                                </ul>
+                            </div>
+                            <div class="theory-tab-content" id="comm-applications">
+                                <ul>
+                                    <li><strong>SCADA Systems:</strong> Process monitoring and control</li>
+                                    <li><strong>PLC Networks:</strong> Programmable logic controller communication</li>
+                                    <li><strong>Motor Drives:</strong> Variable frequency drive control</li>
+                                    <li><strong>Building Automation:</strong> HVAC and lighting control</li>
+                                </ul>
+                            </div>
+                            <div class="theory-tab-content" id="comm-papers">
+                                <h4>Recommended Research Papers</h4>
+                                <ul class="paper-links">
+                                    <li>
+                                        <a href="https://ieeexplore.ieee.org/document/5746668" target="_blank" class="paper-link">
+                                            <span class="paper-icon">📄</span>
+                                            <span class="paper-title">Industrial Communication Networks: A Survey</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://ieeexplore.ieee.org/document/8919243" target="_blank" class="paper-link">
+                                            <span class="paper-icon">📄</span>
+                                            <span class="paper-title">CAN Bus: Protocol and Applications</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://ieeexplore.ieee.org/document/4062517" target="_blank" class="paper-link">
+                                            <span class="paper-icon">📄</span>
+                                            <span class="paper-title">Modbus Protocol: Standard Communication</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://ieeexplore.ieee.org/document/9964108" target="_blank" class="paper-link">
+                                            <span class="paper-icon">📄</span>
+                                            <span class="paper-title">Industrial Ethernet Technologies</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Power Electronics Page -->
         <section id="powerelec-page" class="page">
             <div class="page-header">
@@ -1356,6 +1812,9 @@
                             <h4>IV Curve</h4>
                             <canvas id="solar-iv-curve" width="380" height="200"></canvas>
                         </div>
+                        <div class="viz-card">
+                            <h4>Power Curve</h4>
+                            <canvas id="solar-power-curve" width="380" height="200"></canvas>
                     </div>
                 </div>
                 <div class="controls-panel">
@@ -1372,6 +1831,14 @@
                         <div class="control-group">
                             <label>Temperature: <span class="value" id="solar-temp-value">25</span>°C</label>
                             <input type="range" id="solar-temp-slider" min="0" max="60" value="25">
+                        </div>
+                        <div class="control-group">
+                            <label>Panel Tilt: <span class="value" id="solar-tilt-value">30</span>°</label>
+                            <input type="range" id="solar-tilt-slider" min="0" max="90" value="30">
+                        </div>
+                        <div class="control-group">
+                            <label>Cloud Cover: <span class="value" id="solar-cloud-value">0</span>%</label>
+                            <input type="range" id="solar-cloud-slider" min="0" max="100" value="0">
                         </div>
                     </div>
                     <div class="control-section">
@@ -1454,6 +1921,222 @@
                 </div>
             </div>
         </section>
+
+        <!-- LED Lighting Page -->
+        <section id="ledlighting-page" class="page">
+            <div class="page-header">
+                <h1>💡 LED Lighting Simulator</h1>
+                <p>Understand lux, CRI, lumens, and efficacy - Room lighting, horticulture, and mood lighting</p>
+            </div>
+
+            <div class="simulator-layout">
+                <div class="simulation-view">
+                    <canvas id="led-canvas" width="800" height="400"></canvas>
+                </div>
+
+                <div class="controls-panel">
+                    <!-- Mode Selection -->
+                    <div class="control-section">
+                        <h3>Application Mode</h3>
+                        <div class="led-mode-buttons">
+                            <button class="led-mode-btn active" data-mode="general">🏠 General</button>
+                            <button class="led-mode-btn" data-mode="horticulture">🌱 Horticulture</button>
+                            <button class="led-mode-btn" data-mode="mood">🎭 Mood</button>
+                        </div>
+                    </div>
+
+                    <!-- LED Parameters -->
+                    <div class="control-section">
+                        <h3>LED Parameters</h3>
+                        
+                        <div class="control-group">
+                            <label>LED Power: <span id="led-power-value">10 W</span></label>
+                            <input type="range" id="led-power-slider" min="1" max="50" value="10">
+                        </div>
+
+                        <div class="control-group">
+                            <label>Efficacy: <span id="led-efficacy-value">120 lm/W</span></label>
+                            <input type="range" id="led-efficacy-slider" min="50" max="200" value="120">
+                            <small>Standard: 80-100 | High: 120-150 | Premium: 150+</small>
+                        </div>
+
+                        <div class="control-group">
+                            <label>CCT (Color Temp): <span id="led-cct-value">4000 K</span></label>
+                            <input type="range" id="led-cct-slider" min="2700" max="6500" value="4000" step="100">
+                            <small>2700K=Warm 4000K=Neutral 6500K=Cool</small>
+                        </div>
+
+                        <div class="control-group">
+                            <label>CRI (Color Rendering): <span id="led-cri-value">80</span></label>
+                            <input type="range" id="led-cri-slider" min="60" max="98" value="80">
+                            <small>60=Poor 80=Good 90=Excellent 98=Perfect</small>
+                        </div>
+
+                        <div class="control-group">
+                            <label>Number of LEDs: <span id="led-count-value">4</span></label>
+                            <input type="range" id="led-count-slider" min="1" max="16" value="4">
+                        </div>
+                    </div>
+
+                    <!-- Room Parameters -->
+                    <div class="control-section">
+                        <h3>Room Parameters</h3>
+                        
+                        <div class="control-group">
+                            <label>Room Length: <span id="room-length-value">5 m</span></label>
+                            <input type="range" id="room-length-slider" min="2" max="15" value="5">
+                        </div>
+
+                        <div class="control-group">
+                            <label>Room Width: <span id="room-width-value">4 m</span></label>
+                            <input type="range" id="room-width-slider" min="2" max="10" value="4">
+                        </div>
+
+                        <div class="control-group">
+                            <label>Mounting Height: <span id="mount-height-value">2.5 m</span></label>
+                            <input type="range" id="mount-height-slider" min="2" max="4" value="2.5" step="0.1">
+                        </div>
+                    </div>
+
+                    <!-- Horticulture Options -->
+                    <div class="control-section" id="horticulture-options" style="display:none;">
+                        <h3>Plant Requirements</h3>
+                        <div class="control-group">
+                            <label>Plant Type</label>
+                            <select id="plant-type">
+                                <option value="tomato">Tomato (20 mol/m²/day)</option>
+                                <option value="lettuce">Lettuce (12 mol/m²/day)</option>
+                                <option value="pepper">Pepper (18 mol/m²/day)</option>
+                                <option value="cannabis">Cannabis (25 mol/m²/day)</option>
+                                <option value="herb">Herbs (10 mol/m²/day)</option>
+                                <option value="flower">Flowers (15 mol/m²/day)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Mood Lighting Options -->
+                    <div class="control-section" id="mood-options" style="display:none;">
+                        <h3>Mood Settings</h3>
+                        <div class="control-group">
+                            <label>Intensity: <span id="mood-intensity-value">50%</span></label>
+                            <input type="range" id="mood-intensity-slider" min="10" max="100" value="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="readings-panel">
+                    <h3>Lighting Analysis</h3>
+                    
+                    <div class="reading-item">
+                        <span class="reading-label">Total Lumens:</span>
+                        <span class="reading-value" id="led-lumens-reading">1200 lm</span>
+                    </div>
+
+                    <div class="reading-item">
+                        <span class="reading-label">Avg. Illuminance:</span>
+                        <span class="reading-value" id="led-lux-reading">60 lux</span>
+                    </div>
+
+                    <div class="reading-item">
+                        <span class="reading-label">Efficacy:</span>
+                        <span class="reading-value" id="led-efficacy-reading">120 lm/W</span>
+                    </div>
+
+                    <div class="reading-item">
+                        <span class="reading-label">CCT:</span>
+                        <span class="reading-value" id="led-cct-reading">4000 K</span>
+                    </div>
+
+                    <div class="reading-item">
+                        <span class="reading-label">CRI:</span>
+                        <span class="reading-value" id="led-cri-reading">80</span>
+                    </div>
+
+                    <!-- Horticulture readings -->
+                    <div class="reading-item" id="horticulture-readings" style="display:none;">
+                        <span class="reading-label">DLI (Daily Light Integral):</span>
+                        <span class="reading-value" id="led-dli-reading">--</span>
+                    </div>
+
+                    <div class="reading-item" id="dli-target-readings" style="display:none;">
+                        <span class="reading-label">Target DLI:</span>
+                        <span class="reading-value" id="led-dli-target">--</span>
+                    </div>
+
+                    <div class="reading-item" id="dli-status-readings" style="display:none;">
+                        <span class="reading-label">Status:</span>
+                        <span class="reading-value" id="led-dli-status">--</span>
+                    </div>
+
+                    <div class="recommendation-box">
+                        <h4>Recommendation</h4>
+                        <p id="led-recommendation">--</p>
+                        <p id="led-needed">--</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Educational Content -->
+            <div class="theory-panel">
+                <h3>📚 Understanding LED Lighting Terms</h3>
+                <div class="theory-grid">
+                    <div class="theory-card">
+                        <h4>Lumen (lm)</h4>
+                        <p>Total amount of visible light emitted by a light source. Higher lumens = brighter light.</p>
+                        <ul>
+                            <li>40W incandescent ≈ 450 lm</li>
+                            <li>60W incandescent ≈ 800 lm</li>
+                            <li>10W LED ≈ 800-1200 lm</li>
+                        </ul>
+                    </div>
+                    <div class="theory-card">
+                        <h4>Lux (lx)</h4>
+                        <p>Illuminance - light falling on a surface area. 1 lux = 1 lumen per square meter.</p>
+                        <ul>
+                            <li>Living room: 150-300 lux</li>
+                            <li>Office: 300-500 lux</li>
+                            <li>Task areas: 500-1000 lux</li>
+                        </ul>
+                    </div>
+                    <div class="theory-card">
+                        <h4>Efficacy (lm/W)</h4>
+                        <p>How efficiently a light source converts electricity to light.</p>
+                        <ul>
+                            <li>Incandescent: 10-15 lm/W</li>
+                            <li>CFL: 45-70 lm/W</li>
+                            <li>LED: 80-200 lm/W</li>
+                        </ul>
+                    </div>
+                    <div class="theory-card">
+                        <h4>CRI (Color Rendering Index)</h4>
+                        <p>How accurately colors appear under the light (0-100). Higher = better color accuracy.</p>
+                        <ul>
+                            <li>Poor: &lt;70</li>
+                            <li>Good: 70-80</li>
+                            <li>Excellent: 90-98</li>
+                        </ul>
+                    </div>
+                    <div class="theory-card">
+                        <h4>CCT (Kelvin)</h4>
+                        <p>Color temperature - warmth or coolness of light appearance.</p>
+                        <ul>
+                            <li>2700K: Warm (yellow)</li>
+                            <li>4000K: Neutral white</li>
+                            <li>6500K: Daylight (blue)</li>
+                        </ul>
+                    </div>
+                    <div class="theory-card">
+                        <h4>DLI (mol/m²/day)</h4>
+                        <p>Daily Light Integral - total light for plant growth per day.</p>
+                        <ul>
+                            <li>Low light: &lt;5</li>
+                            <li>Medium: 10-20</li>
+                            <li>High light: 20-30+</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer class="footer">
@@ -1475,6 +2158,9 @@
     <script src="js/solarpanel.js"></script>
     <script src="js/v2g.js"></script>
     <script src="js/powerelectronics.js"></script>
+    <script src="js/widebandgap.js"></script>
+    <script src="js/communication.js"></script>
+    <script src="js/ledlighting.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
 </body>

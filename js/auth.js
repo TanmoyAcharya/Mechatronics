@@ -116,8 +116,12 @@ class AuthSystem {
                 windTurbine: false,
                 solarPanel: false,
                 v2g: false,
+                powerElec: false,
+                widebandgap: false,
+                communication: false,
                 learn: false
             },
+            quizScore: 0,
             completedLessons: [],
             lastVisit: new Date().toISOString()
         };
@@ -174,10 +178,23 @@ class AuthSystem {
                 dashboardUsername.textContent = this.currentUser.username;
             }
             
+            // Ensure progress object has all keys
+            if (!this.currentUser.progress) {
+                this.currentUser.progress = {};
+            }
+            const allKeys = ['synchronous', 'induction', 'dcMotor', 'transformer', 'pmsm', 
+                            'construction', 'windTurbine', 'solarPanel', 'v2g', 'powerElec', 
+                            'widebandgap', 'communication', 'learn'];
+            allKeys.forEach(key => {
+                if (this.currentUser.progress[key] === undefined) {
+                    this.currentUser.progress[key] = false;
+                }
+            });
+            
             // Update progress stats
-            const progress = this.currentUser.progress || {};
+            const progress = this.currentUser.progress;
             const completedCount = Object.values(progress).filter(v => v).length;
-            const totalCount = Object.keys(progress).length;
+            const totalCount = allKeys.length;
             
             const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
             
@@ -198,7 +215,11 @@ class AuthSystem {
                     construction: 'Machine Construction',
                     windTurbine: 'Wind Turbine',
                     solarPanel: 'Solar Panel',
-                    v2g: 'V2G System'
+                    v2g: 'V2G System',
+                    powerElec: 'Power Electronics',
+                    widebandgap: 'Widebandgap Semiconductors',
+                    communication: 'Communication Systems',
+                    learn: 'Learning Center'
                 };
                 
                 completedList.innerHTML = Object.entries(progress)
@@ -249,6 +270,21 @@ class AuthSystem {
     markComplete(section) {
         if (!this.currentUser) return;
         
+        // Ensure progress object has all keys
+        if (!this.currentUser.progress) {
+            this.currentUser.progress = {};
+        }
+        
+        // Initialize all progress keys if not present
+        const allKeys = ['synchronous', 'induction', 'dcMotor', 'transformer', 'pmsm', 
+                        'construction', 'windTurbine', 'solarPanel', 'v2g', 'powerElec', 
+                        'widebandgap', 'communication', 'learn'];
+        allKeys.forEach(key => {
+            if (this.currentUser.progress[key] === undefined) {
+                this.currentUser.progress[key] = false;
+            }
+        });
+        
         this.currentUser.progress[section] = true;
         this.currentUser.lastVisit = new Date().toISOString();
         
@@ -260,6 +296,9 @@ class AuthSystem {
             localStorage.setItem('emlab_users', JSON.stringify(users));
             localStorage.setItem('emlab_user', JSON.stringify(this.currentUser));
         }
+        
+        // Update dashboard display
+        this.updateDashboard();
     }
     
     getProgress() {

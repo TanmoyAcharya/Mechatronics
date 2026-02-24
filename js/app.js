@@ -74,6 +74,18 @@ class App {
                     window.constructionViewer = new ConstructionViewer();
                     console.log('ConstructionViewer created');
                 }
+                if (typeof WidebandgapSimulator === 'function') {
+                    window.widebandgapSimulator = new WidebandgapSimulator();
+                    console.log('WidebandgapSimulator created');
+                }
+                if (typeof CommunicationSimulator === 'function') {
+                    window.communicationSimulator = new CommunicationSimulator();
+                    console.log('CommunicationSimulator created');
+                }
+                if (typeof LEDLightingSimulator === 'function') {
+                    window.ledLightingSimulator = new LEDLightingSimulator();
+                    console.log('LEDLightingSimulator created');
+                }
                 
                 // Start the simulation for the current page
                 this.onPageChange(this.currentPage);
@@ -217,6 +229,14 @@ class App {
                 case 'learn':
                     if (window.authSystem) window.authSystem.markComplete('learn');
                     break;
+                case 'ledlighting':
+                    if (window.ledLightingSimulator) {
+                        window.ledLightingSimulator.ensureInitialized();
+                        window.ledLightingSimulator.resize();
+                        window.ledLightingSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('ledlighting');
+                    }
+                    break;
             }
             // Update dashboard after marking complete
             if (window.authSystem) {
@@ -296,77 +316,125 @@ class App {
         resize();
         window.addEventListener('resize', resize);
         
-        // Animation particles
-        const particles = [];
-        const numParticles = 50;
-        
-        for (let i = 0; i < numParticles; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 2,
-                vy: (Math.random() - 0.5) * 2,
-                radius: Math.random() * 3 + 1,
-                alpha: Math.random() * 0.5 + 0.2,
-                color: Math.random() > 0.5 ? '#00d4ff' : '#8b5cf6'
-            });
-        }
-        
-        // Draw rotating field visualization
-        let angle = 0;
+        // Animation variables
+        let time = 0;
         
         const animate = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Draw background grid
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-            ctx.lineWidth = 1;
-            const gridSize = 40;
+            const w = canvas.width;
+            const h = canvas.height;
+            const centerY = h / 2;
             
-            for (let x = 0; x < canvas.width; x += gridSize) {
+            // ============== LEFT SIDE: Permanent Magnet ==============
+            const leftCenterX = w * 0.3;
+            const magnetWidth = 70;
+            const magnetHeight = 45;
+            const gap = 50;
+            
+            // Draw magnetic field lines (curved between N and S)
+            for (let i = -4; i <= 4; i++) {
+                const offset = i * 10;
+                const alpha = 1 - Math.abs(i) / 5;
+                
                 ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
+                ctx.strokeStyle = `rgba(0, 212, 255, ${alpha * 0.4})`;
+                ctx.lineWidth = 1.5;
+                
+                const startX = leftCenterX - magnetWidth/2 - gap/2;
+                const endX = leftCenterX + magnetWidth/2 + gap/2;
+                const curveHeight = 50 + Math.sin(time * 2) * 8;
+                
+                ctx.moveTo(startX + magnetWidth, centerY + offset);
+                ctx.bezierCurveTo(
+                    startX + magnetWidth + gap * 0.5, centerY + offset - curveHeight,
+                    endX - magnetWidth - gap * 0.5, centerY + offset + curveHeight,
+                    endX - magnetWidth, centerY + offset
+                );
                 ctx.stroke();
             }
             
-            for (let y = 0; y < canvas.height; y += gridSize) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
+            // N pole (North - Red)
+            const northX = leftCenterX - magnetWidth/2 - gap/2;
+            const northGrad = ctx.createLinearGradient(
+                northX - magnetWidth/2, centerY - magnetHeight/2,
+                northX + magnetWidth/2, centerY + magnetHeight/2
+            );
+            northGrad.addColorStop(0, '#ff4444');
+            northGrad.addColorStop(0.5, '#ff6666');
+            northGrad.addColorStop(1, '#cc2222');
             
-            // Draw rotating magnetic field representation
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const maxRadius = Math.min(canvas.width, canvas.height) * 0.35;
+            ctx.fillStyle = northGrad;
+            ctx.beginPath();
+            ctx.roundRect(northX - magnetWidth/2, centerY - magnetHeight/2, magnetWidth, magnetHeight, 6);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#ff8888';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px Outfit, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('N', northX, centerY);
+            
+            // S pole (South - Blue)
+            const southX = leftCenterX + magnetWidth/2 + gap/2;
+            const southGrad = ctx.createLinearGradient(
+                southX - magnetWidth/2, centerY - magnetHeight/2,
+                southX + magnetWidth/2, centerY + magnetHeight/2
+            );
+            southGrad.addColorStop(0, '#2222cc');
+            southGrad.addColorStop(0.5, '#4444ff');
+            southGrad.addColorStop(1, '#2222aa');
+            
+            ctx.fillStyle = southGrad;
+            ctx.beginPath();
+            ctx.roundRect(southX - magnetWidth/2, centerY - magnetHeight/2, magnetWidth, magnetHeight, 6);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#6666ff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('S', southX, centerY);
+            
+            // Label for left side
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.font = 'bold 14px Outfit, sans-serif';
+            ctx.fillText('Permanent Magnet', leftCenterX, centerY + magnetHeight + 25);
+            
+            // ============== RIGHT SIDE: Rotating Field ==============
+            const rightCenterX = w * 0.7;
+            const maxRadius = Math.min(w * 0.2, h * 0.35);
             
             // Draw rotating vectors
             const numVectors = 6;
             for (let i = 0; i < numVectors; i++) {
-                const vectorAngle = angle + (i * Math.PI / 3);
+                const vectorAngle = time * 1.5 + (i * Math.PI / 3);
                 const innerRadius = maxRadius * 0.3;
                 const outerRadius = maxRadius;
                 
-                const x1 = centerX + Math.cos(vectorAngle) * innerRadius;
+                const x1 = rightCenterX + Math.cos(vectorAngle) * innerRadius;
                 const y1 = centerY + Math.sin(vectorAngle) * innerRadius;
-                const x2 = centerX + Math.cos(vectorAngle) * outerRadius;
+                const x2 = rightCenterX + Math.cos(vectorAngle) * outerRadius;
                 const y2 = centerY + Math.sin(vectorAngle) * outerRadius;
                 
                 const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-                gradient.addColorStop(0, 'rgba(0, 212, 255, 0.2)');
-                gradient.addColorStop(1, 'rgba(0, 212, 255, 0.8)');
+                gradient.addColorStop(0, 'rgba(139, 92, 246, 0.3)');
+                gradient.addColorStop(1, 'rgba(139, 92, 246, 0.9)');
                 
                 ctx.strokeStyle = gradient;
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 2.5;
                 ctx.beginPath();
                 ctx.moveTo(x1, y1);
                 ctx.lineTo(x2, y2);
                 ctx.stroke();
                 
                 // Arrow head
-                const arrowSize = 10;
+                const arrowSize = 8;
                 const arrowAngle = Math.atan2(y2 - y1, x2 - x1);
                 ctx.beginPath();
                 ctx.moveTo(x2, y2);
@@ -379,35 +447,67 @@ class App {
                     y2 - arrowSize * Math.sin(arrowAngle + Math.PI / 6)
                 );
                 ctx.closePath();
-                ctx.fillStyle = 'rgba(0, 212, 255, 0.8)';
+                ctx.fillStyle = 'rgba(139, 92, 246, 0.9)';
                 ctx.fill();
             }
             
             // Draw center circle (stator representation)
             ctx.beginPath();
-            ctx.arc(centerX, centerY, maxRadius * 0.25, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(139, 92, 246, 0.5)';
+            ctx.arc(rightCenterX, centerY, maxRadius * 0.25, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(0, 212, 255, 0.5)';
             ctx.lineWidth = 2;
             ctx.stroke();
             
-            // Draw particles
-            particles.forEach(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-                
-                // Bounce off walls
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = p.alpha;
-                ctx.fill();
-                ctx.globalAlpha = 1;
-            });
+            // Draw spinning rotor in center
+            const rotorRadius = maxRadius * 0.2;
+            const rotorAngle = time * 2;
             
-            angle += 0.02;
+            ctx.save();
+            ctx.translate(rightCenterX, centerY);
+            ctx.rotate(rotorAngle);
+            
+            const rotorGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, rotorRadius);
+            rotorGrad.addColorStop(0, '#444466');
+            rotorGrad.addColorStop(1, '#222244');
+            ctx.fillStyle = rotorGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, rotorRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#00d4ff';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            
+            // Rotor magnetic poles
+            ctx.fillStyle = '#00d4ff';
+            ctx.beginPath();
+            ctx.arc(rotorRadius * 0.7, 0, 4, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#ff6666';
+            ctx.beginPath();
+            ctx.arc(-rotorRadius * 0.7, 0, 4, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+            
+            // Label for right side
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.font = 'bold 14px Outfit, sans-serif';
+            ctx.fillText('Rotating Magnetic Field', rightCenterX, centerY + maxRadius + 30);
+            
+            // Main title
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.font = 'bold 20px Outfit, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Electrical Machines Simulator', w / 2, 35);
+            
+            // Subtitle
+            ctx.fillStyle = 'rgba(0, 212, 255, 0.8)';
+            ctx.font = '13px Outfit, sans-serif';
+            ctx.fillText('Click any simulator from menu above to start learning →', w / 2, h - 20);
+            
+            time += 0.02;
             requestAnimationFrame(animate);
         };
         
@@ -443,6 +543,64 @@ function radToDeg(radians) {
 function formatNumber(num, decimals = 2) {
     return num.toFixed(decimals);
 }
+
+// ================================================
+// Sidebar Navigation Functions
+// ================================================
+
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    if (sidebar) {
+        sidebar.classList.toggle('active');
+    }
+    if (overlay) {
+        overlay.classList.toggle('active');
+    }
+}
+
+function toggleSidebarSection(button) {
+    const content = button.nextElementSibling;
+    button.classList.toggle('active');
+    
+    if (content && content.classList.contains('sidebar-section-content')) {
+        content.classList.toggle('active');
+    }
+}
+
+// Setup sidebar link navigation
+document.addEventListener('DOMContentLoaded', () => {
+    // Add click handlers for sidebar links
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            const page = this.getAttribute('data-page');
+            if (page && window.app) {
+                window.app.navigateTo(page);
+                // Close sidebar after navigation
+                toggleSidebar();
+            }
+        });
+    });
+    
+    // Close sidebar when clicking overlay
+    const overlay = document.querySelector('.sidebar-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', toggleSidebar);
+    }
+    
+    // Add click handlers for dropdown items
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const page = this.getAttribute('data-page');
+            if (page && window.app) {
+                window.app.navigateTo(page);
+            }
+        });
+    });
+});
 
 // ================================================
 // Initialize Application
