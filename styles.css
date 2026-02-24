@@ -2053,3 +2053,89 @@ main {
     background: rgba(0, 212, 255, 0.3);
     color: var(--text-primary);
 }
+
+/* Power Electronics Simulator */
+.converter-selector {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+.converter-btn {
+    padding: 12px 25px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.converter-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--text-primary);
+}
+
+.converter-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--bg-dark);
+    font-weight: 600;
+}
+
+.waveform-view {
+    margin-top: 20px;
+    background: #0a0a1a;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.waveform-view canvas {
+    display: block;
+    width: 100%;
+}
+
+.theory-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px auto;
+    max-width: 900px;
+}
+
+.theory-panel h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.converter-theory {
+    padding: 15px;
+}
+
+.converter-theory h4 {
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.converter-theory p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.converter-theory .equation {
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    margin: 15px 0;
+}

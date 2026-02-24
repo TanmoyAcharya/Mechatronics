@@ -1196,6 +1196,102 @@
             </div>
         </section>
 
+        <!-- Power Electronics Page -->
+        <section id="powerelec-page" class="page">
+            <div class="page-header">
+                <h1>Power Electronics Simulator</h1>
+                <p>Interactive simulation of DC-DC converters and inverters</p>
+            </div>
+            
+            <div class="converter-selector">
+                <button class="converter-btn active" data-converter="buck">Buck (Step-Down)</button>
+                <button class="converter-btn" data-converter="boost">Boost (Step-Up)</button>
+                <button class="converter-btn" data-converter="buck-boost">Buck-Boost</button>
+                <button class="converter-btn" data-converter="inverter">Inverter</button>
+            </div>
+            
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="powerelec-canvas" width="800" height="400"></canvas>
+                    </div>
+                    <div class="waveform-view">
+                        <canvas id="powerelec-waveform" width="800" height="200"></canvas>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>Input Parameters</h3>
+                        <div class="control-group">
+                            <label>Input Voltage (Vin): <span class="value" id="powerelec-vin-value">24</span> V</label>
+                            <input type="range" id="powerelec-vin-slider" min="5" max="100" value="24">
+                        </div>
+                        <div class="control-group">
+                            <label>Duty Cycle (D): <span class="value" id="powerelec-duty-value">50</span> %</label>
+                            <input type="range" id="powerelec-duty-slider" min="10" max="90" value="50">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Switching</h3>
+                        <div class="control-group">
+                            <label>Frequency: <span class="value" id="powerelec-freq-value">20</span> kHz</label>
+                            <input type="range" id="powerelec-freq-slider" min="1" max="100" value="20">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Components</h3>
+                        <div class="control-group">
+                            <label>Load Resistance: <span class="value" id="powerelec-load-value">10</span> Ω</label>
+                            <input type="range" id="powerelec-load-slider" min="1" max="50" value="10">
+                        </div>
+                        <div class="control-group">
+                            <label>Inductance: <span class="value" id="powerelec-ind-value">1</span> mH</label>
+                            <input type="range" id="powerelec-ind-slider" min="0.1" max="10" value="1" step="0.1">
+                        </div>
+                        <div class="control-group">
+                            <label>Capacitance: <span class="value" id="powerelec-cap-value">100</span> μF</label>
+                            <input type="range" id="powerelec-cap-slider" min="10" max="1000" value="100">
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>Output Readings</h3>
+                        <div class="reading"><span class="reading-label">Vout:</span><span class="reading-value" id="powerelec-vout-reading">0 V</span></div>
+                        <div class="reading"><span class="reading-label">Iout:</span><span class="reading-value" id="powerelec-iout-reading">0 A</span></div>
+                        <div class="reading"><span class="reading-label">Ripple:</span><span class="reading-value" id="powerelec-ripple-reading">0 %</span></div>
+                        <div class="reading"><span class="reading-label">Efficiency:</span><span class="reading-value" id="powerelec-eff-reading">0 %</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="theory-panel">
+                <h3>Converter Theory</h3>
+                <div class="converter-theory" id="buck-theory">
+                    <h4>Buck Converter (Step-Down)</h4>
+                    <p>Reduces voltage while increasing current. Output voltage is always less than input.</p>
+                    <div class="equation">Vout = Vin × D</div>
+                    <p>Where D is the duty cycle (0-1). The inductor smooths the output current, and the capacitor reduces output voltage ripple.</p>
+                </div>
+                <div class="converter-theory" id="boost-theory" style="display:none;">
+                    <h4>Boost Converter (Step-Up)</h4>
+                    <p>Increases voltage while decreasing current. Output voltage is always greater than input.</p>
+                    <div class="equation">Vout = Vin / (1 - D)</div>
+                    <p>The inductor stores energy during the switch ON time and releases it to the output during OFF time, adding to the input voltage.</p>
+                </div>
+                <div class="converter-theory" id="buck-boost-theory" style="display:none;">
+                    <h4>Buck-Boost Converter</h4>
+                    <p>Can either increase or decrease voltage. Output polarity is inverted from input.</p>
+                    <div class="equation">Vout = Vin × D / (1 - D)</div>
+                    <p>When D < 0.5: buck mode (step-down). When D > 0.5: boost mode (step-up).</p>
+                </div>
+                <div class="converter-theory" id="inverter-theory" style="display:none;">
+                    <h4>Full-Bridge Inverter</h4>
+                    <p>Converts DC to AC using PWM switching. Creates sinusoidal output from DC input.</p>
+                    <div class="equation">Vout = Vin × (2D - 1)</div>
+                    <p>Uses H-bridge topology with 4 switches. By varying the duty cycle, can produce variable amplitude AC.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Wind Turbine Page -->
         <section id="windturbine-page" class="page">
             <div class="page-header">
@@ -1378,6 +1474,7 @@
     <script src="js/windturbine.js"></script>
     <script src="js/solarpanel.js"></script>
     <script src="js/v2g.js"></script>
+    <script src="js/powerelectronics.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
 </body>

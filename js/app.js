@@ -66,6 +66,10 @@ class App {
                     window.v2gSimulator = new V2GSimulator();
                     console.log('V2GSimulator created');
                 }
+                if (typeof PowerElectronicsSimulator === 'function') {
+                    window.powerElecSimulator = new PowerElectronicsSimulator();
+                    console.log('PowerElectronicsSimulator created');
+                }
                 if (typeof ConstructionViewer === 'function') {
                     window.constructionViewer = new ConstructionViewer();
                     console.log('ConstructionViewer created');
@@ -194,6 +198,13 @@ class App {
                         window.v2gSimulator.calculate();
                         window.v2gSimulator.start();
                         if (window.authSystem) window.authSystem.markComplete('v2g');
+                    }
+                    break;
+                case 'powerelec':
+                    if (window.powerElecSimulator) {
+                        window.powerElecSimulator.resize();
+                        window.powerElecSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('powerElec');
                     }
                     break;
                 case 'construction':
