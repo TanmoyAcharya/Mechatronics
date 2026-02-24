@@ -2201,6 +2201,15 @@ main {
     .header .logo {
         flex: 1;
     }
+    
+    /* Make header scroll on mobile - solves overlap issue */
+    .header {
+        position: relative;
+    }
+    
+    main {
+        padding-top: 0 !important;
+    }
 }
 
 @media (max-width: 768px) {
