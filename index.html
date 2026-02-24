@@ -11,6 +11,49 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Auth Modals -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="authSystem.closeModal('login-modal')">&times;</span>
+            <h2>Login</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username-input" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password-input" placeholder="Enter password">
+            </div>
+            <button id="login-btn" class="btn-primary">Login</button>
+            <p class="modal-footer">Don't have an account? <a href="#" onclick="authSystem.openModal('register-modal'); authSystem.closeModal('login-modal')">Register</a></p>
+        </div>
+    </div>
+
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="authSystem.closeModal('register-modal')">&times;</span>
+            <h2>Create Account</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="reg-username" placeholder="Choose username">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="reg-email" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="reg-password" placeholder="Choose password">
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="reg-confirm-password" placeholder="Confirm password">
+            </div>
+            <button id="register-btn" class="btn-primary">Register</button>
+            <p class="modal-footer">Already have an account? <a href="#" onclick="authSystem.openModal('login-modal'); authSystem.closeModal('register-modal')">Login</a></p>
+        </div>
+    </div>
+
     <header class="header">
         <div class="header-content">
             <div class="logo">
@@ -35,8 +78,21 @@
                 <button class="nav-btn" data-page="induction">Induction</button>
                 <button class="nav-btn" data-page="dc-motor">DC Motor</button>
                 <button class="nav-btn" data-page="transformer">Transformer</button>
+                <button class="nav-btn" data-page="pmsm">PMSM</button>
+                <button class="nav-btn" data-page="windturbine">Wind Turbine</button>
+                <button class="nav-btn" data-page="solarpanel">Solar Panel</button>
+                <button class="nav-btn" data-page="v2g">V2G</button>
+                <button class="nav-btn" data-page="learn">Learn</button>
                 <button class="nav-btn" data-page="construction">Construction</button>
             </nav>
+            <div id="auth-buttons">
+                <button class="auth-btn" onclick="authSystem.openModal('login-modal')">Login</button>
+                <button class="auth-btn" onclick="authSystem.openModal('register-modal')">Register</button>
+            </div>
+            <div id="user-info">
+                <span class="username" id="display-username"></span>
+                <button class="auth-btn" id="logout-btn">Logout</button>
+            </div>
         </div>
     </header>
 
@@ -138,7 +194,7 @@
                     </div>
                     <div class="path-card advanced">
                         <div class="path-header">
-                            <span class="path-level">PhD Level</span>
+                            <span class="path-level">Advanced Level</span>
                             <h4>Advanced Analysis</h4>
                         </div>
                         <ul class="path-topics">
@@ -315,7 +371,7 @@
                             <h5>Power-Angle</h5>
                             <div class="equation">P = (EV/X<sub>s</sub>) sin(δ)</div>
                         </div>
-                        <div class="key-concept"><strong>PhD:</strong> Xd determines stability</div>
+                        <div class="key-concept"><strong>Pro Tip:</strong> Xd determines stability</div>
                     </div>
                 </div>
             </div>
@@ -435,7 +491,7 @@
                         <div class="equation">s = (n<sub>s</sub> - n<sub>r</sub>) / n<sub>s</sub></div>
                         <p>When s = 0 (n<sub>r</sub> = n<sub>s</sub>), no relative motion exists between the RMF and rotor, so no EMF is induced - the machine acts as a synchronous machine.</p>
                         <div class="key-concept">
-                            <strong>PhD Insight:</strong> In the generating mode (negative slip), the rotor is driven above synchronous speed, causing the induced rotor currents to reverse, and the machine delivers electrical power to the grid.
+                            <strong>Did You Know?</strong> In the generating mode (negative slip), the rotor is driven above synchronous speed, causing the induced rotor currents to reverse, and the machine delivers electrical power to the grid.
                         </div>
                     </div>
                     <div class="theory-panel-content" data-content="ind-equations">
@@ -620,6 +676,421 @@
             </div>
         </section>
 
+        <!-- PMSM Page -->
+        <section id="pmsm-page" class="page">
+            <div class="page-header">
+                <h1>PMSM Simulator</h1>
+                <p>Permanent Magnet Synchronous Machine with vector control</p>
+            </div>
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="pmsm-canvas" width="800" height="400"></canvas>
+                    </div>
+                    <div class="transformer-viz-grid">
+                        <div class="viz-card">
+                            <h4>Current Waveforms</h4>
+                            <canvas id="pmsm-wave-viz" width="380" height="200"></canvas>
+                        </div>
+                        <div class="viz-card">
+                            <h4>d-q Axis Vectors</h4>
+                            <canvas id="pmsm-vector-viz" width="380" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>Operating Parameters</h3>
+                        <div class="control-group">
+                            <label>Speed: <span class="value" id="pmsm-speed-value">1800</span> RPM</label>
+                            <input type="range" id="pmsm-speed-slider" min="0" max="3600" value="1800">
+                        </div>
+                        <div class="control-group">
+                            <label>Control Mode:</label>
+                            <select id="pmsm-mode">
+                                <option value="torque">Torque Control</option>
+                                <option value="speed">Speed Control</option>
+                                <option value="flux">Field Weakening</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Current Control (Vector Control)</h3>
+                        <div class="control-group">
+                            <label>q-axis Current (Iq): <span class="value" id="pmsm-iq-value">5</span> A</label>
+                            <input type="range" id="pmsm-iq-slider" min="0" max="15" value="5">
+                        </div>
+                        <div class="control-group">
+                            <label>d-axis Current (Id): <span class="value" id="pmsm-id-value">0</span> A</label>
+                            <input type="range" id="pmsm-id-slider" min="-10" max="5" value="0">
+                        </div>
+                        <div class="control-group">
+                            <label>Load Torque: <span class="value" id="pmsm-load-value">10</span> Nm</label>
+                            <input type="range" id="pmsm-load-slider" min="0" max="50" value="10">
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>Measurements</h3>
+                        <div class="reading"><span class="reading-label">Speed:</span><span class="reading-value" id="pmsm-speed-reading">0 RPM</span></div>
+                        <div class="reading"><span class="reading-label">Torque:</span><span class="reading-value" id="pmsm-torque-reading">0 Nm</span></div>
+                        <div class="reading"><span class="reading-label">Power:</span><span class="reading-value" id="pmsm-power-reading">0 W</span></div>
+                        <div class="reading"><span class="reading-label">Efficiency:</span><span class="reading-value" id="pmsm-eff-reading">0%</span></div>
+                        <div class="reading"><span class="reading-label">Frequency:</span><span class="reading-value" id="pmsm-freq-reading">0 Hz</span></div>
+                        <div class="reading"><span class="reading-label">Voltage:</span><span class="reading-value" id="pmsm-vs-reading">0 V</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Learning Page -->
+        <section id="learn-page" class="page">
+            <div class="page-header">
+                <h1>Electrical Machine Learning Center</h1>
+                <p>Comprehensive educational resources on electrical machine fundamentals</p>
+            </div>
+            
+            <div class="learn-container">
+                <!-- Learning Objectives -->
+                <div class="learn-section">
+                    <h2>Learning Objectives</h2>
+                    <div class="learn-grid">
+                        <div class="learn-card">
+                            <div class="learn-icon">🎯</div>
+                            <h3>1. Machine Topologies</h3>
+                            <p>Understand the structure and operating principles of various electrical machine topologies including DC, induction, synchronous, and PMSM machines.</p>
+                        </div>
+                        <div class="learn-card">
+                            <div class="learn-icon">⚡</div>
+                            <h3>2. Application Selection</h3>
+                            <p>Select an appropriate electrical machine topology for a given application based on performance requirements, cost, and efficiency.</p>
+                        </div>
+                        <div class="learn-card">
+                            <div class="learn-icon">🔄</div>
+                            <h3>3. Torque Production</h3>
+                            <p>Explain the torque production process in electrical machines using electromagnetic principles and the Lorentz force equation.</p>
+                        </div>
+                        <div class="learn-card">
+                            <div class="learn-icon">📐</div>
+                            <h3>4. Machine Sizing</h3>
+                            <p>Comprehend the principles of electrical machine sizing including thermal limits, torque density, and power rating calculations.</p>
+                        </div>
+                        <div class="learn-card">
+                            <div class="learn-icon">🧲</div>
+                            <h3>5. Windings</h3>
+                            <p>Understand the basics of electrical machine windings including lap and wave windings, distributed vs concentrated windings.</p>
+                        </div>
+                        <div class="learn-card">
+                            <div class="learn-icon">🔧</div>
+                            <h3>6. Materials</h3>
+                            <p>List and apply the most important materials used in magnetic circuits and windings including electrical steel, copper, and permanent magnets.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Machine Types -->
+                <div class="learn-section">
+                    <h2>Machine Types & Operating Principles</h2>
+                    <div class="topic-accordion">
+                        <div class="topic-item">
+                            <div class="topic-header">
+                                <h3>DC Machines</h3>
+                                <span class="topic-toggle">+</span>
+                            </div>
+                            <div class="topic-content">
+                                <p>DC machines convert electrical energy to mechanical energy (motor) or vice versa (generator). They consist of a stator (field windings) and rotor (armature) with commutator.</p>
+                                <div class="equation">E = kΦn (EMF equation)</div>
+                                <div class="equation">T = kΦIa (Torque equation)</div>
+                                <p><strong>Applications:</strong> DC motors widely used in industry, electric vehicles, robotics where variable speed control is needed.</p>
+                            </div>
+                        </div>
+                        <div class="topic-item">
+                            <div class="topic-header">
+                                <h3>Induction Machines</h3>
+                                <span class="topic-toggle">+</span>
+                            </div>
+                            <div class="topic-content">
+                                <p>Induction machines operate on the principle of transformer action. The stator creates a rotating magnetic field that induces currents in the rotor.</p>
+                                <div class="equation">ns = 120f/P (Synchronous speed)</div>
+                                <div class="equation">s = (ns - n)/ns (Slip)</div>
+                                <div class="equation">T = (3V²R₂/sωs) / ((R₁+R₂/s)² + (X₁+X₂)²)</div>
+                                <p><strong>Applications:</strong> Most widely used motor in industry (pumps, fans, compressors) due to rugged construction and low cost.</p>
+                            </div>
+                        </div>
+                        <div class="topic-item">
+                            <div class="topic-header">
+                                <h3>Synchronous Machines</h3>
+                                <span class="topic-toggle">+</span>
+                            </div>
+                            <div class="topic-content">
+                                <p>Synchronous machines run at constant speed (synchronous speed) determined by frequency and number of poles. Can operate as motor or generator.</p>
+                                <div class="equation">ns = 120f/P (Synchronous speed)</div>
+                                <div class="equation">E = 4.44fNΦk (Generated EMF)</div>
+                                <div class="equation">T = (3VEsinδ)/Xsωs (Power angle equation)</div>
+                                <p><strong>Applications:</strong> Power generation (hydro, thermal generators), large industrial motors, power factor correction.</p>
+                            </div>
+                        </div>
+                        <div class="topic-item">
+                            <div class="topic-header">
+                                <h3>Permanent Magnet Synchronous Machines (PMSM)</h3>
+                                <span class="topic-toggle">+</span>
+                            </div>
+                            <div class="topic-content">
+                                <p>PMSM uses permanent magnets instead of field windings, providing higher efficiency and power density. Requires vector control for operation.</p>
+                                <div class="equation">Te = 1.5P/2 [ΦmIq + (Ld-Lq)IdIq]</div>
+                                <p><strong>Vector Control:</strong> Decouples torque and flux components for precise control.</p>
+                                <p><strong>Applications:</strong> Electric vehicles, wind turbines, servo drives, aerospace.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Calculations -->
+                <div class="learn-section">
+                    <h2>Machine Calculations</h2>
+                    <div class="calc-grid">
+                        <div class="calc-card">
+                            <h3>Induction Machine Calculations</h3>
+                            <div class="calc-input">
+                                <label>Frequency (Hz): <input type="number" id="calc-freq" value="50"></label>
+                                <label>Poles: <input type="number" id="calc-poles" value="4"></label>
+                                <button onclick="calculateInduction()">Calculate</button>
+                            </div>
+                            <div class="calc-result" id="calc-induction-result">
+                                Synchronous Speed: 1500 RPM
+                            </div>
+                        </div>
+                        <div class="calc-card">
+                            <h3>Synchronous Machine Calculations</h3>
+                            <div class="calc-input">
+                                <label>Terminal Voltage (V): <input type="number" id="calc-sync-v" value="400"></label>
+                                <label>Power Factor: <input type="number" id="calc-sync-pf" value="0.8" step="0.1"></label>
+                                <button onclick="calculateSync()">Calculate</button>
+                            </div>
+                            <div class="calc-result" id="calc-sync-result">
+                                Apparent Power calculation shown
+                            </div>
+                        </div>
+                        <div class="calc-card">
+                            <h3>Power & Torque</h3>
+                            <div class="calc-input">
+                                <label>Power (kW): <input type="number" id="calc-power" value="10"></label>
+                                <label>Speed (RPM): <input type="number" id="calc-torquespeed" value="1500"></label>
+                                <button onclick="calculateTorque()">Calculate</button>
+                            </div>
+                            <div class="calc-result" id="calc-torque-result">
+                                Torque: 63.66 Nm
+                            </div>
+                        </div>
+                        <div class="calc-card">
+                            <h3>Efficiency Calculation</h3>
+                            <div class="calc-input">
+                                <label>Output Power (W): <input type="number" id="calc-output" value="8000"></label>
+                                <label>Input Power (W): <input type="number" id="calc-inputp" value="10000"></label>
+                                <button onclick="calculateEfficiency()">Calculate</button>
+                            </div>
+                            <div class="calc-result" id="calc-eff-result">
+                                Efficiency: 80%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Materials -->
+                <div class="learn-section">
+                    <h2>Materials in Electrical Machines</h2>
+                    <div class="materials-grid">
+                        <div class="material-card">
+                            <h3>Electrical Steel</h3>
+                            <p><strong>Types:</strong> Grain-oriented (GO) and Non-oriented (NO) steel</p>
+                            <p><strong>Properties:</strong> High permeability, low core loss (0.5-5 W/kg at 1.5T, 50Hz)</p>
+                            <p><strong>Applications:</strong> Stator and rotor cores</p>
+                            <p><strong>Thickness:</strong> 0.35mm, 0.5mm, 0.65mm laminations</p>
+                        </div>
+                        <div class="material-card">
+                            <h3>Copper</h3>
+                            <p><strong>Properties:</strong> High conductivity (5.96×10⁷ S/m), low resistivity (1.68 μΩ·cm)</p>
+                            <p><strong>Forms:</strong> Round wire, rectangular busbar, litz wire (for high frequency)</p>
+                            <p><strong>Temperature:</strong> Class F (155°C) or Class H (180°C) insulation</p>
+                            <p><strong>Current Density:</strong> 3-6 A/mm² typical</p>
+                        </div>
+                        <div class="material-card">
+                            <h3>Permanent Magnets</h3>
+                            <p><strong>Types:</strong> Ferrite, AlNiCo, SmCo, NdFeB</p>
+                            <p><strong>NdFeB:</strong> Highest energy product (up to 52 MGOe), max temp 200°C</p>
+                            <p><strong>SmCo:</strong> Good up to 350°C, expensive</p>
+                            <p><strong>Ferrite:</strong> Low cost, low energy product, max temp 300°C</p>
+                        </div>
+                        <div class="material-card">
+                            <h3>Insulation Materials</h3>
+                            <p><strong>Classes:</strong> A (105°C), E (120°C), B (130°C), F (155°C), H (180°C)</p>
+                            <p><strong>Types:</strong> Enamel (magnet wire), paper, Mylar, epoxy, varnish</p>
+                            <p><strong>Key Property:</strong> Dielectric strength (typically 20-200 kV/mm)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- V2G Page -->
+        <section id="v2g-page" class="page">
+            <div class="page-header">
+                <h1>V2G Simulator</h1>
+                <p>Vehicle-to-Grid Technology - Electric Vehicle Grid Integration</p>
+            </div>
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="v2g-canvas" width="800" height="400"></canvas>
+                    </div>
+                    <div class="transformer-viz-grid">
+                        <div class="viz-card">
+                            <h4>24-Hour Price Curve</h4>
+                            <canvas id="v2g-graph" width="380" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>EV Battery</h3>
+                        <div class="control-group">
+                            <label>State of Charge (SOC): <span class="value" id="v2g-soc-value">50</span>%</label>
+                            <input type="range" id="v2g-soc-slider" min="10" max="100" value="50">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Time & Grid</h3>
+                        <div class="control-group">
+                            <label>Time of Day: <span class="value" id="v2g-time-value">12:00 PM</span></label>
+                            <input type="range" id="v2g-time-slider" min="0" max="24" value="12" step="0.5">
+                        </div>
+                        <div class="control-group">
+                            <label>Grid Demand: <span class="value" id="v2g-grid-value">5.0</span> kW</label>
+                            <input type="range" id="v2g-grid-slider" min="1" max="20" value="5">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Charging Mode</h3>
+                        <div class="button-group">
+                            <button id="v2g-charge-btn" class="mode-btn">⚡ Charge</button>
+                            <button id="v2g-discharge-btn" class="mode-btn">🔋 V2G Discharge</button>
+                            <button id="v2g-stop-btn" class="mode-btn">⏹️ Stop</button>
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>Status</h3>
+                        <div class="reading"><span class="reading-label">Power:</span><span class="reading-value" id="v2g-power-reading">0 kW</span></div>
+                        <div class="reading"><span class="reading-label">Battery:</span><span class="reading-value" id="v2g-soc-reading">50%</span></div>
+                        <div class="reading"><span class="reading-label">Capacity:</span><span class="reading-value" id="v2g-capacity-reading">37.5 kWh</span></div>
+                        <div class="reading"><span class="reading-label">Grid Price:</span><span class="reading-value" id="v2g-price-reading">$0.12/kWh</span></div>
+                        <div class="reading"><span class="reading-label">Grid Demand:</span><span class="reading-value" id="v2g-grid-demand-reading">5 kW</span></div>
+                        <div class="reading"><span class="reading-label">Cost:</span><span class="reading-value" id="v2g-cost-reading">$0.00</span></div>
+                        <div class="reading"><span class="reading-label">V2G Profit:</span><span class="reading-value" id="v2g-profit-reading">$0.00</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wind Turbine Page -->
+        <section id="windturbine-page" class="page">
+            <div class="page-header">
+                <h1>Wind Turbine Simulator</h1>
+                <p>Interactive simulation of wind turbine power generation</p>
+            </div>
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="wind-canvas" width="800" height="400"></canvas>
+                    </div>
+                    <div class="transformer-viz-grid">
+                        <div class="viz-card">
+                            <h4>Power Curve</h4>
+                            <canvas id="wind-power-curve" width="380" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>Wind Conditions</h3>
+                        <div class="control-group">
+                            <label>Wind Speed: <span class="value" id="wind-speed-value">8</span> m/s</label>
+                            <input type="range" id="wind-speed-slider" min="0" max="30" value="8">
+                        </div>
+                        <div class="control-group">
+                            <label>Wind Direction: <span class="value" id="wind-dir-value">0</span>°</label>
+                            <input type="range" id="wind-dir-slider" min="0" max="360" value="0">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Turbine Control</h3>
+                        <div class="control-group">
+                            <label>Blade Pitch: <span class="value" id="blade-pitch-value">0</span>°</label>
+                            <input type="range" id="blade-pitch-slider" min="0" max="30" value="0">
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>Output</h3>
+                        <div class="reading"><span class="reading-label">Power:</span><span class="reading-value" id="wind-power-reading">0 kW</span></div>
+                        <div class="reading"><span class="reading-label">Rotor Speed:</span><span class="reading-value" id="wind-rotor-reading">0 RPM</span></div>
+                        <div class="reading"><span class="reading-label">Cp:</span><span class="reading-value" id="wind-cp-reading">0%</span></div>
+                        <div class="reading"><span class="reading-label">TSR:</span><span class="reading-value" id="wind-tsr-reading">0</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solar Panel Page -->
+        <section id="solarpanel-page" class="page">
+            <div class="page-header">
+                <h1>Solar Panel Simulator</h1>
+                <p>Interactive simulation of solar PV system power generation</p>
+            </div>
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="solar-canvas" width="800" height="400"></canvas>
+                    </div>
+                    <div class="transformer-viz-grid">
+                        <div class="viz-card">
+                            <h4>IV Curve</h4>
+                            <canvas id="solar-iv-curve" width="380" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>Solar Conditions</h3>
+                        <div class="control-group">
+                            <label>Irradiance: <span class="value" id="solar-irradiance-value">1000</span> W/m²</label>
+                            <input type="range" id="solar-irradiance-slider" min="0" max="1200" value="1000">
+                        </div>
+                        <div class="control-group">
+                            <label>Sun Elevation: <span class="value" id="solar-sun-value">45</span>°</label>
+                            <input type="range" id="solar-sun-slider" min="0" max="90" value="45">
+                        </div>
+                        <div class="control-group">
+                            <label>Temperature: <span class="value" id="solar-temp-value">25</span>°C</label>
+                            <input type="range" id="solar-temp-slider" min="0" max="60" value="25">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Panel Setup</h3>
+                        <div class="control-group">
+                            <label>Panel Tilt: <span class="value" id="solar-tilt-value">30</span>°</label>
+                            <input type="range" id="solar-tilt-slider" min="0" max="90" value="30">
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>Output</h3>
+                        <div class="reading"><span class="reading-label">Power:</span><span class="reading-value" id="solar-power-reading">0 kW</span></div>
+                        <div class="reading"><span class="reading-label">Voltage:</span><span class="reading-value" id="solar-voltage-reading">0 V</span></div>
+                        <div class="reading"><span class="reading-label">Current:</span><span class="reading-value" id="solar-current-reading">0 A</span></div>
+                        <div class="reading"><span class="reading-label">Daily Energy:</span><span class="reading-value" id="solar-energy-reading">0 kWh</span></div>
+                        <div class="reading"><span class="reading-label">Efficiency:</span><span class="reading-value" id="solar-eff-reading">0%</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Construction Page -->
         <section id="construction-page" class="page">
             <div class="page-header">
@@ -686,7 +1157,7 @@
     <footer class="footer">
         <div class="footer-content">
             <p>ElectroMachines Lab - Interactive Electrical Machines Education Platform</p>
-            <p class="footer-note">Designed for PhD-level understanding with interactive simulations</p>
+            <p class="footer-note">Designed for interactive learning with fun simulations</p>
         </div>
     </footer>
 
@@ -694,8 +1165,14 @@
     <script src="js/induction.js"></script>
     <script src="js/dc-motor.js"></script>
     <script src="js/transformer.js"></script>
+    <script src="js/pmsm.js"></script>
+    <script src="js/learning.js"></script>
     <script src="js/construction.js"></script>
     <script src="js/visualizations.js"></script>
+    <script src="js/windturbine.js"></script>
+    <script src="js/solarpanel.js"></script>
+    <script src="js/v2g.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

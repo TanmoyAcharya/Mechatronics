@@ -57,8 +57,23 @@ class ConstructionViewer {
     }
     
     init() {
+        console.log('ConstructionViewer init called');
+        
         this.canvas = document.getElementById('construction-canvas');
+        console.log('Canvas found:', !!this.canvas);
+        
+        if (!this.canvas) {
+            console.error('Construction canvas not found in DOM');
+            return;
+        }
+        
         this.ctx = this.canvas.getContext('2d');
+        console.log('Context created:', !!this.ctx);
+        
+        if (!this.ctx) {
+            console.error('Could not get 2d context');
+            return;
+        }
         
         this.crossSectionCanvas = document.getElementById('cross-section-sync');
         this.crossSectionCtx = this.crossSectionCanvas ? this.crossSectionCanvas.getContext('2d') : null;
@@ -73,6 +88,7 @@ class ConstructionViewer {
         if (this.canvas) {
             if (this.canvas.width < 100) this.canvas.width = 800;
             if (this.canvas.height < 100) this.canvas.height = 500;
+            console.log('Canvas size set:', this.canvas.width, 'x', this.canvas.height);
         }
         if (this.crossSectionCanvas) {
             if (this.crossSectionCanvas.width < 100) this.crossSectionCanvas.width = 400;
@@ -88,8 +104,30 @@ class ConstructionViewer {
         }
         
         this.setupControls();
-        this.resize();
         
+        // Wait for page to be visible before starting animations
+        this.tryResizeAndDraw();
+    }
+    
+    tryResizeAndDraw() {
+        // Check if page is visible
+        const page = document.getElementById('construction-page');
+        if (!page) {
+            console.error('Construction page not found');
+            return;
+        }
+        
+        const isVisible = page.style.display !== 'none';
+        console.log('Construction page visible:', isVisible);
+        
+        if (!isVisible) {
+            // Retry after a short delay
+            setTimeout(() => this.tryResizeAndDraw(), 100);
+            return;
+        }
+        
+        // Now page is visible, do resize and draw
+        this.resize();
         window.addEventListener('resize', () => this.resize());
         
         // Start animation by default
@@ -98,6 +136,7 @@ class ConstructionViewer {
         this.drawCrossSections();
         this.drawMagneticField();
         this.draw();
+        console.log('Initial draw complete');
     }
     
     resize() {

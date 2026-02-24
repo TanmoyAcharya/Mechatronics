@@ -50,6 +50,22 @@ class App {
                     window.transformerSimulator = new TransformerSimulator();
                     console.log('TransformerSimulator created');
                 }
+                if (typeof PMSMSimulator === 'function') {
+                    window.pmsmSimulator = new PMSMSimulator();
+                    console.log('PMSMSimulator created');
+                }
+                if (typeof WindTurbineSimulator === 'function') {
+                    window.windTurbineSimulator = new WindTurbineSimulator();
+                    console.log('WindTurbineSimulator created');
+                }
+                if (typeof SolarPanelSimulator === 'function') {
+                    window.solarPanelSimulator = new SolarPanelSimulator();
+                    console.log('SolarPanelSimulator created');
+                }
+                if (typeof V2GSimulator === 'function') {
+                    window.v2gSimulator = new V2GSimulator();
+                    console.log('V2GSimulator created');
+                }
                 if (typeof ConstructionViewer === 'function') {
                     window.constructionViewer = new ConstructionViewer();
                     console.log('ConstructionViewer created');
@@ -108,6 +124,14 @@ class App {
                 window.dcMotorSimulator.stop();
             } else if (this.currentPage === 'transformer' && window.transformerSimulator) {
                 window.transformerSimulator.stop();
+            } else if (this.currentPage === 'pmsm' && window.pmsmSimulator) {
+                window.pmsmSimulator.stop();
+            } else if (this.currentPage === 'windturbine' && window.windTurbineSimulator) {
+                window.windTurbineSimulator.stop();
+            } else if (this.currentPage === 'solarpanel' && window.solarPanelSimulator) {
+                window.solarPanelSimulator.stop();
+            } else if (this.currentPage === 'v2g' && window.v2gSimulator) {
+                window.v2gSimulator.stop();
             } else if (this.currentPage === 'construction' && window.constructionViewer) {
                 // Don't stop construction viewer
             }
@@ -138,6 +162,30 @@ class App {
                     if (window.transformerSimulator) {
                         window.transformerSimulator.calculate();
                         window.transformerSimulator.start();
+                    }
+                    break;
+                case 'pmsm':
+                    if (window.pmsmSimulator) {
+                        window.pmsmSimulator.calculate();
+                        window.pmsmSimulator.start();
+                    }
+                    break;
+                case 'windturbine':
+                    if (window.windTurbineSimulator) {
+                        window.windTurbineSimulator.calculate();
+                        window.windTurbineSimulator.start();
+                    }
+                    break;
+                case 'solarpanel':
+                    if (window.solarPanelSimulator) {
+                        window.solarPanelSimulator.calculate();
+                        window.solarPanelSimulator.start();
+                    }
+                    break;
+                case 'v2g':
+                    if (window.v2gSimulator) {
+                        window.v2gSimulator.calculate();
+                        window.v2gSimulator.start();
                     }
                     break;
                 case 'construction':
