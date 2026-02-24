@@ -62,7 +62,7 @@ cd Mechatronics
 npx serve
 ```
 
-3. Visit `http://localhost:3000`
+3. Visit https://mechatronics-blue.vercel.app/`
 
 ## 📖 How to Use
 
