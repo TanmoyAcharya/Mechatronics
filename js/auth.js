@@ -15,6 +15,7 @@ class AuthSystem {
         if (savedUser) {
             this.currentUser = JSON.parse(savedUser);
             this.updateUI();
+            this.updateDashboard();
         }
         
         this.setupEventListeners();
@@ -50,8 +51,8 @@ class AuthSystem {
     }
     
     login() {
-        const username = document.getElementById('username-input')?.value;
-        const password = document.getElementById('password-input')?.value;
+        const username = document.getElementById('username-input')?.value || document.getElementById('home-username')?.value;
+        const password = document.getElementById('password-input')?.value || document.getElementById('home-password')?.value;
         
         if (!username || !password) {
             this.showMessage('Please enter username and password', 'error');
@@ -66,6 +67,7 @@ class AuthSystem {
             this.currentUser = user;
             localStorage.setItem('emlab_user', JSON.stringify(user));
             this.updateUI();
+            this.updateDashboard();
             this.showMessage('Login successful!', 'success');
             this.closeModal('login-modal');
         } else {
@@ -74,18 +76,13 @@ class AuthSystem {
     }
     
     register() {
-        const username = document.getElementById('reg-username')?.value;
-        const email = document.getElementById('reg-email')?.value;
-        const password = document.getElementById('reg-password')?.value;
+        const username = document.getElementById('reg-username')?.value || document.getElementById('home-reg-username')?.value;
+        const email = document.getElementById('reg-email')?.value || document.getElementById('home-reg-email')?.value;
+        const password = document.getElementById('reg-password')?.value || document.getElementById('home-reg-password')?.value;
         const confirmPassword = document.getElementById('reg-confirm-password')?.value;
         
-        if (!username || !email || !password || !confirmPassword) {
+        if (!username || !email || !password) {
             this.showMessage('Please fill all fields', 'error');
-            return;
-        }
-        
-        if (password !== confirmPassword) {
-            this.showMessage('Passwords do not match', 'error');
             return;
         }
         
@@ -118,6 +115,7 @@ class AuthSystem {
                 construction: false,
                 windTurbine: false,
                 solarPanel: false,
+                v2g: false,
                 learn: false
             },
             completedLessons: [],
@@ -131,14 +129,16 @@ class AuthSystem {
         this.currentUser = newUser;
         localStorage.setItem('emlab_user', JSON.stringify(newUser));
         this.updateUI();
-        this.showMessage('Registration successful!', 'success');
-        this.closeModal('login-modal');
+        this.updateDashboard();
+        this.showMessage('Account created successfully!', 'success');
+        this.closeModal('register-modal');
     }
     
     logout() {
         this.currentUser = null;
         localStorage.removeItem('emlab_user');
         this.updateUI();
+        this.updateDashboard();
         this.showMessage('Logged out successfully', 'success');
     }
     
@@ -156,6 +156,59 @@ class AuthSystem {
         } else {
             if (authButtons) authButtons.style.display = 'flex';
             if (userInfo) userInfo.style.display = 'none';
+        }
+    }
+    
+    updateDashboard() {
+        const authSection = document.getElementById('home-auth-section');
+        const dashboardSection = document.getElementById('home-dashboard-section');
+        const dashboardUsername = document.getElementById('dashboard-username');
+        
+        if (!authSection || !dashboardSection) return;
+        
+        if (this.currentUser) {
+            authSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+            
+            if (dashboardUsername) {
+                dashboardUsername.textContent = this.currentUser.username;
+            }
+            
+            // Update progress stats
+            const progress = this.currentUser.progress || {};
+            const completedCount = Object.values(progress).filter(v => v).length;
+            const totalCount = Object.keys(progress).length;
+            
+            const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+            
+            const progressBar = document.getElementById('dashboard-progress-bar');
+            const progressText = document.getElementById('dashboard-progress-text');
+            const completedList = document.getElementById('dashboard-completed-list');
+            
+            if (progressBar) progressBar.style.width = progressPercent + '%';
+            if (progressText) progressText.textContent = `${completedCount}/${totalCount} Simulations (${progressPercent}%)`;
+            
+            if (completedList) {
+                const machineNames = {
+                    synchronous: 'Synchronous Machine',
+                    induction: 'Induction Machine',
+                    dcMotor: 'DC Motor',
+                    transformer: 'Transformer',
+                    pmsm: 'PMSM',
+                    construction: 'Machine Construction',
+                    windTurbine: 'Wind Turbine',
+                    solarPanel: 'Solar Panel',
+                    v2g: 'V2G System'
+                };
+                
+                completedList.innerHTML = Object.entries(progress)
+                    .filter(([_, completed]) => completed)
+                    .map(([key, _]) => `<li>✅ ${machineNames[key] || key}</li>`)
+                    .join('') || '<li>No simulations completed yet. Start exploring!</li>';
+            }
+        } else {
+            authSection.style.display = 'block';
+            dashboardSection.style.display = 'none';
         }
     }
     
@@ -236,6 +289,76 @@ class AuthSystem {
         this.showMessage('User not found', 'error');
         return false;
     }
+}
+
+// Contact form submission handler
+function submitContactForm() {
+    const name = document.getElementById('contact-name')?.value?.trim();
+    const email = document.getElementById('contact-email')?.value?.trim();
+    const message = document.getElementById('contact-message')?.value?.trim();
+    
+    if (!name || !email) {
+        showContactMessage('Please enter your name and email', 'error');
+        return;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showContactMessage('Please enter a valid email address', 'error');
+        return;
+    }
+    
+    // Get existing contacts
+    const contacts = JSON.parse(localStorage.getItem('emlab_contacts') || '[]');
+    
+    // Check if email already exists
+    if (contacts.find(c => c.email === email)) {
+        showContactMessage('This email is already subscribed!', 'info');
+        return;
+    }
+    
+    // Add new contact
+    const newContact = {
+        name,
+        email,
+        message: message || '',
+        subscribed: true,
+        date: new Date().toISOString()
+    };
+    
+    contacts.push(newContact);
+    localStorage.setItem('emlab_contacts', JSON.stringify(contacts));
+    
+    // Clear form
+    document.getElementById('contact-name').value = '';
+    document.getElementById('contact-email').value = '';
+    document.getElementById('contact-message').value = '';
+    
+    showContactMessage('Thank you! You\'ll receive updates about new features and simulators.', 'success');
+}
+
+function showContactMessage(message, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `auth-message ${type}`;
+    messageDiv.textContent = message;
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 8px;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        background: ${type === 'error' ? '#ff4757' : type === 'info' ? '#ffa502' : '#2ed573'};
+        color: white;
+        font-weight: 500;
+    `;
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 4000);
 }
 
 // Initialize auth system

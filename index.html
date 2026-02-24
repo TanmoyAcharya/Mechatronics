@@ -114,6 +114,96 @@
                 </div>
             </div>
 
+            <!-- Login/Register Section -->
+            <div class="auth-section" id="home-auth-section">
+                <div class="auth-container">
+                    <div class="auth-welcome">
+                        <h2>🎓 Track Your Learning Journey</h2>
+                        <p>Create a free account to save your progress and unlock personalized features!</p>
+                    </div>
+                    <div class="auth-forms">
+                        <div class="auth-form-box">
+                            <h3>Login</h3>
+                            <input type="text" id="home-username" placeholder="Username">
+                            <input type="password" id="home-password" placeholder="Password">
+                            <button onclick="authSystem.login()" class="btn-primary">Login</button>
+                        </div>
+                        <div class="auth-divider">or</div>
+                        <div class="auth-form-box">
+                            <h3>Register</h3>
+                            <input type="text" id="home-reg-username" placeholder="Choose Username">
+                            <input type="email" id="home-reg-email" placeholder="Your Email">
+                            <input type="password" id="home-reg-password" placeholder="Choose Password">
+                            <button onclick="authSystem.register()" class="btn-primary">Create Account</button>
+                        </div>
+                    </div>
+                    <p class="auth-note">Or continue without account - click any simulator to start!</p>
+                </div>
+            </div>
+
+            <!-- User Dashboard (shown when logged in) -->
+            <div class="dashboard-section" id="home-dashboard-section" style="display:none;">
+                <div class="dashboard-container">
+                    <div class="dashboard-welcome">
+                        <h2>👋 Welcome back, <span id="dashboard-username">User</span>!</h2>
+                        <p>Track your learning progress</p>
+                    </div>
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="progress-percent">0%</span>
+                                <span class="stat-label">Progress</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="completed-count">0</span>
+                                <span class="stat-label">Completed</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🔄</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="total-simulators">11</span>
+                                <span class="stat-label">Total Simulators</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="authSystem.logout()" class="btn-secondary">Logout</button>
+                </div>
+            </div>
+
+            <!-- Contact & Updates Section -->
+            <div class="contact-section" id="home-contact-section">
+                <div class="contact-container">
+                    <div class="contact-info">
+                        <h2>📬 Stay Updated!</h2>
+                        <p>Subscribe to get notified about new simulators, features, and educational content. We regularly add new machines and improve existing simulations.</p>
+                        <div class="contact-features">
+                            <div class="contact-feature">🚀 <strong>New Simulators</strong> - Get notified when we add new electrical machine simulators</div>
+                            <div class="contact-feature">📚 <strong>Learning Content</strong> - Receive updates on new tutorials and guides</div>
+                            <div class="contact-feature">⚡ <strong>Feature Updates</strong> - Be the first to know about new features</div>
+                        </div>
+                    </div>
+                    <div class="contact-form">
+                        <h3>Subscribe for Updates</h3>
+                        <div class="form-group">
+                            <input type="text" id="contact-name" placeholder="Your Name">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="contact-email" placeholder="Your Email Address">
+                        </div>
+                        <div class="form-group">
+                            <textarea id="contact-message" placeholder="Any suggestions or questions? (Optional)" rows="3"></textarea>
+                        </div>
+                        <button onclick="submitContactForm()" class="btn-primary">Send Message & Subscribe</button>
+                        <p class="contact-note">We respect your privacy. Your email will only be used for platform updates.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="features-grid">
                 <div class="feature-card" data-page="synchronous">
                     <div class="feature-icon sync">

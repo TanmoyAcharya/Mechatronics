@@ -105,8 +105,32 @@ class ConstructionViewer {
         
         this.setupControls();
         
-        // Wait for page to be visible before starting animations
-        this.tryResizeAndDraw();
+        // Use MutationObserver to detect when page becomes visible
+        this.setupPageVisibilityObserver();
+    }
+    
+    setupPageVisibilityObserver() {
+        const page = document.getElementById('construction-page');
+        if (!page) return;
+        
+        // Check if page is visible now
+        const checkVisibility = () => {
+            const isVisible = page.classList.contains('active') || page.style.display !== 'none';
+            if (isVisible) {
+                console.log('Construction page now visible, initializing...');
+                setTimeout(() => {
+                    this.resize();
+                    this.start();
+                }, 100);
+            }
+        };
+        
+        // Initial check
+        checkVisibility();
+        
+        // Also try after a delay in case navigation happens
+        setTimeout(checkVisibility, 1000);
+        setTimeout(checkVisibility, 2000);
     }
     
     tryResizeAndDraw() {
@@ -140,20 +164,36 @@ class ConstructionViewer {
     }
     
     resize() {
-        const containers = [
-            { canvas: this.canvas, container: this.canvas.parentElement },
-            { canvas: this.crossSectionCanvas, container: this.crossSectionCanvas.parentElement },
-            { canvas: this.inductionCrossCanvas, container: this.inductionCrossCanvas.parentElement },
-            { canvas: this.magneticFieldCanvas, container: this.magneticFieldCanvas.parentElement }
-        ];
+        console.log('ConstructionViewer resize called');
         
-        containers.forEach(({ canvas, container }) => {
-            if (container) {
-                canvas.width = container.clientWidth;
-                canvas.height = container.clientHeight - 10;
-            }
-        });
+        // Resize main canvas
+        if (this.canvas && this.canvas.parentElement) {
+            const container = this.canvas.parentElement;
+            this.canvas.width = container.clientWidth;
+            this.canvas.height = Math.max(container.clientHeight - 10, 400);
+            console.log('Main canvas resized:', this.canvas.width, 'x', this.canvas.height);
+        }
         
+        // Resize cross-section canvases
+        if (this.crossSectionCanvas && this.crossSectionCanvas.parentElement) {
+            const container = this.crossSectionCanvas.parentElement;
+            this.crossSectionCanvas.width = container.clientWidth || 300;
+            this.crossSectionCanvas.height = container.clientHeight - 50 || 200;
+        }
+        
+        if (this.inductionCrossCanvas && this.inductionCrossCanvas.parentElement) {
+            const container = this.inductionCrossCanvas.parentElement;
+            this.inductionCrossCanvas.width = container.clientWidth || 300;
+            this.inductionCrossCanvas.height = container.clientHeight - 50 || 200;
+        }
+        
+        if (this.magneticFieldCanvas && this.magneticFieldCanvas.parentElement) {
+            const container = this.magneticFieldCanvas.parentElement;
+            this.magneticFieldCanvas.width = container.clientWidth || 300;
+            this.magneticFieldCanvas.height = container.clientHeight - 50 || 200;
+        }
+        
+        // Redraw all
         this.draw();
         this.drawCrossSections();
         this.drawMagneticField();
@@ -206,10 +246,19 @@ class ConstructionViewer {
         this.updateComponentInfo();
         // Start animation when page is shown
         this.autoRotate = true;
+        
+        // Make sure canvas is properly sized
+        if (this.canvas && this.canvas.parentElement) {
+            const container = this.canvas.parentElement;
+            this.canvas.width = container.clientWidth || 800;
+            this.canvas.height = (container.clientHeight - 10) || 500;
+        }
+        
         this.animateRotation();
         this.drawCrossSections();
         this.drawMagneticField();
         this.draw();
+        console.log('Construction viewer started');
     }
     
     animateAssembly(targetProgress) {
