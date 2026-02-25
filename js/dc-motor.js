@@ -1,28 +1,40 @@
 /**
- * DC Motor Simulator
- * Interactive DC motor simulation with realistic animations
+ * DC Motor Simulator - Enhanced Version
+ * Improved physics model with realistic parameters
  */
 
 class DCMotorSimulator {
     constructor() {
-        // Motor parameters
+        // Enhanced Motor Parameters
         this.V = 220;           // Supply voltage (V)
         this.Ia = 0;            // Armature current (A)
         this.If = 0.5;          // Field current (A)
         this.T_load = 0;        // Load torque (Nm)
-        this.Ra = 0.5;          // Armature resistance (Ohm)
-        this.Rf = 200;          // Field resistance (Ohm)
+        
+        // Motor Circuit Parameters
+        this.Ra = 0.5;         // Armature resistance (Ohm)
+        this.Rf = 200;          // Field resistance (Ohm)  
         this.La = 0.01;         // Armature inductance (H)
-        this.K = 0.5;           // Motor constant
-        this.J = 0.05;          // Moment of inertia
-        this.B = 0.01;          // Friction coefficient
+        this.Lf = 10;           // Field inductance (H)
+        
+        // Motor Construction Parameters
+        this.K = 0.5;           // Motor constant (Nm/A/Wb)
+        this.J = 0.05;          // Moment of inertia (kg·m²)
+        this.B = 0.01;          // Viscous friction coefficient (Nm·s/rad)
+        this.PolePairs = 2;     // Number of pole pairs
+        
+        // Thermal Parameters
+        this.Ra_hot = 0.6;     // Hot armature resistance
+        this.temperature = 25;  // Motor temperature (°C)
+        this.thermalTimeConst = 300; // Thermal time constant (s)
         
         // Operating state
-        this.n = 0;             // Speed (RPM)
-        this.omega = 0;         // Angular velocity (rad/s)
-        this.Ea = 0;            // Back EMF (V)
-        this.P_mech = 0;        // Mechanical power (W)
-        this.efficiency = 0;    // Efficiency
+        this.n = 0;            // Speed (RPM)
+        this.omega = 0;        // Angular velocity (rad/s)
+        this.Ea = 0;           // Back EMF (V)
+        this.PowerLoss = 0;    // Total power loss (W)
+        this.P_mech = 0;       // Mechanical power (W)
+        this.efficiency = 0;     // Efficiency
         
         // Motor type
         this.motorType = 'shunt'; // shunt, series, compound
@@ -30,6 +42,12 @@ class DCMotorSimulator {
         // Animation
         this.rotorAngle = 0;
         this.animationId = null;
+        this.time = 0;
+        
+        // History for charts
+        this.speedHistory = [];
+        this.torqueHistory = [];
+        this.maxHistoryLength = 200;
         
         this.init();
     }
@@ -59,19 +77,13 @@ class DCMotorSimulator {
             this.canvas.width = 800;
             this.canvas.height = 450;
         }
-        if (this.speedCanvas && this.speedCanvas.width === 0) {
-            this.speedCanvas.width = 350;
-            this.speedCanvas.height = 180;
-        }
-        if (this.torqueCanvas && this.torqueCanvas.width === 0) {
-            this.torqueCanvas.width = 350;
-            this.torqueCanvas.height = 180;
-        }
         
         this.calculate();
+        this.draw();
     }
     
     setupControls() {
+        // Voltage slider
         const vtSlider = document.getElementById('dc-vt-slider');
         const vtValue = document.getElementById('dc-vt-value');
         if (vtSlider && vtValue) {
@@ -82,6 +94,7 @@ class DCMotorSimulator {
             });
         }
         
+        // Field current slider
         const ifSlider = document.getElementById('dc-if-slider');
         const ifValue = document.getElementById('dc-if-value');
         if (ifSlider && ifValue) {
@@ -92,16 +105,18 @@ class DCMotorSimulator {
             });
         }
         
+        // Torque/Load slider
         const torqueSlider = document.getElementById('dc-torque-slider');
         const torqueValue = document.getElementById('dc-torque-value');
         if (torqueSlider && torqueValue) {
             torqueSlider.addEventListener('input', (e) => {
                 this.T_load = parseFloat(e.target.value);
-                torqueValue.textContent = this.T_load;
+                torqueValue.textContent = this.T_load.toFixed(1);
                 this.calculate();
             });
         }
         
+        // Motor type buttons
         const typeButtons = document.querySelectorAll('#dc-motor-page .motor-type-btn');
         typeButtons.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -111,43 +126,142 @@ class DCMotorSimulator {
                 this.calculate();
             });
         });
+        
+        // Advanced parameter sliders (if they exist)
+        this.setupAdvancedControls();
+    }
+    
+    setupAdvancedControls() {
+        // Armature Resistance
+        const raSlider = document.getElementById('dc-ra-slider');
+        const raValue = document.getElementById('dc-ra-value');
+        if (raSlider && raValue) {
+            raSlider.addEventListener('input', (e) => {
+                this.Ra = parseFloat(e.target.value);
+                this.Ra_hot = this.Ra * 1.2; // 20% increase when hot
+                raValue.textContent = this.Ra.toFixed(2);
+                this.calculate();
+            });
+        }
+        
+        // Field Resistance
+        const rfSlider = document.getElementById('dc-rf-slider');
+        const rfValue = document.getElementById('dc-rf-value');
+        if (rfSlider && rfValue) {
+            rfSlider.addEventListener('input', (e) => {
+                this.Rf = parseFloat(e.target.value);
+                rfValue.textContent = this.Rf.toFixed(0);
+                this.calculate();
+            });
+        }
+        
+        // Moment of Inertia
+        const jSlider = document.getElementById('dc-j-slider');
+        const jValue = document.getElementById('dc-j-value');
+        if (jSlider && jValue) {
+            jSlider.addEventListener('input', (e) => {
+                this.J = parseFloat(e.target.value);
+                jValue.textContent = this.J.toFixed(3);
+                this.calculate();
+            });
+        }
     }
     
     calculate() {
-        // Calculate field current
-        const Vf = this.V;
-        this.If = Vf / this.Rf;
+        // Calculate field current based on motor type
+        switch (this.motorType) {
+            case 'shunt':
+                // Shunt: Field connected directly across supply
+                this.If = this.V / this.Rf;
+                break;
+            case 'series':
+                // Series: Field in series with armature
+                // Need to solve iteratively
+                this.If = this.Ia;
+                break;
+            case 'compound':
+                // Compound: Series + Shunt
+                this.If = this.V / this.Rf;
+                break;
+        }
         
-        // Calculate back EMF
-        const flux = this.K * this.If;
-        this.Ea = flux * this.omega;
+        // Magnetic flux (simplified model - proportional to field current with saturation)
+        const fluxSaturation = 1 + Math.tanh(this.If * 0.5) * 0.3; // Saturation effect
+        const phi = this.K * this.If * fluxSaturation;
         
-        // Armature current from torque equation
-        // T = K * phi * Ia => Ia = T / (K * phi)
-        const phi = this.K * this.If;
-        this.Ia = this.T_load / (phi + 0.001);
+        // Back EMF: E = K * phi * omega
+        this.Ea = this.K * phi * this.omega;
         
-        // Voltage equation: V = Ea + Ia*Ra
-        const ArmatureVoltage = this.V - this.Ia * this.Ra;
-        this.omega = ArmatureVoltage / (phi + 0.001);
+        // Armature voltage equation: V = E + Ia*Ra
+        const V_armature = this.V - this.Ea;
+        
+        // Armature current: Ia = (V - E) / Ra
+        this.Ia = V_armature / this.Ra;
+        
+        // For series motor, armature current = field current
+        if (this.motorType === 'series') {
+            this.If = this.Ia;
+        }
+        
+        // Torque equation: T = K * phi * Ia
+        const T_electric = this.K * phi * this.Ia;
+        
+        // Net torque (electric torque - load torque - friction)
+        const T_friction = this.B * this.omega;
+        const T_net = T_electric - this.T_load - T_friction;
+        
+        // Angular acceleration: alpha = T / J
+        const alpha = T_net / this.J;
+        
+        // Update speed
+        this.omega += alpha * 0.016; // 16ms time step
+        this.omega = Math.max(0, this.omega); // No reverse for DC
         
         // Speed in RPM
         this.n = (this.omega * 60) / (2 * Math.PI);
         this.n = Math.max(0, Math.min(5000, this.n));
         
-        // Mechanical power
-        this.P_mech = this.T_load * this.omega;
+        // Power calculations
+        this.P_mech = this.T_load * this.omega; // Mechanical output power
         
-        // Input power
+        // Electrical input power
         const P_input = this.V * (this.Ia + this.If);
+        
+        // Power losses
+        const P_copper_armature = this.Ia * this.Ia * this.Ra;
+        const P_copper_field = this.If * this.If * this.Rf;
+        const P_friction = T_friction * this.omega;
+        this.PowerLoss = P_copper_armature + P_copper_field + P_friction;
         
         // Efficiency
         this.efficiency = P_input > 0 ? (this.P_mech / P_input) * 100 : 0;
         this.efficiency = Math.max(0, Math.min(100, this.efficiency));
         
-        // Update readings
+        // Update history for charts
+        this.updateHistory();
+        
+        // Update UI readings
+        this.updateReadings();
+        
+        this.draw();
+    }
+    
+    updateHistory() {
+        this.speedHistory.push(this.n);
+        this.torqueHistory.push(this.T_load);
+        
+        if (this.speedHistory.length > this.maxHistoryLength) {
+            this.speedHistory.shift();
+            this.torqueHistory.shift();
+        }
+    }
+    
+    updateReadings() {
         const iaReading = document.getElementById('dc-ia-reading');
         if (iaReading) iaReading.textContent = this.Ia.toFixed(1) + ' A';
+        
+        const ifReading = document.getElementById('dc-if-reading');
+        if (ifReading) ifReading.textContent = this.If.toFixed(1) + ' A';
         
         const speedReading = document.getElementById('dc-n-reading');
         if (speedReading) speedReading.textContent = Math.round(this.n) + ' RPM';
@@ -158,9 +272,15 @@ class DCMotorSimulator {
         const emfReading = document.getElementById('dc-emf-reading');
         if (emfReading) emfReading.textContent = this.Ea.toFixed(1) + ' V';
         
-        this.draw();
-        if (this.speedCanvas) this.drawSpeedChart();
-        if (this.torqueCanvas) this.drawTorqueChart();
+        // Additional readings
+        const powerReading = document.getElementById('dc-power-reading');
+        if (powerReading) powerReading.textContent = this.P_mech.toFixed(0) + ' W';
+        
+        const lossReading = document.getElementById('dc-loss-reading');
+        if (lossReading) lossReading.textContent = this.PowerLoss.toFixed(0) + ' W';
+        
+        const torqueReading = document.getElementById('dc-torque-reading');
+        if (torqueReading) torqueReading.textContent = this.T_load.toFixed(1) + ' Nm';
     }
     
     start() {
@@ -177,11 +297,10 @@ class DCMotorSimulator {
     }
     
     animate() {
+        this.time += 0.016;
         this.rotorAngle += this.omega * 0.016;
-        this.draw();
         
-        if (this.speedCanvas) this.drawSpeedChart();
-        if (this.torqueCanvas) this.drawTorqueChart();
+        this.calculate();
         
         this.animationId = requestAnimationFrame(() => this.animate());
     }
@@ -192,152 +311,359 @@ class DCMotorSimulator {
         const w = canvas.width;
         const h = canvas.height;
         
-        ctx.clearRect(0, 0, w, h);
-        
-        // Background
+        // Clear and draw background
         ctx.fillStyle = '#0a0a12';
         ctx.fillRect(0, 0, w, h);
         
-        const centerX = w / 2;
-        const centerY = h / 2;
-        const scale = Math.min(w, h) * 0.35;
+        // Draw grid
+        this.drawGrid(ctx, w, h);
         
-        // Motor housing
+        // Draw motor based on type
+        switch (this.motorType) {
+            case 'shunt':
+                this.drawShuntMotor(ctx, w, h);
+                break;
+            case 'series':
+                this.drawSeriesMotor(ctx, w, h);
+                break;
+            case 'compound':
+                this.drawCompoundMotor(ctx, w, h);
+                break;
+        }
+        
+        // Draw circuit diagram
+        this.drawCircuit(ctx, w, h);
+        
+        // Draw labels
+        this.drawLabels(ctx, w, h);
+        
+        // Draw charts
+        if (this.speedCanvas) this.drawSpeedChart();
+        if (this.torqueCanvas) this.drawTorqueChart();
+    }
+    
+    drawGrid(ctx, w, h) {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.lineWidth = 1;
+        
+        // Vertical lines
+        for (let x = 0; x < w; x += 50) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, h);
+            ctx.stroke();
+        }
+        
+        // Horizontal lines
+        for (let y = 0; y < h; y += 50) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(w, y);
+            ctx.stroke();
+        }
+    }
+    
+    drawShuntMotor(ctx, w, h) {
+        const centerX = w * 0.35;
+        const centerY = h * 0.5;
+        const rotorRadius = 80;
+        
+        // Draw motor housing (stator)
+        const housingGradient = ctx.createRadialGradient(centerX, centerY, rotorRadius, centerX, centerY, rotorRadius + 40);
+        housingGradient.addColorStop(0, '#1a1a2e');
+        housingGradient.addColorStop(0.7, '#16213e');
+        housingGradient.addColorStop(1, '#0f0f23');
+        
         ctx.beginPath();
-        ctx.arc(centerX, centerY, scale + 15, 0, Math.PI * 2);
-        ctx.fillStyle = '#1a1a25';
+        ctx.arc(centerX, centerY, rotorRadius + 35, 0, Math.PI * 2);
+        ctx.fillStyle = housingGradient;
         ctx.fill();
-        
-        // Stator (field poles)
-        // North pole
-        ctx.beginPath();
-        ctx.arc(centerX, centerY - scale * 0.7, scale * 0.35, Math.PI, 0);
-        ctx.fillStyle = '#353540';
-        ctx.fill();
-        ctx.fillStyle = '#ff4444';
-        ctx.font = 'bold 20px JetBrains Mono';
-        ctx.textAlign = 'center';
-        ctx.fillText('N', centerX, centerY - scale * 0.7);
-        
-        // South pole
-        ctx.beginPath();
-        ctx.arc(centerX, centerY + scale * 0.7, scale * 0.35, 0, Math.PI);
-        ctx.fillStyle = '#353540';
-        ctx.fill();
-        ctx.fillStyle = '#4488ff';
-        ctx.fillText('S', centerX, centerY + scale * 0.7);
-        
-        // Field windings
-        ctx.strokeStyle = '#ffaa00';
+        ctx.strokeStyle = '#2563eb';
         ctx.lineWidth = 3;
-        for (let i = 0; i < 6; i++) {
-            const y = centerY - scale * 0.7 + i * scale * 0.12;
+        ctx.stroke();
+        
+        // Draw field windings (shunt)
+        const fieldColor = this.If > 0 ? '#ff6b6b' : '#444';
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const x1 = centerX + Math.cos(angle) * (rotorRadius + 15);
+            const y1 = centerY + Math.sin(angle) * (rotorRadius + 15);
+            const x2 = centerX + Math.cos(angle + 0.2) * (rotorRadius + 30);
+            const y2 = centerY + Math.sin(angle + 0.2) * (rotorRadius + 30);
+            
             ctx.beginPath();
-            ctx.moveTo(centerX - scale * 0.2, y);
-            ctx.lineTo(centerX + scale * 0.2, y);
-            ctx.stroke();
-        }
-        for (let i = 0; i < 6; i++) {
-            const y = centerY + scale * 0.3 + i * scale * 0.12;
-            ctx.beginPath();
-            ctx.moveTo(centerX - scale * 0.2, y);
-            ctx.lineTo(centerX + scale * 0.2, y);
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = fieldColor;
+            ctx.lineWidth = 8;
             ctx.stroke();
         }
         
-        // Rotor (armature)
-        const rotorRadius = scale * 0.45;
+        // Draw rotor (armature)
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(this.rotorAngle);
+        
+        // Rotor core
+        const rotorGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, rotorRadius);
+        rotorGradient.addColorStop(0, '#2d2d44');
+        rotorGradient.addColorStop(1, '#1a1a2e');
+        
         ctx.beginPath();
-        ctx.arc(centerX, centerY, rotorRadius, 0, Math.PI * 2);
-        ctx.fillStyle = '#454555';
+        ctx.arc(0, 0, rotorRadius - 5, 0, Math.PI * 2);
+        ctx.fillStyle = rotorGradient;
         ctx.fill();
         
-        // Armature slots
+        // Armature windings
+        const armatureColor = this.Ia > 0 ? '#ffd93d' : '#666';
         for (let i = 0; i < 12; i++) {
             const angle = (i / 12) * Math.PI * 2;
             ctx.beginPath();
-            ctx.moveTo(
-                centerX + Math.cos(angle) * rotorRadius * 0.3,
-                centerY + Math.sin(angle) * rotorRadius * 0.3
-            );
-            ctx.lineTo(
-                centerX + Math.cos(angle) * rotorRadius * 0.9,
-                centerY + Math.sin(angle) * rotorRadius * 0.9
-            );
-            ctx.strokeStyle = '#303040';
-            ctx.lineWidth = 3;
+            ctx.moveTo(0, 0);
+            ctx.lineTo(Math.cos(angle) * (rotorRadius - 15), Math.sin(angle) * (rotorRadius - 15));
+            ctx.strokeStyle = armatureColor;
+            ctx.lineWidth = 6;
             ctx.stroke();
-        }
-        
-        // Commutator
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, rotorRadius * 0.25, 0, Math.PI * 2);
-        ctx.fillStyle = '#c08030';
-        ctx.fill();
-        
-        // Commutator segments
-        for (let i = 0; i < 8; i++) {
-            const angle = (i / 8) * Math.PI * 2 + this.rotorAngle;
-            ctx.beginPath();
-            ctx.arc(
-                centerX + Math.cos(angle) * rotorRadius * 0.15,
-                centerY + Math.sin(angle) * rotorRadius * 0.15,
-                rotorRadius * 0.12, 0, Math.PI * 2
-            );
-            ctx.fillStyle = i % 2 === 0 ? '#806030' : '#c0a060';
-            ctx.fill();
         }
         
         // Shaft
         ctx.beginPath();
-        ctx.arc(centerX, centerY, rotorRadius * 0.1, 0, Math.PI * 2);
-        ctx.fillStyle = '#606070';
+        ctx.arc(0, 0, 10, 0, Math.PI * 2);
+        ctx.fillStyle = '#888';
         ctx.fill();
         
-        // Brushes
-        ctx.fillStyle = '#404040';
-        ctx.fillRect(centerX - rotorRadius * 0.4, centerY - 8, 15, 16);
-        ctx.fillRect(centerX + rotorRadius * 0.4 - 15, centerY - 8, 15, 16);
+        ctx.restore();
         
-        // Current direction arrows
-        ctx.fillStyle = '#00ff00';
+        // Draw commutation marks
+        ctx.fillStyle = '#2563eb';
         ctx.font = '12px JetBrains Mono';
-        ctx.fillText('+', centerX - scale * 0.5, centerY - 20);
-        ctx.fillText('-', centerX + scale * 0.5, centerY - 20);
+        ctx.fillText('N', centerX + rotorRadius + 20, centerY - 10);
+        ctx.fillText('S', centerX - rotorRadius - 20, centerY - 10);
         
-        // Speed display
-        const speedDisplay = document.getElementById('dc-motor-speed-display');
-        if (speedDisplay) speedDisplay.textContent = Math.round(this.n) + ' RPM';
+        // Field terminals
+        this.drawTerminal(ctx, centerX + rotorRadius + 60, centerY - 40, 'F+', fieldColor);
+        this.drawTerminal(ctx, centerX + rotorRadius + 60, centerY + 40, 'F-', fieldColor);
+        
+        // Armature terminals  
+        this.drawTerminal(ctx, centerX + rotorRadius + 60, centerY, 'A', this.Ia > 0 ? '#ffd93d' : '#666');
+    }
+    
+    drawSeriesMotor(ctx, w, h) {
+        // Similar to shunt but with series field
+        this.drawShuntMotor(ctx, w, h);
+        
+        // Add series field indicator
+        const centerX = w * 0.35;
+        const centerY = h * 0.5;
+        
+        ctx.fillStyle = '#ff6b6b';
+        ctx.font = 'bold 14px JetBrains Mono';
+        ctx.fillText('SERIES', centerX - 30, centerY + 120);
+    }
+    
+    drawCompoundMotor(ctx, w, h) {
+        this.drawShuntMotor(ctx, w, h);
+        
+        const centerX = w * 0.35;
+        const centerY = h * 0.5;
+        
+        ctx.fillStyle = '#9b59b6';
+        ctx.font = 'bold 14px JetBrains Mono';
+        ctx.fillText('COMPOUND', centerX - 35, centerY + 120);
+    }
+    
+    drawCircuit(ctx, w, h) {
+        const circuitX = w * 0.65;
+        const circuitY = h * 0.2;
+        const circuitW = 280;
+        const circuitH = 180;
+        
+        // Circuit background
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(circuitX, circuitY, circuitW, circuitH);
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(circuitX, circuitY, circuitW, circuitH);
+        
+        // Title
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 14px JetBrains Mono';
+        ctx.fillText('Circuit Diagram', circuitX + 10, circuitY + 20);
+        
+        // Draw circuit based on type
+        if (this.motorType === 'shunt') {
+            this.drawShuntCircuit(ctx, circuitX, circuitY, circuitW, circuitH);
+        }
+        
+        // Values
+        ctx.font = '12px JetBrains Mono';
+        ctx.fillStyle = '#ffd93d';
+        ctx.fillText(`V: ${this.V.toFixed(0)}V`, circuitX + 10, circuitY + 50);
+        ctx.fillText(`Ia: ${this.Ia.toFixed(1)}A`, circuitX + 10, circuitY + 70);
+        ctx.fillText(`If: ${this.If.toFixed(1)}A`, circuitX + 10, circuitY + 90);
+        ctx.fillText(`Ea: ${this.Ea.toFixed(1)}V`, circuitX + 10, circuitY + 110);
+        
+        ctx.fillStyle = '#2ed573';
+        ctx.fillText(`Efficiency: ${this.efficiency.toFixed(1)}%`, circuitX + 10, circuitY + 140);
+        ctx.fillText(`P_out: ${this.P_mech.toFixed(0)}W`, circuitX + 140, circuitY + 50);
+        ctx.fillText(`Loss: ${this.PowerLoss.toFixed(0)}W`, circuitX + 140, circuitY + 70);
+    }
+    
+    drawShuntCircuit(ctx, x, y, w, h) {
+        // Supply
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x + 30, y + 40);
+        ctx.lineTo(x + 50, y + 40);
+        ctx.lineTo(x + 50, y + 50);
+        ctx.lineTo(x + 70, y + 50);
+        ctx.stroke();
+        
+        // Field circuit
+        ctx.beginPath();
+        ctx.moveTo(x + 70, y + 50);
+        ctx.lineTo(x + 70, y + 100);
+        ctx.lineTo(x + 120, y + 100);
+        // Field coil symbol
+        ctx.moveTo(x + 120, y + 100);
+        ctx.arc(x + 135, y + 100, 15, Math.PI, 0);
+        ctx.moveTo(x + 150, y + 100);
+        ctx.arc(x + 165, y + 100, 15, Math.PI, 0);
+        ctx.lineTo(x + 180, y + 100);
+        ctx.lineTo(x + 180, y + 50);
+        ctx.lineTo(x + 30, y + 50);
+        ctx.stroke();
+    }
+    
+    drawTerminal(ctx, x, y, label, color) {
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px JetBrains Mono';
+        ctx.fillText(label, x - 5, y - 15);
+    }
+    
+    drawLabels(ctx, w, h) {
+        // Speed indicator
+        ctx.fillStyle = '#2563eb';
+        ctx.font = 'bold 24px JetBrains Mono';
+        ctx.fillText(`${Math.round(this.n)} RPM`, w * 0.35 - 40, 40);
+        
+        // Motor type
+        ctx.fillStyle = '#666';
+        ctx.font = '14px JetBrains Mono';
+        ctx.fillText(this.motorType.toUpperCase() + ' DC MOTOR', w * 0.35 - 50, h - 20);
+        
+        // Power flow arrow
+        const powerX = w * 0.55;
+        const powerY = h * 0.6;
+        ctx.fillStyle = '#2ed573';
+        ctx.font = '16px JetBrains Mono';
+        ctx.fillText('POWER FLOW', powerX, powerY - 30);
+        
+        // Arrow
+        ctx.beginPath();
+        ctx.moveTo(powerX + 20, powerY);
+        ctx.lineTo(powerX + 80, powerY);
+        ctx.lineTo(powerX + 70, powerY - 10);
+        ctx.moveTo(powerX + 80, powerY);
+        ctx.lineTo(powerX + 70, powerY + 10);
+        ctx.strokeStyle = '#2ed573';
+        ctx.lineWidth = 3;
+        ctx.stroke();
     }
     
     drawSpeedChart() {
+        if (!this.speedCanvas || !this.speedCtx) return;
+        
         const ctx = this.speedCtx;
-        const canvas = this.speedCanvas;
-        const w = canvas.width;
-        const h = canvas.height;
+        const w = this.speedCanvas.width;
+        const h = this.speedCanvas.height;
         
         ctx.fillStyle = '#0a0a12';
         ctx.fillRect(0, 0, w, h);
         
-        ctx.fillStyle = '#9898a8';
-        ctx.font = '12px JetBrains Mono';
-        ctx.textAlign = 'center';
-        ctx.fillText(`Speed: ${Math.round(this.n)} RPM`, w/2, h/2);
+        // Title
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px JetBrains Mono';
+        ctx.fillText('Speed vs Time', 10, 20);
+        
+        // Draw grid
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.moveTo(0, (h / 5) * i);
+            ctx.lineTo(w, (h / 5) * i);
+            ctx.stroke();
+        }
+        
+        // Draw speed line
+        if (this.speedHistory.length > 1) {
+            ctx.beginPath();
+            const maxSpeed = 5000;
+            
+            this.speedHistory.forEach((speed, i) => {
+                const x = (i / this.maxHistoryLength) * w;
+                const y = h - (speed / maxSpeed) * h;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
     }
     
     drawTorqueChart() {
+        if (!this.torqueCanvas || !this.torqueCtx) return;
+        
         const ctx = this.torqueCtx;
-        const canvas = this.torqueCanvas;
-        const w = canvas.width;
-        const h = canvas.height;
+        const w = this.torqueCanvas.width;
+        const h = this.torqueCanvas.height;
         
         ctx.fillStyle = '#0a0a12';
         ctx.fillRect(0, 0, w, h);
         
-        ctx.fillStyle = '#9898a8';
-        ctx.font = '12px JetBrains Mono';
-        ctx.textAlign = 'center';
-        ctx.fillText(`Torque: ${this.T_load.toFixed(1)} Nm`, w/2, h/2);
+        // Title
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px JetBrains Mono';
+        ctx.fillText('Torque vs Time', 10, 20);
+        
+        // Draw grid
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.moveTo(0, (h / 5) * i);
+            ctx.lineTo(w, (h / 5) * i);
+            ctx.stroke();
+        }
+        
+        // Draw torque line
+        if (this.torqueHistory.length > 1) {
+            ctx.beginPath();
+            const maxTorque = 50;
+            
+            this.torqueHistory.forEach((torque, i) => {
+                const x = (i / this.maxHistoryLength) * w;
+                const y = h - (torque / maxTorque) * h;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            
+            ctx.strokeStyle = '#ff6b6b';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
     }
 }
 
