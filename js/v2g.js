@@ -324,7 +324,7 @@ class V2GSimulator {
         }
         
         // SOC reading
-        const socReading = document('v2g.getElementById-soc-reading');
+        const socReading = document.getElementById('v2g-soc-reading');
         if (socReading) socReading.textContent = this.batterySOC.toFixed(0) + '%';
         
         // Capacity reading (kWh in battery)
