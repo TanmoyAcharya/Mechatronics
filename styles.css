@@ -1033,6 +1033,16 @@ main {
     width: 90%;
     max-width: 400px;
     position: relative;
+    z-index: 10000;
+}
+
+.modal-content * {
+    pointer-events: auto !important;
+}
+
+.modal-content .g_id_signin iframe {
+    pointer-events: auto !important;
+    z-index: 10001 !important;
 }
 
 .modal-close {
@@ -1073,6 +1083,10 @@ main {
     border-radius: var(--radius-md);
     color: var(--text-primary);
     font-size: 1rem;
+    pointer-events: auto !important;
+    cursor: text !important;
+    position: relative !important;
+    z-index: 10002 !important;
 }
 
 .form-group input:focus {
@@ -1298,6 +1312,8 @@ main {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     color: var(--text-primary);
+    pointer-events: auto !important;
+    cursor: text !important;
 }
 
 .auth-form-box input:focus {
