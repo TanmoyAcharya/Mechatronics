@@ -59,6 +59,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
     <!-- Auth Modals -->
@@ -178,6 +179,7 @@
                     <div class="dropdown-menu">
                         <button class="dropdown-item" data-page="construction">🏗️ Construction</button>
                         <button class="dropdown-item" data-page="learn">📚 Learn & Quiz</button>
+                        <button class="dropdown-item" data-page="about-page">💝 About & Donate</button>
                     </div>
                 </div>
                 <div class="dropdown">
@@ -2435,6 +2437,65 @@
         </section>
     </main>
 
+    <!-- About Section -->
+    <section id="about-page" class="page">
+        <div class="page-header">
+            <h1>About ElectroMachines Lab</h1>
+            <p>Empowering the next generation of electrical engineers</p>
+        </div>
+        <div class="about-container">
+            <div class="about-creator">
+                <div class="creator-card">
+                    <div class="creator-avatar">
+                        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="50" cy="40" r="20" fill="currentColor"/>
+                            <path d="M20 85c0-16.569 13.431-30 30-30s30 13.431 30 30" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h2>Tanmoy Acharya</h2>
+                    <p class="creator-title">Founder & Developer</p>
+                    <p class="creator-bio">I am a passionate student of electrical transport system. I created ElectroMachines Lab to make learning about electrical machines accessible, interactive, and fun for students and engineers worldwide.</p>
+                    <p class="creator-vision">My vision is to democratize engineering education and help anyone interested in understanding how electrical machines work through hands-on simulations.</p>
+                </div>
+            </div>
+            
+            <div class="donation-section">
+                <div class="donation-card">
+                    <h2>💝 Support This Project</h2>
+                    <p>ElectroMachines Lab is free for everyone to use. If you've learned something valuable, please consider supporting my studies and website maintenance costs.</p>
+                    <p class="donation-amounts">Any amount helps! 💰</p>
+                    <div class="donation-buttons">
+                        <button class="donation-btn" data-amount="5" onclick="processDonation(5)">$5</button>
+                        <button class="donation-btn" data-amount="10" onclick="processDonation(10)">$10</button>
+                        <button class="donation-btn" data-amount="25" onclick="processDonation(25)">$25</button>
+                        <button class="donation-btn custom" onclick="showCustomAmount()">Custom</button>
+                    </div>
+                    <div id="custom-amount-input" class="custom-amount" style="display:none;">
+                        <input type="number" id="donation-custom-amount" placeholder="Enter amount" min="1">
+                        <button class="donation-btn" onclick="processDonation(document.getElementById('donation-custom-amount').value)">Donate</button>
+                    </div>
+                    <p class="stripe-note">🔒 Secure payment powered by Stripe</p>
+                </div>
+            </div>
+            
+            <div class="about-features">
+                <div class="feature-card">
+                    <h3>🎓 Free Education</h3>
+                    <p>All simulators and learning materials are completely free</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🌍 Accessible Everywhere</h3>
+                    <p>Learn from anywhere in the world with internet access</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🚀 Always Improving</h3>
+                    <p>New simulators and features added regularly</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <footer class="footer">
         <div class="footer-content">
             <p>ElectroMachines Lab - Interactive Electrical Machines Education Platform</p>
@@ -2463,6 +2524,7 @@
     <script src="js/lift.js"></script>
     <script src="js/catfollower.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/donation.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
