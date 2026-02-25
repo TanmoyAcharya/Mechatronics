@@ -178,7 +178,7 @@ class AuthSystem {
         const username = this.sanitizeInput(document.getElementById('reg-username')?.value || document.getElementById('home-reg-username')?.value || '');
         const email = this.sanitizeInput(document.getElementById('reg-email')?.value || document.getElementById('home-reg-email')?.value || '');
         const password = document.getElementById('reg-password')?.value || document.getElementById('home-reg-password')?.value || '';
-        const confirmPassword = document.getElementById('reg-confirm-password')?.value || '';
+        const confirmPassword = document.getElementById('reg-confirm-password')?.value || document.getElementById('home-reg-confirm-password')?.value || '';
         
         // Validation
         if (!username || !email || !password) {
