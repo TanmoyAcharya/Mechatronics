@@ -400,6 +400,49 @@ function showContactMessage(message, type) {
     }, 4000);
 }
 
+// Make Google callback global so it can be called from the HTML
+window.handleGoogleLogin = handleGoogleLogin;
+
+// Google OAuth Login Handler
+function handleGoogleLogin(response) {
+    if (response && response.credential) {
+        // Decode the JWT token to get user info
+        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+        
+        const googleUser = {
+            username: payload.name || payload.email.split('@')[0],
+            email: payload.email,
+            password: 'google_oauth_' + payload.sub, // Placeholder for OAuth users
+            isGoogleUser: true,
+            googleId: payload.sub,
+            picture: payload.picture,
+            progress: {},
+            createdAt: new Date().toISOString()
+        };
+        
+        // Check if user already exists
+        const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
+        let existingUser = users.find(u => u.email === googleUser.email);
+        
+        if (!existingUser) {
+            // Create new user
+            users.push(googleUser);
+            localStorage.setItem('emlab_users', JSON.stringify(users));
+            existingUser = googleUser;
+        }
+        
+        // Set as current user
+        window.authSystem.currentUser = existingUser;
+        localStorage.setItem('emlab_user', JSON.stringify(existingUser));
+        window.authSystem.updateUI();
+        window.authSystem.updateDashboard();
+        window.authSystem.closeModal('login-modal');
+        showContactMessage('Welcome! Signed in with Google successfully.', 'success');
+    } else {
+        showContactMessage('Google sign-in failed. Please try again.', 'error');
+    }
+}
+
 // Initialize auth system
 document.addEventListener('DOMContentLoaded', () => {
     window.authSystem = new AuthSystem();
