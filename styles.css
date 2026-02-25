@@ -1143,6 +1143,44 @@ main {
     min-width: 240px;
 }
 
+/* OTP Modal Styles */
+.otp-info {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.otp-resend {
+    text-align: center;
+    margin-top: 15px;
+    color: var(--text-secondary);
+}
+
+.otp-resend .link-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: underline;
+    padding: 0;
+}
+
+.otp-note {
+    text-align: center;
+    margin-top: 15px;
+    padding: 10px;
+    background: #fff3cd;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    color: #856404;
+}
+
+.otp-note strong {
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
 /* Auth header buttons */
 #auth-buttons {
     display: flex;

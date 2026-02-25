@@ -1,21 +1,103 @@
 /**
  * User Authentication and Learning Progress System
- * Simple localStorage-based authentication
+ * Secure localStorage-based authentication with OTP verification
  */
 
 class AuthSystem {
     constructor() {
         this.currentUser = null;
+        this.pendingRegistration = null;
+        this.otpExpiry = 5 * 60 * 1000; // 5 minutes
+        this.maxLoginAttempts = 5;
+        this.lockoutTime = 15 * 60 * 1000; // 15 minutes
         this.init();
+    }
+    
+    // Security: Input sanitization
+    sanitizeInput(input) {
+        if (typeof input !== 'string') return '';
+        return input
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+            .replace(/javascript:/gi, '')
+            .replace(/on\w+=/gi, '')
+            .trim();
+    }
+    
+    // Security: Validate email format
+    validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+    
+    // Security: Check password strength
+    checkPasswordStrength(password) {
+        let strength = 0;
+        const feedback = [];
+        
+        if (password.length < 8) {
+            feedback.push('At least 8 characters');
+        } else {
+            strength += 1;
+        }
+        
+        if (/[a-z]/.test(password)) strength += 1;
+        else feedback.push('lowercase letter');
+        
+        if (/[A-Z]/.test(password)) strength += 1;
+        else feedback.push('uppercase letter');
+        
+        if (/[0-9]/.test(password)) strength += 1;
+        else feedback.push('number');
+        
+        if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+        else feedback.push('special character');
+        
+        return { strength, feedback };
+    }
+    
+    // Security: Generate OTP
+    generateOTP() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+    
+    // Security: Check if account is locked
+    isLockedOut() {
+        const lockoutEnd = localStorage.getItem('emlab_lockout_end');
+        if (lockoutEnd && Date.now() < parseInt(lockoutEnd)) {
+            return true;
+        }
+        return false;
+    }
+    
+    // Security: Record failed attempt
+    recordFailedAttempt() {
+        let attempts = parseInt(localStorage.getItem('emlab_failed_attempts') || '0');
+        attempts++;
+        localStorage.setItem('emlab_failed_attempts', attempts.toString());
+        
+        if (attempts >= this.maxLoginAttempts) {
+            localStorage.setItem('emlab_lockout_end', (Date.now() + this.lockoutTime).toString());
+            this.showMessage('Too many failed attempts. Please try again in 15 minutes.', 'error');
+        }
+    }
+    
+    // Security: Clear failed attempts on successful login
+    clearFailedAttempts() {
+        localStorage.removeItem('emlab_failed_attempts');
+        localStorage.removeItem('emlab_lockout_end');
     }
     
     init() {
         // Check for existing session
         const savedUser = localStorage.getItem('emlab_user');
         if (savedUser) {
-            this.currentUser = JSON.parse(savedUser);
-            this.updateUI();
-            this.updateDashboard();
+            try {
+                this.currentUser = JSON.parse(savedUser);
+                this.updateUI();
+                this.updateDashboard();
+            } catch (e) {
+                localStorage.removeItem('emlab_user');
+            }
         }
         
         this.setupEventListeners();
@@ -31,7 +113,19 @@ class AuthSystem {
         // Register form
         const registerBtn = document.getElementById('register-btn');
         if (registerBtn) {
-            registerBtn.addEventListener('click', () => this.register());
+            registerBtn.addEventListener('click', () => this.startRegistration());
+        }
+        
+        // OTP verification
+        const verifyOtpBtn = document.getElementById('verify-otp-btn');
+        if (verifyOtpBtn) {
+            verifyOtpBtn.addEventListener('click', () => this.verifyOTP());
+        }
+        
+        // Resend OTP
+        const resendOtpBtn = document.getElementById('resend-otp-btn');
+        if (resendOtpBtn) {
+            resendOtpBtn.addEventListener('click', () => this.resendOTP());
         }
         
         // Logout
@@ -45,14 +139,22 @@ class AuthSystem {
         if (togglePassword) {
             togglePassword.addEventListener('click', () => {
                 const input = document.getElementById('password-input');
-                input.type = input.type === 'password' ? 'text' : 'password';
+                if (input) {
+                    input.type = input.type === 'password' ? 'text' : 'password';
+                }
             });
         }
     }
     
     login() {
-        const username = document.getElementById('username-input')?.value || document.getElementById('home-username')?.value;
-        const password = document.getElementById('password-input')?.value || document.getElementById('home-password')?.value;
+        // Check lockout
+        if (this.isLockedOut()) {
+            this.showMessage('Account is temporarily locked. Please try again later.', 'error');
+            return;
+        }
+        
+        const username = this.sanitizeInput(document.getElementById('username-input')?.value || document.getElementById('home-username')?.value || '');
+        const password = document.getElementById('password-input')?.value || document.getElementById('home-password')?.value || '';
         
         if (!username || !password) {
             this.showMessage('Please enter username and password', 'error');
@@ -64,6 +166,7 @@ class AuthSystem {
         const user = users.find(u => u.username === username && u.password === password);
         
         if (user) {
+            this.clearFailedAttempts();
             this.currentUser = user;
             localStorage.setItem('emlab_user', JSON.stringify(user));
             this.updateUI();
@@ -71,40 +174,167 @@ class AuthSystem {
             this.showMessage('Login successful!', 'success');
             this.closeModal('login-modal');
         } else {
-            this.showMessage('Invalid username or password', 'error');
+            this.recordFailedAttempt();
+            const remainingAttempts = this.maxLoginAttempts - parseInt(localStorage.getItem('emlab_failed_attempts') || '0');
+            this.showMessage(`Invalid username or password. ${remainingAttempts} attempts remaining.`, 'error');
         }
     }
     
-    register() {
-        const username = document.getElementById('reg-username')?.value || document.getElementById('home-reg-username')?.value;
-        const email = document.getElementById('reg-email')?.value || document.getElementById('home-reg-email')?.value;
-        const password = document.getElementById('reg-password')?.value || document.getElementById('home-reg-password')?.value;
-        const confirmPassword = document.getElementById('reg-confirm-password')?.value;
+    startRegistration() {
+        const username = this.sanitizeInput(document.getElementById('reg-username')?.value || document.getElementById('home-reg-username')?.value || '');
+        const email = this.sanitizeInput(document.getElementById('reg-email')?.value || document.getElementById('home-reg-email')?.value || '');
+        const password = document.getElementById('reg-password')?.value || document.getElementById('home-reg-password')?.value || '';
+        const confirmPassword = document.getElementById('reg-confirm-password')?.value || '';
         
+        // Validation
         if (!username || !email || !password) {
             this.showMessage('Please fill all fields', 'error');
             return;
         }
         
-        if (password.length < 6) {
-            this.showMessage('Password must be at least 6 characters', 'error');
+        if (!this.validateEmail(email)) {
+            this.showMessage('Please enter a valid email address', 'error');
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            this.showMessage('Passwords do not match', 'error');
+            return;
+        }
+        
+        const strengthCheck = this.checkPasswordStrength(password);
+        if (strengthCheck.strength < 3) {
+            this.showMessage(`Password is too weak. Add: ${strengthCheck.feedback.join(', ')}`, 'error');
             return;
         }
         
         // Get existing users
         const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
         
-        // Check if username exists
+        // Check if username or email exists
         if (users.find(u => u.username === username)) {
             this.showMessage('Username already exists', 'error');
             return;
         }
         
-        // Create new user
-        const newUser = {
+        if (users.find(u => u.email === email)) {
+            this.showMessage('Email already registered', 'error');
+            return;
+        }
+        
+        // Generate OTP and store pending registration
+        const otp = this.generateOTP();
+        this.pendingRegistration = {
             username,
             email,
             password,
+            otp,
+            otpExpiry: Date.now() + this.otpExpiry
+        };
+        
+        // Store OTP for verification
+        localStorage.setItem('emlab_pending_otp', JSON.stringify({
+            otp,
+            email,
+            expiry: Date.now() + this.otpExpiry
+        }));
+        
+        // Show OTP modal
+        this.closeModal('register-modal');
+        this.showOTPModal(email, otp);
+    }
+    
+    showOTPModal(email, otp) {
+        // Create OTP modal if it doesn't exist
+        let otpModal = document.getElementById('otp-modal');
+        if (!otpModal) {
+            otpModal = document.createElement('div');
+            otpModal.id = 'otp-modal';
+            otpModal.className = 'modal';
+            otpModal.innerHTML = `
+                <div class="modal-content">
+                    <span class="modal-close" onclick="authSystem.closeModal('otp-modal')">&times;</span>
+                    <h2>📧 Verify Your Email</h2>
+                    <p class="otp-info">We've sent a verification code to <strong id="otp-email"></strong></p>
+                    <div class="form-group">
+                        <label>Enter 6-digit OTP</label>
+                        <input type="text" id="otp-input" maxlength="6" placeholder="123456" autocomplete="one-time-code">
+                    </div>
+                    <button id="verify-otp-btn" class="btn-primary">Verify & Create Account</button>
+                    <p class="otp-resend">Didn't receive code? <button id="resend-otp-btn" class="link-btn">Resend OTP</button></p>
+                    <p class="otp-note">For demo: OTP is <strong id="demo-otp"></strong></p>
+                </div>
+            `;
+            document.body.appendChild(otpModal);
+            
+            // Add event listeners
+            document.getElementById('verify-otp-btn').addEventListener('click', () => this.verifyOTP());
+            document.getElementById('resend-otp-btn').addEventListener('click', () => this.resendOTP());
+        }
+        
+        document.getElementById('otp-email').textContent = email;
+        document.getElementById('demo-otp').textContent = otp;
+        document.getElementById('otp-input').value = '';
+        otpModal.style.display = 'flex';
+    }
+    
+    verifyOTP() {
+        const otpInput = document.getElementById('otp-input')?.value.trim() || '';
+        const pendingData = JSON.parse(localStorage.getItem('emlab_pending_otp') || '{}');
+        
+        if (!pendingData.otp) {
+            this.showMessage('Registration session expired. Please try again.', 'error');
+            return;
+        }
+        
+        // Check expiry
+        if (Date.now() > pendingData.expiry) {
+            localStorage.removeItem('emlab_pending_otp');
+            this.showMessage('OTP expired. Please request a new one.', 'error');
+            return;
+        }
+        
+        // Verify OTP
+        if (otpInput !== pendingData.otp) {
+            this.showMessage('Invalid OTP. Please try again.', 'error');
+            return;
+        }
+        
+        // Complete registration
+        this.completeRegistration(pendingData.email);
+    }
+    
+    resendOTP() {
+        const pendingData = JSON.parse(localStorage.getItem('emlab_pending_otp') || '{}');
+        if (!pendingData.email) {
+            this.showMessage('No pending registration found.', 'error');
+            return;
+        }
+        
+        // Generate new OTP
+        const newOtp = this.generateOTP();
+        const newExpiry = Date.now() + this.otpExpiry;
+        
+        localStorage.setItem('emlab_pending_otp', JSON.stringify({
+            otp: newOtp,
+            email: pendingData.email,
+            expiry: newExpiry
+        }));
+        
+        document.getElementById('demo-otp').textContent = newOtp;
+        document.getElementById('otp-input').value = '';
+        this.showMessage('New OTP sent!', 'success');
+    }
+    
+    completeRegistration(email) {
+        const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
+        
+        // Create new user
+        const newUser = {
+            username: this.pendingRegistration.username,
+            email: this.pendingRegistration.email,
+            password: this.pendingRegistration.password,
+            emailVerified: true,
             createdAt: new Date().toISOString(),
             progress: {
                 synchronous: false,
@@ -129,13 +359,23 @@ class AuthSystem {
         users.push(newUser);
         localStorage.setItem('emlab_users', JSON.stringify(users));
         
+        // Clear pending OTP
+        localStorage.removeItem('emlab_pending_otp');
+        this.pendingRegistration = null;
+        
         // Auto login
         this.currentUser = newUser;
         localStorage.setItem('emlab_user', JSON.stringify(newUser));
+        
+        this.closeModal('otp-modal');
         this.updateUI();
         this.updateDashboard();
-        this.showMessage('Account created successfully!', 'success');
-        this.closeModal('register-modal');
+        this.showMessage('Account created and verified successfully!', 'success');
+    }
+    
+    register() {
+        // Legacy method - redirect to OTP flow
+        this.startRegistration();
     }
     
     logout() {
@@ -416,6 +656,7 @@ function handleGoogleLogin(response) {
             isGoogleUser: true,
             googleId: payload.sub,
             picture: payload.picture,
+            emailVerified: true, // Google already verifies email
             progress: {},
             createdAt: new Date().toISOString()
         };
