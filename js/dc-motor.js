@@ -473,10 +473,10 @@ class DCMotorSimulator {
     }
     
     drawCircuit(ctx, w, h) {
-        const circuitX = w * 0.65;
-        const circuitY = h * 0.2;
-        const circuitW = 280;
-        const circuitH = 180;
+        const circuitX = w * 0.62;
+        const circuitY = h * 0.65;
+        const circuitW = 250;
+        const circuitH = 160;
         
         // Circuit background
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
