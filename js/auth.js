@@ -29,28 +29,22 @@ class AuthSystem {
         return emailRegex.test(email);
     }
     
-    // Security: Check password strength
+    // Security: Check password strength (simplified)
     checkPasswordStrength(password) {
         let strength = 0;
         const feedback = [];
         
-        if (password.length < 8) {
-            feedback.push('At least 8 characters');
+        if (password.length < 4) {
+            feedback.push('At least 4 characters');
         } else {
             strength += 1;
         }
         
-        if (/[a-z]/.test(password)) strength += 1;
-        else feedback.push('lowercase letter');
-        
-        if (/[A-Z]/.test(password)) strength += 1;
-        else feedback.push('uppercase letter');
+        if (/[a-zA-Z]/.test(password)) strength += 1;
+        else feedback.push('letter');
         
         if (/[0-9]/.test(password)) strength += 1;
         else feedback.push('number');
-        
-        if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
-        else feedback.push('special character');
         
         return { strength, feedback };
     }
@@ -202,9 +196,9 @@ class AuthSystem {
             return;
         }
         
-        const strengthCheck = this.checkPasswordStrength(password);
-        if (strengthCheck.strength < 3) {
-            this.showMessage(`Password is too weak. Add: ${strengthCheck.feedback.join(', ')}`, 'error');
+        // Simple password validation (at least 4 characters)
+        if (password.length < 4) {
+            this.showMessage('Password must be at least 4 characters', 'error');
             return;
         }
         
