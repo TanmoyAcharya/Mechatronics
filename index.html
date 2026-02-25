@@ -172,6 +172,7 @@
                         <button class="dropdown-item" data-page="powerelec">📊 Power Electronics</button>
                         <button class="dropdown-item" data-page="widebandgap">⚡ Widebandgap</button>
                         <button class="dropdown-item" data-page="v2g">🚗 V2G</button>
+                        <button class="dropdown-item" data-page="evtol">🚁 EVTOL</button>
                     </div>
                 </div>
                 <div class="dropdown">
@@ -291,6 +292,9 @@
                 </button>
                 <button class="sidebar-link" data-page="v2g">
                     <span class="link-icon">🚗</span> V2G (Vehicle to Grid)
+                </button>
+                <button class="sidebar-link" data-page="evtol">
+                    <span class="link-icon">🚁</span> EVTOL (Electric Aviation)
                 </button>
             </div>
         </div>
@@ -1416,6 +1420,33 @@
                             <label>State of Charge (SOC): <span class="value" id="v2g-soc-value">50</span>%</label>
                             <input type="range" id="v2g-soc-slider" min="10" max="100" value="50">
                         </div>
+                        <div class="control-group">
+                            <label>Battery Capacity: <span class="value" id="v2g-capacity-value">75</span> kWh</label>
+                            <input type="range" id="v2g-capacity-slider" min="40" max="150" value="75">
+                        </div>
+                        <div class="control-group">
+                            <label>Battery Health: <span class="value" id="v2g-health-value">95</span>%</label>
+                            <input type="range" id="v2g-health-slider" min="50" max="100" value="95">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Charger Settings</h3>
+                        <div class="control-group">
+                            <label>Max Charge Power: <span class="value" id="v2g-charge-power-value">11.0</span> kW</label>
+                            <input type="range" id="v2g-charge-power-slider" min="3.3" max="22" value="11" step="0.5">
+                        </div>
+                        <div class="control-group">
+                            <label>V2G Discharge Power: <span class="value" id="v2g-discharge-power-value">10.0</span> kW</label>
+                            <input type="range" id="v2g-discharge-power-slider" min="1" max="20" value="10" step="0.5">
+                        </div>
+                        <div class="control-group">
+                            <label>Charge Current: <span class="value" id="v2g-current-value">32</span> A</label>
+                            <input type="range" id="v2g-current-slider" min="12" max="80" value="32">
+                        </div>
+                        <div class="control-group">
+                            <label>Charger Efficiency: <span class="value" id="v2g-efficiency-value">92</span>%</label>
+                            <input type="range" id="v2g-efficiency-slider" min="80" max="98" value="92">
+                        </div>
                     </div>
                     <div class="control-section">
                         <h3>Time & Grid</h3>
@@ -1431,20 +1462,127 @@
                     <div class="control-section">
                         <h3>Charging Mode</h3>
                         <div class="button-group">
-                            <button id="v2g-charge-btn" class="mode-btn">⚡ Charge</button>
-                            <button id="v2g-discharge-btn" class="mode-btn">🔋 V2G Discharge</button>
-                            <button id="v2g-stop-btn" class="mode-btn">⏹️ Stop</button>
+                            <button id="v2g-charge-btn" class="mode-btn">Charge</button>
+                            <button id="v2g-discharge-btn" class="mode-btn">V2G Discharge</button>
+                            <button id="v2g-stop-btn" class="mode-btn">Stop</button>
+                            <button id="v2g-reset-btn" class="mode-btn">Reset</button>
                         </div>
                     </div>
                     <div class="readings-panel">
                         <h3>Status</h3>
                         <div class="reading"><span class="reading-label">Power:</span><span class="reading-value" id="v2g-power-reading">0 kW</span></div>
                         <div class="reading"><span class="reading-label">Battery:</span><span class="reading-value" id="v2g-soc-reading">50%</span></div>
-                        <div class="reading"><span class="reading-label">Capacity:</span><span class="reading-value" id="v2g-capacity-reading">37.5 kWh</span></div>
+                        <div class="reading"><span class="reading-label">Capacity:</span><span class="reading-value" id="v2g-capacity-reading">37.5 / 75 kWh</span></div>
                         <div class="reading"><span class="reading-label">Grid Price:</span><span class="reading-value" id="v2g-price-reading">$0.12/kWh</span></div>
                         <div class="reading"><span class="reading-label">Grid Demand:</span><span class="reading-value" id="v2g-grid-demand-reading">5 kW</span></div>
                         <div class="reading"><span class="reading-label">Cost:</span><span class="reading-value" id="v2g-cost-reading">$0.00</span></div>
                         <div class="reading"><span class="reading-label">V2G Profit:</span><span class="reading-value" id="v2g-profit-reading">$0.00</span></div>
+                        <div class="reading"><span class="reading-label">Efficiency:</span><span class="reading-value" id="v2g-efficiency-reading">--</span></div>
+                        <div class="reading"><span class="reading-label">Power Loss:</span><span class="reading-value" id="v2g-loss-reading">0 kW</span></div>
+                        <div class="reading"><span class="reading-label">Battery Health:</span><span class="reading-value" id="v2g-health-reading">95%</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EVTOL Page -->
+        <section id="evtol-page" class="page">
+            <div class="page-header">
+                <h1>EVTOL Simulator</h1>
+                <p>Electric Vertical Takeoff and Landing Aircraft - The Future of Urban Air Mobility</p>
+            </div>
+            
+            <div class="material-selector">
+                <button class="evtol-type-btn active" data-type="multirotor">
+                    <span class="mat-icon">🚁</span>
+                    <span class="mat-name">Multirotor</span>
+                    <span class="mat-spec">250 km/h • 200 km</span>
+                </button>
+                <button class="evtol-type-btn" data-type="vectored">
+                    <span class="mat-icon">✈️</span>
+                    <span class="mat-name">Vectored Thrust</span>
+                    <span class="mat-spec">300 km/h • 250 km</span>
+                </button>
+                <button class="evtol-type-btn" data-type="lift+cruise">
+                    <span class="mat-icon">🛩️</span>
+                    <span class="mat-name">Lift + Cruise</span>
+                    <span class="mat-spec">280 km/h • 220 km</span>
+                </button>
+            </div>
+            
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="evtol-canvas" width="800" height="450"></canvas>
+                    </div>
+                    <div class="transformer-viz-grid">
+                        <div class="viz-card">
+                            <h4>Flight Data</h4>
+                            <canvas id="evtol-graph" width="380" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>Battery</h3>
+                        <div class="control-group">
+                            <label>State of Charge (SOC): <span class="value" id="evtol-soc-value">80</span>%</label>
+                            <input type="range" id="evtol-soc-slider" min="10" max="100" value="80">
+                        </div>
+                        <div class="control-group">
+                            <label>Battery Capacity: <span class="value" id="evtol-capacity-value">300</span> kWh</label>
+                            <input type="range" id="evtol-capacity-slider" min="100" max="500" value="300">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Flight Settings</h3>
+                        <div class="control-group">
+                            <label>Target Altitude: <span class="value" id="evtol-alt-value">500</span> m</label>
+                            <input type="range" id="evtol-alt-slider" min="100" max="2000" value="500">
+                        </div>
+                        <div class="control-group">
+                            <label>Cruise Speed: <span class="value" id="evtol-speed-value">150</span> km/h</label>
+                            <input type="range" id="evtol-speed-slider" min="50" max="250" value="150">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Environment</h3>
+                        <div class="control-group">
+                            <label>Temperature: <span class="value" id="evtol-temp-value">20</span> C</label>
+                            <input type="range" id="evtol-temp-slider" min="-20" max="50" value="20">
+                        </div>
+                        <div class="control-group">
+                            <label>Wind Speed: <span class="value" id="evtol-wind-value">0</span> km/h</label>
+                            <input type="range" id="evtol-wind-slider" min="0" max="100" value="0">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>Flight Control</h3>
+                        <div class="button-group">
+                            <button id="evtol-takeoff-btn" class="mode-btn evtol-control-btn">Takeoff</button>
+                            <button id="evtol-cruise-btn" class="mode-btn evtol-control-btn">Cruise</button>
+                            <button id="evtol-descend-btn" class="mode-btn evtol-control-btn">Descend</button>
+                            <button id="evtol-land-btn" class="mode-btn evtol-control-btn">Land</button>
+                        </div>
+                        <div class="button-group">
+                            <button id="evtol-charge-btn" class="mode-btn">Charge</button>
+                            <button id="evtol-stop-btn" class="mode-btn">Stop</button>
+                            <button id="evtol-reset-btn" class="mode-btn">Reset</button>
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>Status</h3>
+                        <div class="reading"><span class="reading-label">Altitude:</span><span class="reading-value" id="evtol-alt-reading">0 m</span></div>
+                        <div class="reading"><span class="reading-label">Speed:</span><span class="reading-value" id="evtol-speed-reading">0 km/h</span></div>
+                        <div class="reading"><span class="reading-label">Power:</span><span class="reading-value" id="evtol-power-reading">0 kW</span></div>
+                        <div class="reading"><span class="reading-label">Battery:</span><span class="reading-value" id="evtol-soc-reading">80%</span></div>
+                        <div class="reading"><span class="reading-label">Capacity:</span><span class="reading-value" id="evtol-capacity-reading">240 / 300 kWh</span></div>
+                        <div class="reading"><span class="reading-label">Range:</span><span class="reading-value" id="evtol-range-reading">0 km</span></div>
+                        <div class="reading"><span class="reading-label">Flight Time:</span><span class="reading-value" id="evtol-time-reading">0h 0m</span></div>
+                        <div class="reading"><span class="reading-label">Energy Used:</span><span class="reading-value" id="evtol-energy-reading">0 kWh</span></div>
+                        <div class="reading"><span class="reading-label">Temperature:</span><span class="reading-value" id="evtol-temp-reading">20 C</span></div>
+                        <div class="reading"><span class="reading-label">Wind:</span><span class="reading-value" id="evtol-wind-reading">0 km/h</span></div>
+                        <div class="reading"><span class="reading-label">Mode:</span><span class="reading-value" id="evtol-mode-reading">GROUND</span></div>
                     </div>
                 </div>
             </div>
@@ -2524,6 +2662,7 @@
     <script src="js/windturbine.js"></script>
     <script src="js/solarpanel.js"></script>
     <script src="js/v2g.js"></script>
+    <script src="js/evtol.js"></script>
     <script src="js/powerelectronics.js"></script>
     <script src="js/widebandgap.js"></script>
     <script src="js/communication.js"></script>

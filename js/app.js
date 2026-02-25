@@ -66,6 +66,10 @@ class App {
                     window.v2gSimulator = new V2GSimulator();
                     console.log('V2GSimulator created');
                 }
+                if (typeof EVTOLSimulator === 'function') {
+                    window.evtolSimulator = new EVTOLSimulator();
+                    console.log('EVTOLSimulator created');
+                }
                 if (typeof PowerElectronicsSimulator === 'function') {
                     window.powerElecSimulator = new PowerElectronicsSimulator();
                     console.log('PowerElectronicsSimulator created');
@@ -173,6 +177,8 @@ class App {
                 window.solarPanelSimulator.stop();
             } else if (this.currentPage === 'v2g' && window.v2gSimulator) {
                 window.v2gSimulator.stop();
+            } else if (this.currentPage === 'evtol' && window.evtolSimulator) {
+                window.evtolSimulator.stop();
             } else if (this.currentPage === 'construction' && window.constructionViewer) {
                 // Don't stop construction viewer
             }
@@ -235,6 +241,13 @@ class App {
                         window.v2gSimulator.calculate();
                         window.v2gSimulator.start();
                         if (window.authSystem) window.authSystem.markComplete('v2g');
+                    }
+                    break;
+                case 'evtol':
+                    if (window.evtolSimulator) {
+                        window.evtolSimulator.calculate();
+                        window.evtolSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('evtol');
                     }
                     break;
                 case 'powerelec':

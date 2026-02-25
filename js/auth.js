@@ -340,6 +340,7 @@ class AuthSystem {
                 windTurbine: false,
                 solarPanel: false,
                 v2g: false,
+                evtol: false,
                 powerElec: false,
                 widebandgap: false,
                 communication: false,
@@ -417,7 +418,7 @@ class AuthSystem {
                 this.currentUser.progress = {};
             }
             const allKeys = ['synchronous', 'induction', 'dcMotor', 'transformer', 'pmsm', 
-                            'construction', 'windTurbine', 'solarPanel', 'v2g', 'powerElec', 
+                            'construction', 'windTurbine', 'solarPanel', 'v2g', 'evtol', 'powerElec', 
                             'widebandgap', 'communication', 'learn'];
             allKeys.forEach(key => {
                 if (this.currentUser.progress[key] === undefined) {
@@ -450,6 +451,7 @@ class AuthSystem {
                     windTurbine: 'Wind Turbine',
                     solarPanel: 'Solar Panel',
                     v2g: 'V2G System',
+                    evtol: 'EVTOL Aviation',
                     powerElec: 'Power Electronics',
                     widebandgap: 'Widebandgap Semiconductors',
                     communication: 'Communication Systems',
