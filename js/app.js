@@ -117,7 +117,11 @@ class App {
         const navButtons = document.querySelectorAll('.nav-btn');
         
         navButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                // Skip navigation for dropdown toggles and buttons without data-page
+                if (!btn.dataset.page || btn.classList.contains('dropdown-toggle')) {
+                    return;
+                }
                 const page = btn.dataset.page;
                 this.navigateTo(page);
             });
@@ -125,6 +129,9 @@ class App {
     }
     
     navigateTo(page) {
+        // Skip if no page specified
+        if (!page) return;
+        
         // Update navigation buttons
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.page === page);
@@ -142,6 +149,8 @@ class App {
             
             // Trigger page-specific initialization
             this.onPageChange(page);
+        } else {
+            console.warn(`Page '${page}' not found. Expected element with id '${page}-page'`);
         }
     }
     
@@ -295,7 +304,7 @@ class App {
         cards.forEach(card => {
             card.addEventListener('click', () => {
                 const page = card.dataset.page;
-                this.navigateTo(page);
+                if (page) this.navigateTo(page);
             });
         });
     }
@@ -306,7 +315,7 @@ class App {
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const page = btn.dataset.goto;
-                this.navigateTo(page);
+                if (page) this.navigateTo(page);
             });
         });
     }
@@ -634,6 +643,35 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.addEventListener('click', toggleSidebar);
     }
     
+    // Add click handlers for dropdown toggles
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = this.parentElement;
+            const menu = dropdown.querySelector('.dropdown-menu');
+            
+            // Close other dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                if (m !== menu) m.style.display = '';
+            });
+            
+            // Toggle this dropdown
+            if (menu.style.display === 'block') {
+                menu.style.display = '';
+            } else {
+                menu.style.display = 'block';
+            }
+        });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown-menu').forEach(m => {
+            m.style.display = '';
+        });
+    });
+    
     // Add click handlers for dropdown items
     const dropdownItems = document.querySelectorAll('.dropdown-item');
     dropdownItems.forEach(item => {
@@ -641,6 +679,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const page = this.getAttribute('data-page');
             if (page && window.app) {
                 window.app.navigateTo(page);
+                // Close any open dropdowns
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = '');
             }
         });
     });
