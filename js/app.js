@@ -270,6 +270,12 @@ class App {
                 case 'learn':
                     if (window.authSystem) window.authSystem.markComplete('learn');
                     break;
+                case 'blog':
+                    this.initBlogFilters();
+                    break;
+                case 'blog':
+                    this.initBlogFilters();
+                    break;
                 case 'ledlighting':
                     if (window.ledLightingSimulator) {
                         window.ledLightingSimulator.ensureInitialized();
@@ -352,6 +358,30 @@ class App {
             tab.addEventListener('click', () => {
                 const content = tab.dataset.theory;
                 this.switchTheoryTab('ind-theory', content);
+            });
+        });
+    }
+    
+    initBlogFilters() {
+        const filters = document.querySelectorAll('.blog-filter');
+        const cards = document.querySelectorAll('.blog-card');
+        
+        filters.forEach(filter => {
+            filter.addEventListener('click', () => {
+                // Update active filter
+                filters.forEach(f => f.classList.remove('active'));
+                filter.classList.add('active');
+                
+                const category = filter.dataset.category;
+                
+                // Filter cards
+                cards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
             });
         });
     }

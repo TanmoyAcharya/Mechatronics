@@ -207,6 +207,7 @@
                     <div class="dropdown-menu">
                         <button class="dropdown-item" data-page="construction">🏗️ Construction</button>
                         <button class="dropdown-item" data-page="learn">📚 Learn & Quiz</button>
+                        <button class="dropdown-item" data-page="blog">📰 Tech Blog</button>
                     </div>
                 </div>
                 <button class="nav-btn" data-page="about">
@@ -1507,6 +1508,105 @@
                         <div class="reading"><span class="reading-label">Efficiency:</span><span class="reading-value" id="v2g-efficiency-reading">--</span></div>
                         <div class="reading"><span class="reading-label">Power Loss:</span><span class="reading-value" id="v2g-loss-reading">0 kW</span></div>
                         <div class="reading"><span class="reading-label">Battery Health:</span><span class="reading-value" id="v2g-health-reading">95%</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Page -->
+        <section id="blog-page" class="page">
+            <div class="page-header">
+                <h1>📰 Tech Blog</h1>
+                <p>Latest Trends in Electrical Machines & Mechatronics</p>
+            </div>
+            
+            <div class="blog-container">
+                <div class="blog-filters">
+                    <button class="blog-filter active" data-category="all">All</button>
+                    <button class="blog-filter" data-category="evtol">🚁 eVTOL</button>
+                    <button class="blog-filter" data-category="renewable">☀️ Renewable</button>
+                    <button class="blog-filter" data-category="power">⚡ Power Electronics</button>
+                    <button class="blog-filter" data-category="motors">🔌 Motors</button>
+                </div>
+                
+                <div class="blog-grid" id="blog-grid">
+                    <!-- Blog posts will be loaded dynamically -->
+                    <div class="blog-card" data-category="evtol">
+                        <div class="blog-image">🚁</div>
+                        <div class="blog-content">
+                            <span class="blog-category">eVTOL</span>
+                            <h3>Future of Urban Air Mobility</h3>
+                            <p>Electric vertical takeoff and landing aircraft are revolutionizing transportation in cities worldwide.</p>
+                            <div class="blog-meta">
+                                <span>📅 Feb 2026</span>
+                                <span>👤 Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="blog-card" data-category="renewable">
+                        <div class="blog-image">☀️</div>
+                        <div class="blog-content">
+                            <span class="blog-category">Renewable Energy</span>
+                            <h3>Next-Gen Solar Panel Efficiency</h3>
+                            <p>New perovskite solar cells достигают efficiency levels exceeding 30% in lab conditions.</p>
+                            <div class="blog-meta">
+                                <span>📅 Feb 2026</span>
+                                <span>👤 Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="blog-card" data-category="power">
+                        <div class="blog-image">⚡</div>
+                        <div class="blog-content">
+                            <span class="blog-category">Power Electronics</span>
+                            <h3>Widebandgap Semiconductors</h3>
+                            <p>SiC and GaN technologies are enabling more efficient power conversion systems.</p>
+                            <div class="blog-meta">
+                                <span>📅 Jan 2026</span>
+                                <span>👤 Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="blog-card" data-category="motors">
+                        <div class="blog-image">🔌</div>
+                        <div class="blog-content">
+                            <span class="blog-category">Electric Motors</span>
+                            <h3>Advances in PMSM Technology</h3>
+                            <p>New magnetic materials are improving torque density in permanent magnet synchronous motors.</p>
+                            <div class="blog-meta">
+                                <span>📅 Jan 2026</span>
+                                <span>👤 Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="blog-card" data-category="evtol">
+                        <div class="blog-image">🛩️</div>
+                        <div class="blog-content">
+                            <span class="blog-category">eVTOL</span>
+                            <h3>Battery Technologies for Aviation</h3>
+                            <p>Solid-state batteries promise to double eVTOL range by 2028.</p>
+                            <div class="blog-meta">
+                                <span>📅 Dec 2025</span>
+                                <span>👤 Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="blog-card" data-category="renewable">
+                        <div class="blog-image">💨</div>
+                        <div class="blog-content">
+                            <span class="blog-category">Renewable Energy</span>
+                            <h3>Floating Wind Turbines</h3>
+                            <p>Deep-sea floating wind farms are opening new frontiers for wind energy.</p>
+                            <div class="blog-meta">
+                                <span>📅 Dec 2025</span>
+                                <span>👤 Admin</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
