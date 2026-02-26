@@ -304,52 +304,94 @@ class EVTOLSimulator {
     }
     
     calculate() {
+        // Calculate air density based on temperature and altitude (ISA model)
+        const altitudeFactor = Math.exp(-this.altitude / 8500); // Scale height approximation
+        this.airDensity = 1.225 * (288.15 / (273.15 + this.temperature)) * altitudeFactor;
+        
+        // Temperature effects on battery performance
+        const tempFactor = this.temperature < 0 ? 0.7 : (this.temperature > 40 ? 0.8 : 1.0);
+        const effectiveBatteryCapacity = this.batteryCapacity * (this.batteryHealth / 100) * tempFactor;
+        
         // Calculate power based on flight mode
         if (this.isCharging) {
-            this.currentPower = this.maxChargePower;
+            this.currentPower = this.maxChargePower * tempFactor;
             // Simulate charging
-            this.batterySOC = Math.min(100, this.batterySOC + 0.5);
+            this.batterySOC = Math.min(100, this.batterySOC + 0.5 * tempFactor);
         } else if (this.motorsRunning) {
+            // Thrust required for hover (equal to weight)
+            const mass = 2000; // kg
+            const weight = mass * this.gravity; // N
+            const airDensityRatio = this.airDensity / 1.225;
+            
+            // Motor efficiency varies with power level
+            const motorEfficiency = 0.92; // Typical brushless motor efficiency
+            
             switch(this.flightMode) {
                 case 'takeoff':
-                    // High power for takeoff
-                    this.currentPower = this.hoverPower * 1.5;
-                    this.altitude = Math.min(this.targetAltitude, this.altitude + 2);
-                    this.speed = Math.min(this.targetSpeed * 0.3, this.speed + 3);
+                    // High power for takeoff - requires extra thrust for acceleration
+                    const takeoffThrust = weight * 1.3; // 30% extra for climb
+                    const powerRequired = (takeoffThrust * 10) / (motorEfficiency * 1000); // kW
+                    this.currentPower = Math.min(this.hoverPower * 1.5, powerRequired);
+                    
+                    // Air density affects climb rate
+                    const climbRate = 5 * airDensityRatio; // m/s
+                    this.altitude = Math.min(this.targetAltitude, this.altitude + climbRate * 0.5);
+                    
+                    // Speed increases during climb
+                    this.speed = Math.min(this.targetSpeed * 0.3, this.speed + 3 * airDensityRatio);
+                    
                     if (this.altitude >= this.targetAltitude * 0.8) {
                         this.flightMode = 'hover';
                     }
                     break;
                     
                 case 'hover':
-                    this.currentPower = this.hoverPower;
-                    this.altitude = Math.min(this.maxAltitude, this.altitude + 0.5);
+                    // Hover power depends on air density
+                    this.currentPower = this.hoverPower * (1 / airDensityRatio) * 0.8;
+                    
+                    // Slower climb in hover
+                    this.altitude = Math.min(this.maxAltitude, this.altitude + 0.5 * airDensityRatio);
                     this.speed = Math.min(this.targetSpeed * 0.5, this.speed + 1);
                     break;
                     
                 case 'cruise':
-                    // Optimized power for cruise
-                    const speedFactor = this.speed / this.maxSpeed;
-                    this.currentPower = this.cruisePower * (0.5 + speedFactor * 0.5);
-                    // Wind effect
-                    this.speed = Math.max(0, this.speed - this.windSpeed * 0.01);
-                    this.speed = Math.min(this.targetSpeed, this.speed + 1);
+                    // Drag calculation: D = 0.5 * rho * V^2 * Cd * A
+                    const velocity = this.speed / 3.6; // m/s
+                    const dragArea = 8; // m² frontal area
+                    const dragCoeff = 0.25;
+                    const drag = 0.5 * this.airDensity * velocity * velocity * dragCoeff * dragArea;
+                    
+                    // Power to overcome drag
+                    const dragPower = (drag * velocity) / (motorEfficiency * 1000); // kW
+                    
+                    // Induced power for lift
+                    const liftPower = (weight * velocity) / (motorEfficiency * 1000 * 15); // efficiency factor
+                    
+                    // Total cruise power
+                    this.currentPower = Math.min(this.cruisePower * 1.5, dragPower + liftPower);
+                    
+                    // Wind effect - more realistic
+                    const headwind = this.windSpeed * Math.cos(this.windDirection * Math.PI / 180);
+                    this.speed = Math.max(0, this.speed - Math.abs(headwind) * 0.05);
+                    this.speed = Math.min(this.targetSpeed, this.speed + 0.5 * airDensityRatio);
                     break;
                     
                 case 'descend':
-                    // Lower power during descent
-                    this.currentPower = this.cruisePower * 0.3;
-                    this.altitude = Math.max(0, this.altitude - 1.5);
-                    this.speed = Math.max(0, this.speed - 2);
+                    // Lower power during descent - can glide
+                    const descentRate = 3 * airDensityRatio;
+                    this.currentPower = this.cruisePower * 0.2; // Minimal power for controlled descent
+                    this.altitude = Math.max(0, this.altitude - descentRate);
+                    this.speed = Math.max(0, this.speed - 1);
                     if (this.altitude < 50) {
                         this.flightMode = 'landing';
                     }
                     break;
                     
                 case 'landing':
-                    this.currentPower = this.hoverPower * 0.5;
+                    // Need power for soft landing
+                    this.currentPower = this.hoverPower * 0.4 * (1 / airDensityRatio);
                     this.altitude = Math.max(0, this.altitude - 2);
-                    this.speed = Math.max(0, this.speed - 3);
+                    this.speed = Math.max(0, this.speed - 2);
                     if (this.altitude <= 0) {
                         this.flightMode = 'ground';
                         this.motorsRunning = false;
@@ -360,14 +402,20 @@ class EVTOLSimulator {
                     this.currentPower = 0;
             }
             
-            // Calculate energy consumption
+            // Calculate energy consumption with proper time step
             if (this.currentPower > 0) {
-                this.energyConsumed += this.currentPower * 0.001; // kWh per tick
-                this.flightTime += 0.1;
+                const timeStep = 0.1; // seconds (10 Hz update)
+                this.energyConsumed += this.currentPower * (timeStep / 3600); // kWh
+                this.flightTime += timeStep;
                 
-                // Update SOC based on consumption
-                const dischargeRate = this.energyConsumed / this.batteryCapacity * 100;
-                this.batterySOC = Math.max(0, this.batterySOC - dischargeRate * 0.001);
+                // Update SOC based on actual consumption
+                const energyUsedKwh = this.currentPower * (timeStep / 3600);
+                this.batterySOC = Math.max(0, this.batterySOC - (energyUsedKwh / effectiveBatteryCapacity * 100));
+                
+                // Low battery warning
+                if (this.batterySOC < 20) {
+                    this.batterySOC = Math.max(0, this.batterySOC - 0.01); // Faster drain at low SOC
+                }
             }
         } else {
             this.currentPower = 0;
@@ -1116,4 +1164,611 @@ class EVTOLSimulator {
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     window.evtolSimulator = new EVTOLSimulator();
+});
+
+// ================================================
+// 3D eVTOL Simulator using Three.js
+// Realistic flight physics and 3D visualization
+// ================================================
+
+class EVTOLSimulator3D {
+    constructor() {
+        this.container = null;
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
+        this.controls = null;
+        this.isRunning = false;
+        
+        // Flight parameters (synced with 2D simulator)
+        this.evtolType = 'multirotor';
+        this.altitude = 0;
+        this.speed = 0;
+        this.targetAltitude = 500;
+        this.targetSpeed = 150;
+        this.flightMode = 'ground';
+        this.motorsRunning = false;
+        
+        // Physics constants
+        this.gravity = 9.81; // m/s²
+        this.airDensity = 1.225; // kg/m³
+        this.wingArea = 10; // m²
+        this.mass = 2000; // kg (typical eVTOL)
+        this.thrustPerMotor = 5000; // N
+        this.dragCoefficient = 0.3;
+        
+        // Three.js objects
+        this.evtol = null;
+        this.rotors = [];
+        this.environment = null;
+        this.particles = [];
+        
+        this.init();
+    }
+    
+    init() {
+        this.container = document.getElementById('evtol-canvas-3d');
+        if (!this.container) {
+            this.create3DContainer();
+            return;
+        }
+        
+        this.setupScene();
+        this.setupEnvironment();
+        this.createEVTOL();
+        this.setupControls();
+        this.start();
+    }
+    
+    create3DContainer() {
+        const canvasContainer = document.querySelector('#evtol-simulation .simulation-view');
+        if (!canvasContainer || !document.getElementById('evtol-canvas')) return;
+        
+        // Create 3D container
+        const canvas3d = document.createElement('div');
+        canvas3d.id = 'evtol-canvas-3d-container';
+        canvas3d.style.cssText = 'display:none; width:100%; height:450px; position:relative;';
+        
+        const canvas3dInner = document.createElement('div');
+        canvas3dInner.id = 'evtol-canvas-3d';
+        canvas3dInner.style.cssText = 'width:100%; height:100%;';
+        
+        canvas3d.appendChild(canvas3dInner);
+        canvasContainer.appendChild(canvas3d);
+        
+        // Add toggle button
+        const controlsPanel = document.querySelector('.evtol-controls');
+        if (controlsPanel) {
+            const toggleBtn = document.createElement('button');
+            toggleBtn.id = 'evtol-3d-toggle';
+            toggleBtn.className = 'btn btn-secondary';
+            toggleBtn.textContent = 'Switch to 3D View';
+            toggleBtn.style.marginTop = '10px';
+            toggleBtn.onclick = () => this.toggle3DView();
+            controlsPanel.appendChild(toggleBtn);
+        }
+        
+        this.container = canvas3dInner;
+        this.init();
+    }
+    
+    toggle3DView() {
+        const canvas2d = document.getElementById('evtol-canvas');
+        const canvas3dContainer = document.getElementById('evtol-canvas-3d-container');
+        const toggleBtn = document.getElementById('evtol-3d-toggle');
+        
+        if (canvas2d && canvas3dContainer) {
+            if (canvas3dContainer.style.display === 'none') {
+                canvas2d.style.display = 'none';
+                canvas3dContainer.style.display = 'block';
+                toggleBtn.textContent = 'Switch to 2D View';
+                this.init();
+            } else {
+                canvas3dContainer.style.display = 'none';
+                canvas2d.style.display = 'block';
+                toggleBtn.textContent = 'Switch to 3D View';
+                this.stop();
+            }
+        }
+    }
+    
+    setupScene() {
+        // Scene
+        this.scene = new THREE.Scene();
+        this.scene.fog = new THREE.Fog(0x87ceeb, 100, 2000);
+        
+        // Camera
+        const aspect = this.container.clientWidth / this.container.clientHeight;
+        this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 5000);
+        this.camera.position.set(-30, 20, 30);
+        this.camera.lookAt(0, 10, 0);
+        
+        // Renderer
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.container.appendChild(this.renderer.domElement);
+        
+        // Orbit Controls
+        if (typeof THREE.OrbitControls !== 'undefined') {
+            this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+            this.controls.enableDamping = true;
+            this.controls.dampingFactor = 0.05;
+            this.controls.minDistance = 10;
+            this.controls.maxDistance = 200;
+            this.controls.target.set(0, 10, 0);
+        }
+        
+        // Sky gradient
+        const skyGeo = new THREE.SphereGeometry(2000, 32, 32);
+        const skyMat = new THREE.ShaderMaterial({
+            uniforms: {
+                topColor: { value: new THREE.Color(0x0077ff) },
+                bottomColor: { value: new THREE.Color(0xffffff) },
+                offset: { value: 400 },
+                exponent: { value: 0.6 }
+            },
+            vertexShader: `
+                varying vec3 vWorldPosition;
+                void main() {
+                    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                    vWorldPosition = worldPosition.xyz;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 topColor;
+                uniform vec3 bottomColor;
+                uniform float offset;
+                uniform float exponent;
+                varying vec3 vWorldPosition;
+                void main() {
+                    float h = normalize(vWorldPosition + offset).y;
+                    gl_FragColor = vec4(mix(bottomColor, topColor, max(pow(max(h, 0.0), exponent), 0.0)), 1.0);
+                }
+            `,
+            side: THREE.BackSide
+        });
+        const sky = new THREE.Mesh(skyGeo, skyMat);
+        this.scene.add(sky);
+        
+        // Lighting
+        const ambient = new THREE.AmbientLight(0x404040, 0.5);
+        this.scene.add(ambient);
+        
+        const sun = new THREE.DirectionalLight(0xffffff, 1);
+        sun.position.set(100, 200, 50);
+        sun.castShadow = true;
+        sun.shadow.mapSize.width = 2048;
+        sun.shadow.mapSize.height = 2048;
+        sun.shadow.camera.near = 0.5;
+        sun.shadow.camera.far = 500;
+        sun.shadow.camera.left = -100;
+        sun.shadow.camera.right = 100;
+        sun.shadow.camera.top = 100;
+        sun.shadow.camera.bottom = -100;
+        this.scene.add(sun);
+        
+        window.addEventListener('resize', () => this.onResize());
+    }
+    
+    setupEnvironment() {
+        // Ground plane
+        const groundGeo = new THREE.PlaneGeometry(2000, 2000);
+        const groundMat = new THREE.MeshStandardMaterial({
+            color: 0x2d5a27,
+            roughness: 0.9
+        });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        this.scene.add(ground);
+        
+        // Add some buildings for reference
+        const buildingMat = new THREE.MeshStandardMaterial({ color: 0x808080, roughness: 0.7 });
+        
+        const buildings = [
+            { x: 50, z: 30, w: 20, h: 80, d: 20 },
+            { x: -40, z: 60, w: 30, h: 120, d: 25 },
+            { x: 80, z: -50, w: 25, h: 60, d: 25 },
+            { x: -60, z: -40, w: 35, h: 100, d: 30 },
+            { x: 20, z: -80, w: 20, h: 40, d: 20 }
+        ];
+        
+        buildings.forEach(b => {
+            const geo = new THREE.BoxGeometry(b.w, b.h, b.d);
+            const building = new THREE.Mesh(geo, buildingMat);
+            building.position.set(b.x, b.h / 2, b.z);
+            building.castShadow = true;
+            building.receiveShadow = true;
+            this.scene.add(building);
+        });
+        
+        // Runway
+        const runwayGeo = new THREE.PlaneGeometry(300, 30);
+        const runwayMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 });
+        const runway = new THREE.Mesh(runwayGeo, runwayMat);
+        runway.rotation.x = -Math.PI / 2;
+        runway.position.y = 0.01;
+        runway.receiveShadow = true;
+        this.scene.add(runway);
+        
+        // Runway markings
+        const markingGeo = new THREE.PlaneGeometry(5, 2);
+        const markingMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        for (let i = -120; i < 120; i += 20) {
+            const marking = new THREE.Mesh(markingGeo, markingMat);
+            marking.rotation.x = -Math.PI / 2;
+            marking.position.set(i, 0.02, 0);
+            this.scene.add(marking);
+        }
+    }
+    
+    createEVTOL() {
+        this.evtol = new THREE.Group();
+        
+        // Fuselage
+        const fuselageGeo = new THREE.CapsuleGeometry(1.5, 6, 8, 16);
+        const fuselageMat = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            roughness: 0.3,
+            metalness: 0.7
+        });
+        const fuselage = new THREE.Mesh(fuselageGeo, fuselageMat);
+        fuselage.rotation.z = Math.PI / 2;
+        fuselage.castShadow = true;
+        this.evtol.add(fuselage);
+        
+        // Cockpit
+        const cockpitGeo = new THREE.SphereGeometry(1.3, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+        const cockpitMat = new THREE.MeshStandardMaterial({
+            color: 0x88ccff,
+            roughness: 0.1,
+            metalness: 0.9,
+            transparent: true,
+            opacity: 0.7
+        });
+        const cockpit = new THREE.Mesh(cockpitGeo, cockpitMat);
+        cockpit.position.set(2, 0.5, 0);
+        cockpit.rotation.z = -Math.PI / 2;
+        this.evtol.add(cockpit);
+        
+        // Wings
+        const wingGeo = new THREE.BoxGeometry(2, 0.3, 12);
+        const wingMat = new THREE.MeshStandardMaterial({
+            color: 0xeeeeee,
+            roughness: 0.4,
+            metalness: 0.5
+        });
+        const wing = new THREE.Mesh(wingGeo, wingMat);
+        wing.position.set(0, 0, 0);
+        wing.castShadow = true;
+        this.evtol.add(wing);
+        
+        // Tail
+        const tailGeo = new THREE.BoxGeometry(1.5, 0.2, 4);
+        const tail = new THREE.Mesh(tailGeo, wingMat);
+        tail.position.set(-3, 0.5, 0);
+        tail.castShadow = true;
+        this.evtol.add(tail);
+        
+        const vTailGeo = new THREE.BoxGeometry(1, 2, 0.2);
+        const vTail1 = new THREE.Mesh(vTailGeo, wingMat);
+        vTail1.position.set(-3.5, 1.5, 1);
+        vTail1.rotation.x = Math.PI / 6;
+        vTail1.castShadow = true;
+        this.evtol.add(vTail1);
+        
+        const vTail2 = new THREE.Mesh(vTailGeo, wingMat);
+        vTail2.position.set(-3.5, 1.5, -1);
+        vTail2.rotation.x = -Math.PI / 6;
+        vTail2.castShadow = true;
+        this.evtol.add(vTail2);
+        
+        // Create rotors based on type
+        this.createRotors();
+        
+        // Position the eVTOL
+        this.evtol.position.set(0, 0.5, 0);
+        this.scene.add(this.evtol);
+    }
+    
+    createRotors() {
+        // Clear existing rotors
+        this.rotors.forEach(r => this.evtol.remove(r));
+        this.rotors = [];
+        
+        const rotorPositions = this.getRotorPositions();
+        const rotorMat = new THREE.MeshStandardMaterial({
+            color: 0x333333,
+            roughness: 0.5,
+            metalness: 0.8
+        });
+        
+        rotorPositions.forEach(pos => {
+            // Motor housing
+            const motorGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.4, 16);
+            const motor = new THREE.Mesh(motorGeo, rotorMat);
+            motor.position.set(pos.x, pos.y, pos.z);
+            motor.castShadow = true;
+            this.evtol.add(motor);
+            
+            // Rotor disc (simplified blade representation)
+            const discGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.05, 32);
+            const discMat = new THREE.MeshStandardMaterial({
+                color: 0x222222,
+                transparent: true,
+                opacity: 0.6
+            });
+            const disc = new THREE.Mesh(discGeo, discMat);
+            disc.position.set(pos.x, pos.y + 0.25, pos.z);
+            this.evtol.add(disc);
+            this.rotors.push(disc);
+            
+            // Blade visualization
+            const bladeGeo = new THREE.BoxGeometry(0.1, 0.02, 2.2);
+            const bladeMat = new THREE.MeshStandardMaterial({ color: 0x444444 });
+            
+            for (let i = 0; i < 4; i++) {
+                const blade = new THREE.Mesh(bladeGeo, bladeMat);
+                blade.position.set(pos.x, pos.y + 0.25, pos.z);
+                blade.rotation.y = (i * Math.PI) / 2;
+                blade.castShadow = true;
+                this.evtol.add(blade);
+            }
+        });
+    }
+    
+    getRotorPositions() {
+        switch(this.evtolType) {
+            case 'multirotor':
+                return [
+                    { x: 3, y: 0.5, z: 3 },
+                    { x: 3, y: 0.5, z: -3 },
+                    { x: -2, y: 0.5, z: 3 },
+                    { x: -2, y: 0.5, z: -3 },
+                    { x: 0.5, y: 0.5, z: 4 },
+                    { x: 0.5, y: 0.5, z: -4 }
+                ];
+            case 'vectored':
+                return [
+                    { x: 3, y: 0, z: 2 },
+                    { x: 3, y: 0, z: -2 },
+                    { x: -2, y: 0, z: 2 },
+                    { x: -2, y: 0, z: -2 }
+                ];
+            case 'lift+cruise':
+                return [
+                    { x: 3, y: 0.5, z: 2 },
+                    { x: 3, y: 0.5, z: -2 },
+                    { x: -1, y: 0.5, z: 0 }
+                ];
+            default:
+                return [{ x: 3, y: 0.5, z: 0 }];
+        }
+    }
+    
+    setupControls() {
+        // Listen for 2D simulator events
+        document.addEventListener('evtolUpdate', (e) => {
+            this.updateFromSimulator(e.detail);
+        });
+    }
+    
+    updateFromSimulator(params) {
+        if (params.type !== undefined) {
+            this.evtolType = params.type;
+            this.createRotors();
+        }
+        if (params.altitude !== undefined) this.altitude = params.altitude;
+        if (params.speed !== undefined) this.speed = params.speed;
+        if (params.flightMode !== undefined) this.flightMode = params.flightMode;
+        if (params.motorsRunning !== undefined) this.motorsRunning = params.motorsRunning;
+    }
+    
+    // Realistic physics calculations
+    calculatePhysics(dt) {
+        if (!this.motorsRunning) return;
+        
+        const numRotors = this.getRotorPositions().length;
+        const totalThrust = numRotors * this.thrustPerMotor;
+        
+        // Forces
+        const weight = this.mass * this.gravity;
+        const thrust = totalThrust;
+        const lift = this.calculateLift();
+        const drag = this.calculateDrag();
+        
+        // Vertical acceleration
+        let verticalAccel = 0;
+        
+        switch(this.flightMode) {
+            case 'takeoff':
+                verticalAccel = (thrust - weight) / this.mass;
+                verticalAccel = Math.max(0, verticalAccel);
+                break;
+            case 'hover':
+                verticalAccel = 0;
+                break;
+            case 'cruise':
+                // Forward acceleration
+                const forwardAccel = (thrust * 0.3 - drag) / this.mass;
+                this.speed = Math.min(this.maxSpeed, this.speed + forwardAccel * dt);
+                verticalAccel = (lift + thrust * 0.7 - weight) / this.mass;
+                break;
+            case 'descend':
+                verticalAccel = -2; // Controlled descent
+                break;
+            case 'landing':
+                verticalAccel = -3;
+                break;
+        }
+        
+        // Update altitude
+        this.altitude = Math.max(0, this.altitude + verticalAccel * dt);
+        
+        // Update eVTOL position
+        this.evtol.position.y = this.altitude + 0.5;
+        
+        // Tilt based on movement
+        const tiltAngle = this.speed * 0.005;
+        this.evtol.rotation.x = Math.sin(tiltAngle);
+    }
+    
+    calculateLift() {
+        // L = 0.5 * ρ * v² * S * CL
+        const v = this.speed / 3.6; // Convert km/h to m/s
+        return 0.5 * this.airDensity * v * v * this.wingArea * 1.0;
+    }
+    
+    calculateDrag() {
+        // D = 0.5 * ρ * v² * S * CD
+        const v = this.speed / 3.6;
+        return 0.5 * this.airDensity * v * v * this.wingArea * this.dragCoefficient;
+    }
+    
+    updateRotors(dt) {
+        if (!this.motorsRunning) return;
+        
+        // Rotor rotation speed based on power
+        let rotorSpeed = 0;
+        switch(this.flightMode) {
+            case 'takeoff':
+                rotorSpeed = 50;
+                break;
+            case 'hover':
+                rotorSpeed = 30;
+                break;
+            case 'cruise':
+                rotorSpeed = 40;
+                break;
+            case 'descend':
+            case 'landing':
+                rotorSpeed = 20;
+                break;
+            default:
+                rotorSpeed = 0;
+        }
+        
+        this.rotors.forEach(rotor => {
+            rotor.rotation.y += rotorSpeed * dt;
+        });
+    }
+    
+    createParticle(x, y, z) {
+        const geo = new THREE.SphereGeometry(0.1, 4, 4);
+        const mat = new THREE.MeshBasicMaterial({
+            color: 0xaaaaaa,
+            transparent: true,
+            opacity: 0.5
+        });
+        const particle = new THREE.Mesh(geo, mat);
+        particle.position.set(x, y, z);
+        particle.velocity = new THREE.Vector3(
+            (Math.random() - 0.5) * 2,
+            -Math.random() * 3 - 1,
+            (Math.random() - 0.5) * 2
+        );
+        particle.life = 1;
+        
+        this.scene.add(particle);
+        this.particles.push(particle);
+    }
+    
+    updateParticles(dt) {
+        if (!this.motorsRunning || this.flightMode !== 'ground') return;
+        
+        // Create new particles
+        if (Math.random() < 0.3) {
+            const pos = this.evtol.position;
+            this.createParticle(
+                pos.x + (Math.random() - 0.5) * 4,
+                pos.y - 0.5,
+                pos.z + (Math.random() - 0.5) * 4
+            );
+        }
+        
+        // Update existing particles
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+            const p = this.particles[i];
+            p.position.add(p.velocity.clone().multiplyScalar(dt));
+            p.life -= dt * 0.5;
+            p.material.opacity = p.life * 0.5;
+            
+            if (p.life <= 0) {
+                this.scene.remove(p);
+                this.particles.splice(i, 1);
+            }
+        }
+    }
+    
+    onResize() {
+        if (!this.container || !this.camera || !this.renderer) return;
+        
+        const width = this.container.clientWidth;
+        const height = this.container.clientHeight;
+        
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(width, height);
+    }
+    
+    start() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+        this.lastTime = performance.now();
+        this.animate();
+    }
+    
+    stop() {
+        this.isRunning = false;
+    }
+    
+    animate() {
+        if (!this.isRunning) return;
+        
+        const now = performance.now();
+        const dt = (now - this.lastTime) / 1000;
+        this.lastTime = now;
+        
+        // Update physics
+        this.calculatePhysics(dt);
+        
+        // Update rotors
+        this.updateRotors(dt);
+        
+        // Update particles
+        this.updateParticles(dt);
+        
+        // Update controls
+        if (this.controls) this.controls.update();
+        
+        // Render
+        this.renderer.render(this.scene, this.camera);
+        
+        requestAnimationFrame(() => this.animate());
+    }
+    
+    // Sync with 2D simulator
+    syncWithSimulator(simulator) {
+        this.evtolType = simulator.evtolType;
+        this.altitude = simulator.altitude;
+        this.speed = simulator.speed;
+        this.flightMode = simulator.flightMode;
+        this.motorsRunning = simulator.motorsRunning;
+        this.targetAltitude = simulator.targetAltitude;
+        this.targetSpeed = simulator.targetSpeed;
+    }
+}
+
+// Auto-initialize
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (typeof THREE !== 'undefined') {
+            window.evtolSimulator3D = new EVTOLSimulator3D();
+        }
+    }, 1000);
 });

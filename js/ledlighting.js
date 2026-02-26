@@ -16,6 +16,14 @@ class LEDLightingSimulator {
         this.ledCCT = 4000; // Kelvin (Correlated Color Temperature)
         this.ledCRI = 80; // Color Rendering Index
         
+        // Thermal Parameters
+        this.ledTemperature = 25; // LED junction temperature (°C)
+        this.ambientTemperature = 25; // Room ambient temperature (°C)
+        this.thermalResistance = 10; // °C/W - heat sink thermal resistance
+        this.heatsinkTemp = 35; // Heatsink temperature
+        this.maxJunctionTemp = 120; // Maximum LED junction temperature
+        this.temperatureUpdateRate = 0.1; // Thermal time constant factor
+        
         // Room Parameters
         this.roomLength = 5; // meters
         this.roomWidth = 4; // meters
@@ -112,6 +120,17 @@ class LEDLightingSimulator {
             criSlider.addEventListener('input', (e) => {
                 this.ledCRI = parseInt(e.target.value);
                 criValue.textContent = this.ledCRI;
+                this.calculate();
+            });
+        }
+        
+        // Ambient temperature slider
+        const ambientTempSlider = document.getElementById('led-ambient-temp-slider');
+        const ambientTempValue = document.getElementById('led-ambient-temp-value');
+        if (ambientTempSlider && ambientTempValue) {
+            ambientTempSlider.addEventListener('input', (e) => {
+                this.ambientTemperature = parseInt(e.target.value);
+                ambientTempValue.textContent = this.ambientTemperature + ' °C';
                 this.calculate();
             });
         }
@@ -236,8 +255,23 @@ class LEDLightingSimulator {
     }
     
     calculate() {
+        // Thermal calculation - heat generated and temperature rise
+        const powerLoss = this.ledPower * (1 - this.ledEfficacy / 200); // Approximate power converted to heat
+        const tempRise = powerLoss * this.thermalResistance;
+        
+        // Thermal time constant - gradual temperature change
+        this.heatsinkTemp += (this.ambientTemperature + tempRise - this.heatsinkTemp) * this.temperatureUpdateRate;
+        this.ledTemperature = this.heatsinkTemp + tempRise;
+        
+        // Temperature affects LED efficacy (thermal degradation)
+        const tempFactor = Math.max(0.7, 1 - (Math.max(0, this.ledTemperature - 25) / 150));
+        const effectiveEfficacy = this.ledEfficacy * tempFactor;
+        
+        // Temperature affects lifetime
+        const lifetimeFactor = Math.max(0.5, 1 - (Math.max(0, this.ledTemperature - 25) / 200));
+        
         // Calculate total luminous flux
-        const totalLumens = this.ledPower * this.ledEfficacy;
+        const totalLumens = this.ledPower * effectiveEfficacy;
         
         // Calculate area
         const floorArea = this.roomLength * this.roomWidth;
@@ -248,18 +282,24 @@ class LEDLightingSimulator {
         const maintenanceFactor = 0.8;
         const avgLux = (totalLumens * utilizationFactor * maintenanceFactor) / floorArea;
         
+        // Room temperature increase due to LED heat
+        const roomTempIncrease = (powerLoss * this.ledPositions.length) / (this.roomLength * this.roomWidth * this.roomHeight * 0.5);
+        const roomTemperature = this.ambientTemperature + roomTempIncrease;
+        
         // Update readings display
         const lumensReading = document.getElementById('led-lumens-reading');
         const luxReading = document.getElementById('led-lux-reading');
         const efficacyReading = document.getElementById('led-efficacy-reading');
         const cctReading = document.getElementById('led-cct-reading');
         const criReading = document.getElementById('led-cri-reading');
+        const tempReading = document.getElementById('led-temp-reading');
         
         if (lumensReading) lumensReading.textContent = totalLumens.toFixed(0) + ' lm';
         if (luxReading) luxReading.textContent = avgLux.toFixed(1) + ' lux';
-        if (efficacyReading) efficacyReading.textContent = this.ledEfficacy + ' lm/W';
+        if (efficacyReading) efficacyReading.textContent = effectiveEfficacy.toFixed(0) + ' lm/W';
         if (cctReading) cctReading.textContent = this.ledCCT + ' K';
         if (criReading) criReading.textContent = this.ledCRI;
+        if (tempReading) tempReading.textContent = this.ledTemperature.toFixed(0) + ' °C';
         
         // Calculate for horticulture mode
         if (this.appMode === 'horticulture') {
@@ -548,3 +588,459 @@ class LEDLightingSimulator {
 
 // Initialize
 window.LEDLightingSimulator = LEDLightingSimulator;
+
+// ================================================
+// 3D LED Lighting Simulator using Three.js
+// Realistic photometrics with inverse square law
+// ================================================
+
+class LEDLightingSimulator3D {
+    constructor() {
+        this.container = null;
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
+        this.controls = null;
+        this.isRunning = false;
+        this.animationId = null;
+        
+        // LED Parameters
+        this.ledPower = 10; // Watts
+        this.ledEfficacy = 120; // lumens per watt
+        this.ledCCT = 4000; // Kelvin
+        this.ledCRI = 80;
+        
+        // Room Parameters (in meters)
+        this.roomLength = 5;
+        this.roomWidth = 4;
+        this.roomHeight = 3;
+        this.ceilingHeight = 2.5;
+        
+        // LED positions (normalized 0-1)
+        this.ledPositions = [
+            { x: 0.25, y: 0.25 },
+            { x: 0.75, y: 0.25 },
+            { x: 0.25, y: 0.75 },
+            { x: 0.75, y: 0.75 }
+        ];
+        
+        // Three.js objects
+        this.ledLights = [];
+        this.ledFixtures = [];
+        this.measurementPoints = [];
+        
+        // Application mode
+        this.appMode = 'general';
+        
+        this.init();
+    }
+    
+    init() {
+        this.container = document.getElementById('led-canvas-3d');
+        if (!this.container) {
+            // Create container if not exists
+            const canvasContainer = document.querySelector('.simulation-view');
+            if (canvasContainer && document.getElementById('led-canvas')) {
+                this.create3DContainer();
+            }
+            return;
+        }
+        
+        this.setupScene();
+        this.setupLights();
+        this.setupRoom();
+        this.setupControls();
+        this.start();
+    }
+    
+    create3DContainer() {
+        // Create a toggle button for 3D view
+        const canvasContainer = document.querySelector('.simulation-view');
+        if (!canvasContainer) return;
+        
+        // Add 3D canvas alongside 2D
+        const canvas3d = document.createElement('div');
+        canvas3d.id = 'led-canvas-3d-container';
+        canvas3d.style.cssText = 'display:none; width:100%; height:400px; position:relative;';
+        
+        const canvas3dInner = document.createElement('div');
+        canvas3dInner.id = 'led-canvas-3d';
+        canvas3dInner.style.cssText = 'width:100%; height:100%;';
+        
+        canvas3d.appendChild(canvas3dInner);
+        canvasContainer.appendChild(canvas3d);
+        
+        // Add toggle button
+        const controlsArea = document.getElementById('led-controls');
+        if (controlsArea) {
+            const toggleBtn = document.createElement('button');
+            toggleBtn.id = 'led-3d-toggle';
+            toggleBtn.className = 'btn btn-secondary';
+            toggleBtn.textContent = 'Switch to 3D View';
+            toggleBtn.style.marginTop = '10px';
+            toggleBtn.onclick = () => this.toggle3DView();
+            controlsArea.appendChild(toggleBtn);
+        }
+        
+        this.container = canvas3dInner;
+        this.init();
+    }
+    
+    toggle3DView() {
+        const canvas2d = document.getElementById('led-canvas');
+        const canvas3dContainer = document.getElementById('led-canvas-3d-container');
+        const toggleBtn = document.getElementById('led-3d-toggle');
+        
+        if (canvas2d && canvas3dContainer) {
+            if (canvas3dContainer.style.display === 'none') {
+                canvas2d.style.display = 'none';
+                canvas3dContainer.style.display = 'block';
+                toggleBtn.textContent = 'Switch to 2D View';
+                this.init();
+            } else {
+                canvas3dContainer.style.display = 'none';
+                canvas2d.style.display = 'block';
+                toggleBtn.textContent = 'Switch to 3D View';
+                this.stop();
+            }
+        }
+    }
+    
+    setupScene() {
+        // Scene
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0x0a0a12);
+        
+        // Camera
+        const aspect = this.container.clientWidth / this.container.clientHeight;
+        this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 100);
+        this.camera.position.set(4, 3, 6);
+        this.camera.lookAt(0, 1, 0);
+        
+        // Renderer
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1;
+        this.container.appendChild(this.renderer.domElement);
+        
+        // Orbit Controls
+        if (typeof THREE.OrbitControls !== 'undefined') {
+            this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+            this.controls.enableDamping = true;
+            this.controls.dampingFactor = 0.05;
+            this.controls.minDistance = 2;
+            this.controls.maxDistance = 15;
+            this.controls.target.set(0, 1, 0);
+        }
+        
+        // Ambient light (very dim)
+        const ambient = new THREE.AmbientLight(0x111122, 0.1);
+        this.scene.add(ambient);
+        
+        // Handle resize
+        window.addEventListener('resize', () => this.onResize());
+    }
+    
+    setupRoom() {
+        // Room dimensions
+        const length = this.roomLength;
+        const width = this.roomWidth;
+        const height = this.roomHeight;
+        
+        // Floor
+        const floorGeo = new THREE.PlaneGeometry(length, width);
+        const floorMat = new THREE.MeshStandardMaterial({ 
+            color: 0x404050,
+            roughness: 0.8,
+            metalness: 0.1
+        });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        this.scene.add(floor);
+        
+        // Floor grid
+        const gridHelper = new THREE.GridHelper(Math.max(length, width), 20, 0x00aaff, 0x222233);
+        gridHelper.position.y = 0.01;
+        this.scene.add(gridHelper);
+        
+        // Walls
+        const wallMat = new THREE.MeshStandardMaterial({ 
+            color: 0x505060,
+            roughness: 0.9,
+            metalness: 0.0,
+            side: THREE.DoubleSide
+        });
+        
+        // Back wall
+        const backWallGeo = new THREE.PlaneGeometry(length, height);
+        const backWall = new THREE.Mesh(backWallGeo, wallMat);
+        backWall.position.set(0, height/2, -width/2);
+        backWall.receiveShadow = true;
+        this.scene.add(backWall);
+        
+        // Left wall
+        const leftWallGeo = new THREE.PlaneGeometry(width, height);
+        const leftWall = new THREE.Mesh(leftWallGeo, wallMat);
+        leftWall.rotation.y = Math.PI / 2;
+        leftWall.position.set(-length/2, height/2, 0);
+        leftWall.receiveShadow = true;
+        this.scene.add(leftWall);
+        
+        // Ceiling
+        const ceilingGeo = new THREE.PlaneGeometry(length, width);
+        const ceilingMat = new THREE.MeshStandardMaterial({ 
+            color: 0x303040,
+            roughness: 0.9
+        });
+        const ceiling = new THREE.Mesh(ceilingGeo, ceilingMat);
+        ceiling.rotation.x = Math.PI / 2;
+        ceiling.position.y = height;
+        this.scene.add(ceiling);
+        
+        // Add measurement grid points on floor
+        this.setupMeasurementPoints();
+    }
+    
+    setupMeasurementPoints() {
+        // Create small spheres to show measurement points
+        const pointGeo = new THREE.SphereGeometry(0.03, 8, 8);
+        
+        for (let x = 0; x <= 4; x++) {
+            for (let z = 0; z <= 4; z++) {
+                const pointMat = new THREE.MeshBasicMaterial({ 
+                    color: 0x00ff00,
+                    transparent: true,
+                    opacity: 0.5
+                });
+                const point = new THREE.Mesh(pointGeo, pointMat);
+                
+                // Position in room coordinates
+                point.position.set(
+                    (x / 4 - 0.5) * this.roomLength,
+                    0.05,
+                    (z / 4 - 0.5) * this.roomWidth
+                );
+                
+                this.scene.add(point);
+                this.measurementPoints.push(point);
+            }
+        }
+    }
+    
+    setupLights() {
+        // Clear existing lights
+        this.ledLights.forEach(light => this.scene.remove(light));
+        this.ledFixtures.forEach(fixture => this.scene.remove(fixture));
+        this.ledLights = [];
+        this.ledFixtures = [];
+        
+        const totalLumens = this.ledPower * this.ledEfficacy;
+        const lumensPerLed = totalLumens / this.ledPositions.length;
+        
+        // Color based on CCT
+        const color = this.getCCTColorThree(this.ledCCT);
+        
+        this.ledPositions.forEach((pos, i) => {
+            // LED fixture (3D model representation)
+            const fixtureGeo = new THREE.CylinderGeometry(0.08, 0.1, 0.05, 16);
+            const fixtureMat = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                emissive: color,
+                emissiveIntensity: 0.5
+            });
+            const fixture = new THREE.Mesh(fixtureGeo, fixtureMat);
+            
+            // Position in room
+            const ledX = (pos.x - 0.5) * this.roomLength;
+            const ledZ = (pos.y - 0.5) * this.roomWidth;
+            fixture.position.set(ledX, this.ceilingHeight, ledZ);
+            
+            this.scene.add(fixture);
+            this.ledFixtures.push(fixture);
+            
+            // Spotlight with realistic physics
+            const spotlight = new THREE.SpotLight(color, lumensPerLed / 1000);
+            spotlight.position.set(ledX, this.ceilingHeight - 0.05, ledZ);
+            spotlight.target.position.set(ledX, 0, ledZ);
+            
+            // Realistic spotlight parameters
+            spotlight.angle = Math.PI / 4; // 45 degree beam
+            spotlight.penumbra = 0.3;
+            spotlight.decay = 2; // Inverse square law
+            spotlight.distance = 10;
+            
+            spotlight.castShadow = true;
+            spotlight.shadow.mapSize.width = 1024;
+            spotlight.shadow.mapSize.height = 1024;
+            spotlight.shadow.camera.near = 0.1;
+            spotlight.shadow.camera.far = 10;
+            
+            this.scene.add(spotlight);
+            this.scene.add(spotlight.target);
+            this.ledLights.push(spotlight);
+            
+            // LED glow sprite
+            const glowMat = new THREE.SpriteMaterial({
+                map: this.createGlowTexture(color),
+                transparent: true,
+                blending: THREE.AdditiveBlending
+            });
+            const glow = new THREE.Sprite(glowMat);
+            glow.scale.set(0.5, 0.5, 1);
+            glow.position.set(ledX, this.ceilingHeight - 0.03, ledZ);
+            this.scene.add(glow);
+        });
+    }
+    
+    createGlowTexture(color) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        
+        const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(0.3, color.replace(')', ', 0.5)').replace('rgb', 'rgba'));
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 128, 128);
+        
+        const texture = new THREE.CanvasTexture(canvas);
+        return texture;
+    }
+    
+    getCCTColorThree(cct) {
+        // Convert CCT to RGB
+        let r, g, b;
+        
+        if (cct < 4000) {
+            // Warm white
+            const t = cct / 4000;
+            r = 255;
+            g = Math.round(180 + t * 75);
+            b = Math.round(100 + t * 55);
+        } else if (cct < 6500) {
+            // Neutral white
+            const t = (cct - 4000) / 2500;
+            r = Math.round(255 - t * 30);
+            g = Math.round(255 - t * 30);
+            b = Math.round(155 + t * 100);
+        } else {
+            // Cool white
+            const t = (cct - 6500) / 6500;
+            r = Math.round(225 - t * 50);
+            g = Math.round(225 - t * 50);
+            b = 255;
+        }
+        
+        return new THREE.Color(r/255, g/255, b/255);
+    }
+    
+    setupControls() {
+        // Hook into the 2D simulator's controls
+        const originalCalculate = window.LEDLightingSimulator?.prototype?.calculate;
+        if (originalCalculate) {
+            // Listen for changes
+            document.addEventListener('ledUpdate', (e) => {
+                this.updateParameters(e.detail);
+            });
+        }
+    }
+    
+    updateParameters(params) {
+        if (params.power !== undefined) this.ledPower = params.power;
+        if (params.efficacy !== undefined) this.ledEfficacy = params.efficacy;
+        if (params.cct !== undefined) this.ledCCT = params.cct;
+        if (params.cri !== undefined) this.ledCRI = params.cri;
+        if (params.ledCount !== undefined) this.updateLEDCount(params.ledCount);
+        
+        this.setupLights();
+    }
+    
+    updateLEDCount(count) {
+        this.ledPositions = [];
+        const grid = Math.ceil(Math.sqrt(count));
+        for (let i = 0; i < count; i++) {
+            const row = Math.floor(i / grid);
+            const col = i % grid;
+            this.ledPositions.push({
+                x: (col + 0.5) / grid,
+                y: (row + 0.5) / grid
+            });
+        }
+        this.setupLights();
+    }
+    
+    onResize() {
+        if (!this.container || !this.camera || !this.renderer) return;
+        
+        const width = this.container.clientWidth;
+        const height = this.container.clientHeight;
+        
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(width, height);
+    }
+    
+    start() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+        this.animate();
+    }
+    
+    stop() {
+        this.isRunning = false;
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+    }
+    
+    animate() {
+        if (!this.isRunning) return;
+        
+        // Update controls
+        if (this.controls) this.controls.update();
+        
+        // Render
+        this.renderer.render(this.scene, this.camera);
+        
+        this.animationId = requestAnimationFrame(() => this.animate());
+    }
+    
+    // Realistic illuminance calculation using inverse square law
+    calculateIlluminanceAt(point) {
+        let totalLux = 0;
+        
+        this.ledLights.forEach(light => {
+            const dx = point.x - light.position.x;
+            const dy = point.y - light.position.y;
+            const dz = point.z - light.position.z;
+            const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+            
+            if (distance > 0.1) {
+                // Inverse square law with cosine correction
+                const cosAngle = Math.abs(dy) / distance;
+                const luminousIntensity = light.intensity * 1000; // Convert back to lumens
+                const illuminance = (luminousIntensity * cosAngle) / (distance * distance);
+                totalLux += illuminance;
+            }
+        });
+        
+        return totalLux;
+    }
+}
+
+// Auto-initialize 3D view when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (typeof THREE !== 'undefined') {
+            window.ledSimulator3D = new LEDLightingSimulator3D();
+        }
+    }, 1000);
+});

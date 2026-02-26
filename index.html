@@ -20,7 +20,7 @@
     <meta property="og:url" content="https://electromachinelab.com/">
     <meta property="og:title" content="ElectroMachines Lab | Interactive Electrical Machines Simulations">
     <meta property="og:description" content="Master electrical machines through interactive simulations - DC motors, AC machines, transformers, power electronics, and renewable energy systems.">
-    <meta property="og:image" content="https://electromachinelab.com/og-image.png">
+    <meta property="og:image" content="./og-image.svg">
     <meta property="og:site_name" content="ElectroMachines Lab">
     
     <!-- Twitter -->
@@ -28,7 +28,7 @@
     <meta name="twitter:site" content="@electromachineslab">
     <meta name="twitter:title" content="ElectroMachines Lab | Interactive Electrical Machines Simulations">
     <meta name="twitter:description" content="Master electrical machines through interactive simulations - DC motors, AC machines, transformers, power electronics, and renewable energy systems.">
-    <meta name="twitter:image" content="https://electromachinelab.com/og-image.png">
+    <meta name="twitter:image" content="./og-image.svg">
     
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y0C8YHY1RP"></script>
@@ -45,6 +45,10 @@
     
     <!-- EmailJS for sending OTP emails -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <!-- Three.js for 3D visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
     
     <!-- Theme Color -->
     <meta name="theme-color" content="#2563eb">
@@ -2272,6 +2276,12 @@
                         </div>
 
                         <div class="control-group">
+                            <label>Ambient Temperature: <span id="led-ambient-temp-value">25 °C</span></label>
+                            <input type="range" id="led-ambient-temp-slider" min="0" max="50" value="25">
+                            <small>Affects LED performance and lifetime</small>
+                        </div>
+
+                        <div class="control-group">
                             <label>Number of LEDs: <span id="led-count-value">4</span></label>
                             <input type="range" id="led-count-slider" min="1" max="16" value="4">
                         </div>
@@ -2349,6 +2359,11 @@
                     <div class="reading-item">
                         <span class="reading-label">CRI:</span>
                         <span class="reading-value" id="led-cri-reading">80</span>
+                    </div>
+
+                    <div class="reading-item">
+                        <span class="reading-label">LED Temperature:</span>
+                        <span class="reading-value" id="led-temp-reading">35 °C</span>
                     </div>
 
                     <!-- Horticulture readings -->
@@ -2628,6 +2643,7 @@
                     <p class="creator-title">Founder & Developer</p>
                     <p class="creator-bio">I am a passionate student of electrical transport system. I created ElectroMachines Lab to make learning about electrical machines accessible, interactive, and fun for students and engineers worldwide.</p>
                     <p class="creator-vision">My vision is to democratize engineering education and help anyone interested in understanding how electrical machines work through hands-on simulations.</p>
+                    <p class="creator-contact">📧 <a href="mailto:tanmoy1106082@gmail.com">tanmoy1106082@gmail.com</a></p>
                 </div>
             </div>
             
