@@ -72,7 +72,7 @@ async function processDonation(amount) {
 
 // Demo message when Stripe is not configured
 function showDonationDemoMessage(amount) {
-    const message = `Thank you for your interest in donating $${amount}! \n\nTo enable donations, please configure your Stripe API key in the donation.js file.\n\nContact: tanmoyacharya@example.com`;
+    const message = `Thank you for your interest in donating ${amount}! \n\nTo enable donations, please configure your Stripe API key in the donation.js file.`;
     
     alert(message);
     showMessage('Donation system needs configuration. Please contact the administrator.', 'info');

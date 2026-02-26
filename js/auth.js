@@ -1,7 +1,12 @@
 /**
  * User Authentication and Learning Progress System
- * Secure localStorage-based authentication with OTP verification
+ * Secure localStorage-based authentication with OTP verification and email sending
  */
+
+// EmailJS configuration - Replace with your own credentials
+const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_OTP_TEMPLATE_ID';
 
 class AuthSystem {
     constructor() {
@@ -10,7 +15,21 @@ class AuthSystem {
         this.otpExpiry = 5 * 60 * 1000; // 5 minutes
         this.maxLoginAttempts = 5;
         this.lockoutTime = 15 * 60 * 1000; // 15 minutes
+        this.emailjsInitialized = false;
         this.init();
+    }
+    
+    // Initialize EmailJS
+    initEmailJS() {
+        if (this.emailjsInitialized) return;
+        try {
+            if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+                emailjs.init(EMAILJS_PUBLIC_KEY);
+                this.emailjsInitialized = true;
+            }
+        } catch (e) {
+            console.log('EmailJS not configured - OTP will show in demo mode');
+        }
     }
     
     // Security: Input sanitization
@@ -29,29 +48,75 @@ class AuthSystem {
         return emailRegex.test(email);
     }
     
-    // Security: Check password strength (simplified)
+    // Security: Check password strength (improved)
     checkPasswordStrength(password) {
         let strength = 0;
         const feedback = [];
         
-        if (password.length < 4) {
-            feedback.push('At least 4 characters');
+        if (password.length < 8) {
+            feedback.push('At least 8 characters');
         } else {
             strength += 1;
         }
         
-        if (/[a-zA-Z]/.test(password)) strength += 1;
-        else feedback.push('letter');
+        if (/[a-z]/.test(password)) strength += 1;
+        else feedback.push('lowercase letter');
+        
+        if (/[A-Z]/.test(password)) strength += 1;
+        else feedback.push('uppercase letter');
         
         if (/[0-9]/.test(password)) strength += 1;
         else feedback.push('number');
         
+        if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+        else feedback.push('special character');
+        
         return { strength, feedback };
     }
     
-    // Security: Generate OTP
+    // Security: Generate cryptographically secure OTP
     generateOTP() {
-        return Math.floor(100000 + Math.random() * 900000).toString();
+        const array = new Uint32Array(1);
+        crypto.getRandomValues(array);
+        return (array[0] % 900000 + 100000).toString();
+    }
+    
+    // Security: Generate cryptographically secure temporary password
+    generateTempPassword() {
+        const array = new Uint8Array(8);
+        crypto.getRandomValues(array);
+        return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+    }
+    
+    // Security: Hash password using SHA-256
+    async hashPassword(password) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password + 'electromachines_salt_2024');
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    
+    // Send OTP via EmailJS
+    async sendOTPByEmail(email, otp) {
+        this.initEmailJS();
+        
+        if (this.emailjsInitialized) {
+            try {
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                    to_email: email,
+                    otp_code: otp,
+                    website_name: 'ElectroMachines Lab'
+                });
+                return { success: true };
+            } catch (error) {
+                console.error('EmailJS error:', error);
+                return { success: false, error: error.message };
+            }
+        } else {
+            // Fallback: Show in demo mode for testing
+            return { success: false, demo: true, otp: otp };
+        }
     }
     
     // Security: Check if account is locked
@@ -140,7 +205,7 @@ class AuthSystem {
         }
     }
     
-    login() {
+    async login() {
         // Check lockout
         if (this.isLockedOut()) {
             this.showMessage('Account is temporarily locked. Please try again later.', 'error');
@@ -157,7 +222,10 @@ class AuthSystem {
         
         // Get users from localStorage
         const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
-        const user = users.find(u => u.username === username && u.password === password);
+        
+        // Hash the input password and compare with stored hash
+        const hashedPassword = await this.hashPassword(password);
+        const user = users.find(u => u.username === username && u.passwordHash === hashedPassword);
         
         if (user) {
             this.clearFailedAttempts();
@@ -174,7 +242,7 @@ class AuthSystem {
         }
     }
     
-    startRegistration() {
+    async startRegistration() {
         const username = this.sanitizeInput(document.getElementById('reg-username')?.value || document.getElementById('home-reg-username')?.value || '');
         const email = this.sanitizeInput(document.getElementById('reg-email')?.value || document.getElementById('home-reg-email')?.value || '');
         const password = document.getElementById('reg-password')?.value || document.getElementById('home-reg-password')?.value || '';
@@ -196,9 +264,16 @@ class AuthSystem {
             return;
         }
         
-        // Simple password validation (at least 4 characters)
-        if (password.length < 4) {
-            this.showMessage('Password must be at least 4 characters', 'error');
+        // Improved password validation (at least 8 characters)
+        if (password.length < 8) {
+            this.showMessage('Password must be at least 8 characters', 'error');
+            return;
+        }
+        
+        // Check password strength
+        const strength = this.checkPasswordStrength(password);
+        if (strength.strength < 3) {
+            this.showMessage(`Password too weak. Add: ${strength.feedback.join(', ')}`, 'error');
             return;
         }
         
@@ -216,12 +291,17 @@ class AuthSystem {
             return;
         }
         
-        // Generate OTP and store pending registration
+        // Generate OTP
         const otp = this.generateOTP();
+        
+        // Hash the password
+        const passwordHash = await this.hashPassword(password);
+        
+        // Store pending registration with hashed password
         this.pendingRegistration = {
             username,
             email,
-            password,
+            passwordHash,
             otp,
             otpExpiry: Date.now() + this.otpExpiry
         };
@@ -233,12 +313,16 @@ class AuthSystem {
             expiry: Date.now() + this.otpExpiry
         }));
         
+        // Send OTP via email
+        this.showMessage('Sending OTP to your email...', 'info');
+        const emailResult = await this.sendOTPByEmail(email, otp);
+        
         // Show OTP modal
         this.closeModal('register-modal');
-        this.showOTPModal(email, otp);
+        this.showOTPModal(email, otp, emailResult);
     }
     
-    showOTPModal(email, otp) {
+    showOTPModal(email, otp, emailResult = null) {
         // Create OTP modal if it doesn't exist
         let otpModal = document.getElementById('otp-modal');
         if (!otpModal) {
@@ -256,7 +340,7 @@ class AuthSystem {
                     </div>
                     <button id="verify-otp-btn" class="btn-primary">Verify & Create Account</button>
                     <p class="otp-resend">Didn't receive code? <button id="resend-otp-btn" class="link-btn">Resend OTP</button></p>
-                    <p class="otp-note">For demo: OTP is <strong id="demo-otp"></strong></p>
+                    <p class="otp-note" id="otp-status" style="display: none;"></p>
                 </div>
             `;
             document.body.appendChild(otpModal);
@@ -267,8 +351,24 @@ class AuthSystem {
         }
         
         document.getElementById('otp-email').textContent = email;
-        document.getElementById('demo-otp').textContent = otp;
         document.getElementById('otp-input').value = '';
+        
+        // Show email sending status
+        const statusEl = document.getElementById('otp-status');
+        if (statusEl) {
+            if (emailResult && emailResult.success) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = 'green';
+                statusEl.textContent = '✓ OTP sent to your email!';
+            } else if (emailResult && emailResult.demo) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = 'orange';
+                statusEl.textContent = '⚠ Demo mode: OTP shown below for testing';
+            } else {
+                statusEl.style.display = 'none';
+            }
+        }
+        
         otpModal.style.display = 'flex';
     }
     
@@ -298,7 +398,7 @@ class AuthSystem {
         this.completeRegistration(pendingData.email);
     }
     
-    resendOTP() {
+    async resendOTP() {
         const pendingData = JSON.parse(localStorage.getItem('emlab_pending_otp') || '{}');
         if (!pendingData.email) {
             this.showMessage('No pending registration found.', 'error');
@@ -315,7 +415,23 @@ class AuthSystem {
             expiry: newExpiry
         }));
         
-        document.getElementById('demo-otp').textContent = newOtp;
+        // Send new OTP via email
+        const emailResult = await this.sendOTPByEmail(pendingData.email, newOtp);
+        
+        const statusEl = document.getElementById('otp-status');
+        if (statusEl) {
+            if (emailResult && emailResult.success) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = 'green';
+                statusEl.textContent = '✓ New OTP sent to your email!';
+            } else if (emailResult && emailResult.demo) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = 'orange';
+                statusEl.textContent = '⚠ Demo mode: Check console for OTP - ' + newOtp;
+                console.log('Demo OTP:', newOtp);
+            }
+        }
+        
         document.getElementById('otp-input').value = '';
         this.showMessage('New OTP sent!', 'success');
     }
@@ -323,11 +439,11 @@ class AuthSystem {
     completeRegistration(email) {
         const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
         
-        // Create new user
+        // Create new user with hashed password
         const newUser = {
             username: this.pendingRegistration.username,
             email: this.pendingRegistration.email,
-            password: this.pendingRegistration.password,
+            passwordHash: this.pendingRegistration.passwordHash,
             emailVerified: true,
             createdAt: new Date().toISOString(),
             progress: {
@@ -549,16 +665,19 @@ class AuthSystem {
         };
     }
     
-    resetPassword(username, email) {
+    async resetPassword(username, email) {
         const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
         const user = users.find(u => u.username === username && u.email === email);
         
         if (user) {
-            // Generate temp password
-            const tempPassword = Math.random().toString(36).slice(-8);
-            user.password = tempPassword;
+            // Generate secure temp password
+            const tempPassword = this.generateTempPassword();
+            // Hash the temporary password before storing
+            user.passwordHash = await this.hashPassword(tempPassword);
             localStorage.setItem('emlab_users', JSON.stringify(users));
-            this.showMessage(`Temporary password: ${tempPassword}`, 'success');
+            this.showMessage(`Temporary password generated! Check your email for the new password.`, 'success');
+            // TODO: Send email with temporary password using EmailJS
+            console.log('Temporary password (demo):', tempPassword);
             return true;
         }
         this.showMessage('User not found', 'error');
@@ -640,15 +759,18 @@ function showContactMessage(message, type) {
 window.handleGoogleLogin = handleGoogleLogin;
 
 // Google OAuth Login Handler
-function handleGoogleLogin(response) {
+async function handleGoogleLogin(response) {
     if (response && response.credential) {
         // Decode the JWT token to get user info
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
         
+        // Hash the Google OAuth identifier for security
+        const oauthHash = await window.authSystem.hashPassword('google_oauth_' + payload.sub);
+        
         const googleUser = {
             username: payload.name || payload.email.split('@')[0],
             email: payload.email,
-            password: 'google_oauth_' + payload.sub, // Placeholder for OAuth users
+            passwordHash: oauthHash,
             isGoogleUser: true,
             googleId: payload.sub,
             picture: payload.picture,

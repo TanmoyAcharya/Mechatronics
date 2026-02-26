@@ -6,6 +6,13 @@
     <title>ElectroMachines Lab | Learn and Enjoy the World of Machines</title>
     <meta name="description" content="Interactive electrical machines simulations - learn and enjoy the world of machines">
     <meta name="keywords" content="electrical machines, simulations, motors, transformers, induction, synchronous, PMSM, V2G, power electronics, wind turbine, solar panel, learning, education">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://accounts.google.com https://js.stripe.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.emailjs.com https://*.google-analytics.com https://analytics.google.com; frame-src https://accounts.google.com;">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
     <link rel="canonical" href="https://electromachinelab.com/">
     
     <!-- Open Graph / Facebook -->
@@ -24,8 +31,8 @@
     <meta name="twitter:image" content="https://electromachinelab.com/og-image.png">
     
     <!-- Google tag (gtag.js) -->
-    <script type="text/plain" data-category="analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-Y0C8YHY1RP"></script>
-    <script type="text/plain" data-category="analytics">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y0C8YHY1RP"></script>
+    <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -35,6 +42,9 @@
     
     <!-- Usercentrics Consent Banner -->
     <script id="usercentrics-cmp" src="https://app.usercentrics.eu/browser-ui/latest/loader.js" data-settings-id="aFOjJR9Hr4_tej" async></script>
+    
+    <!-- EmailJS for sending OTP emails -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
     <!-- Theme Color -->
     <meta name="theme-color" content="#2563eb">
@@ -2661,7 +2671,6 @@
         <div class="footer-content">
             <p>ElectroMachines Lab - Interactive Electrical Machines Education Platform</p>
             <p class="footer-note">Designed for interactive learning with fun simulations</p>
-            <p class="visitor-counter">👥 Visitors: <span id="visitor-count">0</span></p>
         </div>
     </footer>
 
@@ -2688,7 +2697,6 @@
     <script src="js/catfollower.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/donation.js"></script>
-    <script src="js/visitor-counter.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
