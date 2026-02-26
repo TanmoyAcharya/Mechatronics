@@ -136,6 +136,8 @@ class App {
         // Skip if no page specified
         if (!page) return;
         
+        console.log('Navigating to:', page);
+        
         // Update navigation buttons
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.page === page);
@@ -147,6 +149,7 @@ class App {
         });
         
         const targetPage = document.getElementById(`${page}-page`);
+        console.log('Target page element:', targetPage);
         if (targetPage) {
             targetPage.classList.add('active');
             this.currentPage = page;
@@ -688,8 +691,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add click handlers for dropdown items
     const dropdownItems = document.querySelectorAll('.dropdown-item');
     dropdownItems.forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent document click from closing dropdown
             const page = this.getAttribute('data-page');
+            console.log('Dropdown item clicked:', page);
             if (page && window.app) {
                 window.app.navigateTo(page);
                 // Close any open dropdowns
