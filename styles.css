@@ -3092,6 +3092,37 @@ main {
     padding: 20px;
 }
 
+/* About Page Hero Animation */
+.about-hero-animation {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+}
+
+.motor-animation {
+    width: 100%;
+    height: 100%;
+}
+
+.motor-animation .rotor {
+    transform-origin: 100px 100px;
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.about-page .page-header {
+    text-align: center;
+    padding: 40px 20px;
+}
+
 .blog-filters {
     display: flex;
     flex-wrap: wrap;
