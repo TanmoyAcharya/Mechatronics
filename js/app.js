@@ -735,52 +735,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ================================================
-// DateTime Widget - Live Clock
-// ================================================
-function updateDateTime() {
-    const now = new Date();
-    
-    // Format time as HH:MM:SS
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const timeString = `${hours}:${minutes}:${seconds}`;
-    
-    // Format date as Weekday, Month Day, Year
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const dateString = now.toLocaleDateString('en-US', options);
-    
-    // Greeting based on time
-    const hour = now.getHours();
-    let greeting = '';
-    if (hour >= 5 && hour < 12) {
-        greeting = '☀️ Good Morning';
-    } else if (hour >= 12 && hour < 17) {
-        greeting = '🌤️ Good Afternoon';
-    } else if (hour >= 17 && hour < 21) {
-        greeting = '🌙 Good Evening';
-    } else {
-        greeting = '🌑 Good Night';
-    }
-    
-    // Update DOM elements
-    const timeEl = document.getElementById('current-time');
-    const dateEl = document.getElementById('current-date');
-    const greetingEl = document.getElementById('time-greeting');
-    
-    if (timeEl) timeEl.textContent = timeString;
-    if (dateEl) dateEl.textContent = dateString;
-    if (greetingEl) greetingEl.textContent = greeting;
-}
-
-// ================================================
 // Initialize Application
 // ================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Start the datetime widget
-    updateDateTime();
-    setInterval(updateDateTime, 1000);
-    
     window.app = new App();
 });
