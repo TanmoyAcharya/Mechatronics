@@ -88,13 +88,21 @@ class AuthSystem {
         return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
     }
     
-    // Security: Hash password using SHA-256
-    async hashPassword(password) {
+    // Security: Generate unique salt for each user
+    generateSalt() {
+        const array = new Uint8Array(16);
+        crypto.getRandomValues(array);
+        return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Security: Hash password using SHA-256 with unique salt
+    async hashPassword(password, salt = null) {
+        const userSalt = salt || this.generateSalt();
         const encoder = new TextEncoder();
-        const data = encoder.encode(password + 'electromachines_salt_2024');
+        const data = encoder.encode(password + userSalt);
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return { hash: hashArray.map(b => b.toString(16).padStart(2, '0')).join(''), salt: userSalt };
     }
     
     // Send OTP via EmailJS
@@ -223,9 +231,17 @@ class AuthSystem {
         // Get users from localStorage
         const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
         
-        // Hash the input password and compare with stored hash
-        const hashedPassword = await this.hashPassword(password);
-        const user = users.find(u => u.username === username && u.passwordHash === hashedPassword);
+        // Find user first to get their salt
+        const existingUser = users.find(u => u.username === username);
+        if (!existingUser) {
+            this.recordFailedAttempt();
+            this.showMessage('Invalid username or password', 'error');
+            return;
+        }
+        
+        // Hash the input password with stored salt and compare with stored hash
+        const hashedPasswordResult = await this.hashPassword(password, existingUser.salt);
+        const user = users.find(u => u.username === username && u.passwordHash === hashedPasswordResult.hash);
         
         if (user) {
             this.clearFailedAttempts();
@@ -294,14 +310,15 @@ class AuthSystem {
         // Generate OTP
         const otp = this.generateOTP();
         
-        // Hash the password
-        const passwordHash = await this.hashPassword(password);
+        // Hash the password with unique salt
+        const passwordResult = await this.hashPassword(password);
         
-        // Store pending registration with hashed password
+        // Store pending registration with hashed password and salt
         this.pendingRegistration = {
             username,
             email,
-            passwordHash,
+            passwordHash: passwordResult.hash,
+            salt: passwordResult.salt,
             otp,
             otpExpiry: Date.now() + this.otpExpiry
         };
@@ -427,8 +444,7 @@ class AuthSystem {
             } else if (emailResult && emailResult.demo) {
                 statusEl.style.display = 'block';
                 statusEl.style.color = 'orange';
-                statusEl.textContent = '⚠ Demo mode: Check console for OTP - ' + newOtp;
-                console.log('Demo OTP:', newOtp);
+                statusEl.textContent = '⚠ Demo mode: OTP will be shown in the verification input';
             }
         }
         
@@ -439,11 +455,12 @@ class AuthSystem {
     completeRegistration(email) {
         const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
         
-        // Create new user with hashed password
+        // Create new user with hashed password and unique salt
         const newUser = {
             username: this.pendingRegistration.username,
             email: this.pendingRegistration.email,
             passwordHash: this.pendingRegistration.passwordHash,
+            salt: this.pendingRegistration.salt,
             emailVerified: true,
             createdAt: new Date().toISOString(),
             progress: {
@@ -697,12 +714,13 @@ class AuthSystem {
         if (user) {
             // Generate secure temp password
             const tempPassword = this.generateTempPassword();
-            // Hash the temporary password before storing
-            user.passwordHash = await this.hashPassword(tempPassword);
+            // Hash the temporary password with unique salt before storing
+            const hashResult = await this.hashPassword(tempPassword);
+            user.passwordHash = hashResult.hash;
+            user.salt = hashResult.salt;
             localStorage.setItem('emlab_users', JSON.stringify(users));
             this.showMessage(`Temporary password generated! Check your email for the new password.`, 'success');
             // TODO: Send email with temporary password using EmailJS
-            console.log('Temporary password (demo):', tempPassword);
             return true;
         }
         this.showMessage('User not found', 'error');
@@ -712,18 +730,24 @@ class AuthSystem {
 
 // Contact form submission handler
 function submitContactForm() {
-    const name = document.getElementById('contact-name')?.value?.trim();
-    const email = document.getElementById('contact-email')?.value?.trim();
-    const message = document.getElementById('contact-message')?.value?.trim();
+    // Sanitize inputs to prevent XSS
+    const name = document.getElementById('contact-name')?.value?.trim() || '';
+    const email = document.getElementById('contact-email')?.value?.trim() || '';
+    const message = document.getElementById('contact-message')?.value?.trim() || '';
     
-    if (!name || !email) {
+    // Sanitize inputs
+    const sanitizedName = name.replace(/<[^>]*>/g, '').substring(0, 100);
+    const sanitizedEmail = email.replace(/<[^>]*>/g, '').substring(0, 100);
+    const sanitizedMessage = message.replace(/<[^>]*>/g, '').substring(0, 500);
+    
+    if (!sanitizedName || !sanitizedEmail) {
         showContactMessage('Please enter your name and email', 'error');
         return;
     }
     
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(sanitizedEmail)) {
         showContactMessage('Please enter a valid email address', 'error');
         return;
     }
@@ -732,15 +756,15 @@ function submitContactForm() {
     const contacts = JSON.parse(localStorage.getItem('emlab_contacts') || '[]');
     
     // Check if email already exists
-    if (contacts.find(c => c.email === email)) {
+    if (contacts.find(c => c.email === sanitizedEmail)) {
         showContactMessage('This email is already subscribed!', 'info');
         return;
     }
     
     // Add new contact
     const newContact = {
-        name,
-        email,
+        name: sanitizedName,
+        email: sanitizedEmail,
         message: message || '',
         subscribed: true,
         date: new Date().toISOString()
@@ -789,13 +813,14 @@ async function handleGoogleLogin(response) {
         // Decode the JWT token to get user info
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
         
-        // Hash the Google OAuth identifier for security
-        const oauthHash = await window.authSystem.hashPassword('google_oauth_' + payload.sub);
+        // Hash the Google OAuth identifier for security with unique salt
+        const oauthHashResult = await window.authSystem.hashPassword('google_oauth_' + payload.sub);
         
         const googleUser = {
             username: payload.name || payload.email.split('@')[0],
             email: payload.email,
-            passwordHash: oauthHash,
+            passwordHash: oauthHashResult.hash,
+            salt: oauthHashResult.salt,
             isGoogleUser: true,
             googleId: payload.sub,
             picture: payload.picture,

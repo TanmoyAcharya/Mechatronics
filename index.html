@@ -8,14 +8,23 @@
     <meta name="keywords" content="electrical machines, simulations, motors, transformers, induction, synchronous, PMSM, V2G, power electronics, wind turbine, solar panel, learning, education">
     
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://accounts.google.com https://js.stripe.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.emailjs.com https://*.google-analytics.com https://analytics.google.com; frame-src https://accounts.google.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://accounts.google.com https://js.stripe.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.emailjs.com https://*.google-analytics.com https://analytics.google.com; frame-src https://accounts.google.com; upgrade-insecure-requests;">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
     
-    <link rel="canonical" href="https://electromachinelab.com/">
-    
-    <!-- Open Graph / Facebook -->
+    <link rel="canonical" href="https://electromachineslab.com/">
+    <meta name="author" content="ElectroMachines Lab">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ElectroMachines Lab">
+    <link rel="icon" type="image/svg+xml" href="./og-image.svg">
+    <link rel="apple-touch-icon" href="./og-image.svg">
+    <link rel="alternate" hreflang="en" href="https://electromachinelab.com/">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://electromachinelab.com/">
     <meta property="og:title" content="ElectroMachines Lab | Interactive Electrical Machines Simulations">
@@ -44,14 +53,11 @@
     <script id="usercentrics-cmp" src="https://app.usercentrics.eu/browser-ui/latest/loader.js" data-settings-id="aFOjJR9Hr4_tej" async></script>
     
     <!-- EmailJS for sending OTP emails -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" integrity="sha384-eG3C1mMTk2z31M0u1yT3SR3N1fX5rhyLI3R3gWRLY2gJREMybVN6x2YVJgVCH8" crossorigin="anonymous"></script>
     
     <!-- Three.js for 3D visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
-    
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#2563eb">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" integrity="sha384-/7xG0qc1/8r7JqZJ3xkJb5K7eWd6r4v4J8T3kqB7K1NZ8ya5eMx5L4y3uJ5lP5" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js" integrity="sha384-mBtxZ48Ex5o2/3kqB2b32v8m2v2/ZxnbCwQVgcK3x3O6J/4J6U/WJpxQ7RXJy3n" crossorigin="anonymous"></script>
     
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
@@ -63,21 +69,46 @@
       "description": "Interactive electrical machines simulations for learning and education. Covers DC motors, AC machines, transformers, power electronics, and renewable energy systems.",
       "publisher": {
         "@type": "Organization",
-        "name": "ElectroMachines Lab"
+        "name": "ElectroMachines Lab",
+        "url": "https://electromachinelab.com/"
       },
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://electromachinelab.com/{search_term_string}",
         "query-input": "required name=search_term_string"
       },
-      "courses": [
-        {"@type": "Course", "name": "DC Motor Fundamentals"},
-        {"@type": "Course", "name": "Synchronous Machines"},
-        {"@type": "Course", "name": "Induction Machines"},
-        {"@type": "Course", "name": "Power Transformers"},
-        {"@type": "Course", "name": "PMSM Control"},
-        {"@type": "Course", "name": "Renewable Energy Systems"}
-      ]
+      "about": {
+        "@type": "Thing",
+        "name": "Electrical Machines",
+        "description": "Study of electric motors, generators, transformers and related electrical machines"
+      },
+      "course": [
+        {"@type": "Course", "name": "DC Motor Fundamentals", "description": "Learn the fundamentals of DC motor operation, control, and applications"},
+        {"@type": "Course", "name": "Synchronous Machines", "description": "Explore synchronous motors and generators with field excitation control"},
+        {"@type": "Course", "name": "Induction Machines", "description": "Deep dive into asynchronous motors and generators with slip analysis"},
+        {"@type": "Course", "name": "Power Transformers", "description": "Understand transformer operation, equivalent circuits, and applications"},
+        {"@type": "Course", "name": "PMSM Control", "description": "Learn permanent magnet synchronous motor control techniques"},
+        {"@type": "Course", "name": "Renewable Energy Systems", "description": "Study wind turbines, solar panels, and grid integration"}
+      ],
+      "hasPart": {
+        "@type": "WebSite",
+        "name": "ElectroMachines Lab Simulators",
+        "url": "https://electromachinelab.com/"
+      }
+    }
+    </script>
+    
+    <!-- Breadcrumb List Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://electromachinelab.com/"
+      }]
     }
     </script>
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
@@ -376,11 +407,20 @@
             <div class="hero">
                 <div class="hero-bg"></div>
                 <div class="hero-content">
+                    <div class="datetime-widget" id="datetime-widget">
+                        <div class="datetime-date">
+                            <span id="current-date"></span>
+                        </div>
+                        <div class="datetime-time">
+                            <span id="current-time"></span>
+                        </div>
+                        <div class="datetime-greeting" id="time-greeting"></div>
+                    </div>
                     <h1 class="hero-title">Master <span class="gradient-text">Electrical Machines</span></h1>
                     <p class="hero-subtitle">Interactive simulations for understanding electrical machines - Learn and Enjoy!</p>
                     <div class="hero-cta">
                         <button class="cta-btn primary" data-goto="synchronous">Start Learning</button>
-                        <button class="cta-btn secondary" data-goto="induction">Explore Induction</button>
+                        <button class="cta-btn secondary" data-goto="blog">📰 Tech Blog</button>
                     </div>
                 </div>
                 <div class="hero-visual">
@@ -1604,6 +1644,71 @@
                             <p>Deep-sea floating wind farms are opening new frontiers for wind energy.</p>
                             <div class="blog-meta">
                                 <span>📅 Dec 2025</span>
+                                <span>👤 Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="blog-card" data-category="power">
+                        <div class="blog-image">🤖</div>
+                        <div class="blog-content">
+                            <span class="blog-category">AI & Electronics</span>
+                            <h3>AI-Driven Motor Design</h3>
+                            <p>Machine learning algorithms are optimizing motor designs for maximum efficiency and minimal weight.</p>
+                            <div class="blog-meta">
+                                <span>📅 Nov 2025</span>
+                                <span>👤 Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="blog-card" data-category="power">
+                        <div class="blog-image">🔋</div>
+                        <div class="blog-content">
+                            <span class="blog-category">Energy Storage</span>
+                            <h3>Wireless Power Transfer</h3>
+                            <p>Resonant inductive coupling enables efficient wireless charging for EVs and industrial applications.</p>
+                            <div class="blog-meta">
+                                <span>📅 Nov 2025</span>
+                                <span>👤 Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="blog-card" data-category="motors">
+                        <div class="blog-image">🚗</div>
+                        <div class="blog-content">
+                            <span class="blog-category">Electric Vehicles</span>
+                            <h3>Next-Gen Electric Drive Systems</h3>
+                            <p>Integrated motor-in-wheel systems are revolutionizing EV design and performance.</p>
+                            <div class="blog-meta">
+                                <span>📅 Oct 2025</span>
+                                <span>👤 Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="blog-card" data-category="renewable">
+                        <div class="blog-image">⚡</div>
+                        <div class="blog-content">
+                            <span class="blog-category">Smart Grid</span>
+                            <h3>Grid-Forming Inverters</h3>
+                            <p>Advanced inverters that can form and stabilize microgrids during outages.</p>
+                            <div class="blog-meta">
+                                <span>📅 Oct 2025</span>
+                                <span>👤 Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="blog-card" data-category="power">
+                        <div class="blog-image">🌡️</div>
+                        <div class="blog-content">
+                            <span class="blog-category">Power Electronics</span>
+                            <h3>Advanced Thermal Management</h3>
+                            <p>Liquid cooling and phase-change materials are enabling higher power densities in power electronics.</p>
+                            <div class="blog-meta">
+                                <span>📅 Sep 2025</span>
                                 <span>👤 Admin</span>
                             </div>
                         </div>

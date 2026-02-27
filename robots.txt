@@ -3,4 +3,8 @@ Allow: /
 Disallow: /admin
 Disallow: /private
 
+# Sitemap
 Sitemap: https://electromachinelab.com/sitemap.xml
+
+# Crawl-delay (optional, for politeness)
+Crawl-delay: 1
