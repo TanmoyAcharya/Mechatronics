@@ -293,17 +293,17 @@ main {
 /* DateTime Widget */
 .datetime-widget {
     position: absolute;
-    top: -60px;
-    right: 0;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(124, 58, 237, 0.15));
+    top: -50px;
+    left: 0;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(124, 58, 237, 0.2));
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-lg);
-    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
     text-align: center;
-    min-width: 160px;
+    min-width: 140px;
     animation: floatIn 0.8s ease-out forwards;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes floatIn {
@@ -318,16 +318,16 @@ main {
 }
 
 .datetime-date {
-    font-size: 0.85rem;
+    font-size: 0.65rem;
     color: var(--text-secondary);
     font-weight: 500;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
 }
 
 .datetime-time {
-    font-size: 2rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--text-primary);
     font-family: var(--font-mono);
@@ -335,13 +335,13 @@ main {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    line-height: 1.2;
+    line-height: 1.1;
 }
 
 .datetime-greeting {
-    font-size: 0.75rem;
+    font-size: 0.6rem;
     color: var(--accent-cyan);
-    margin-top: 4px;
+    margin-top: 2px;
     font-weight: 500;
 }
 
@@ -349,9 +349,8 @@ main {
     .datetime-widget {
         position: relative;
         top: 0;
-        margin-bottom: var(--space-lg);
-        left: 50%;
-        transform: translateX(-50%);
+        left: 0;
+        margin-bottom: var(--space-md);
         display: inline-block;
     }
     
@@ -2932,9 +2931,8 @@ main {
         position: relative;
         top: 0;
         right: auto;
-        left: 50%;
-        transform: translateX(-50%);
-        margin-bottom: var(--space-lg);
+        left: 0;
+        margin-bottom: var(--space-md);
     }
     
     .features-grid {
