@@ -519,7 +519,13 @@ class AuthSystem {
         const dashboardSection = document.getElementById('home-dashboard-section');
         const dashboardUsername = document.getElementById('dashboard-username');
         
-        if (!authSection || !dashboardSection) return;
+        console.log('[DASHBOARD] updateDashboard called');
+        console.log('[DASHBOARD] Auth section:', !!authSection, 'Dashboard section:', !!dashboardSection);
+        
+        if (!authSection || !dashboardSection) {
+            console.log('[DASHBOARD] ERROR: Missing dashboard elements');
+            return;
+        }
         
         if (this.currentUser) {
             authSection.style.display = 'none';
@@ -535,7 +541,8 @@ class AuthSystem {
             }
             const allKeys = ['synchronous', 'induction', 'dcMotor', 'transformer', 'pmsm', 
                             'construction', 'windTurbine', 'solarPanel', 'v2g', 'evtol', 'powerElec', 
-                            'widebandgap', 'communication', 'learn'];
+                            'widebandgap', 'communication', 'learn', 'ledlighting', 'circuitbreaker', 
+                            'bldcfan', 'compressor', 'lift'];
             allKeys.forEach(key => {
                 if (this.currentUser.progress[key] === undefined) {
                     this.currentUser.progress[key] = false;
@@ -549,36 +556,40 @@ class AuthSystem {
             
             const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
             
+            console.log('[DASHBOARD] Completed:', completedCount, 'Total:', totalCount, 'Percent:', progressPercent);
+            
+            // Update the CORRECT element IDs that exist in index.html
+            const progressPercentEl = document.getElementById('progress-percent');
+            const completedCountEl = document.getElementById('completed-count');
+            const totalSimulatorsEl = document.getElementById('total-simulators');
+            
+            if (progressPercentEl) {
+                progressPercentEl.textContent = progressPercent + '%';
+                console.log('[DASHBOARD] Updated progress-percent to:', progressPercent + '%');
+            } else {
+                console.log('[DASHBOARD] ERROR: progress-percent element not found');
+            }
+            
+            if (completedCountEl) {
+                completedCountEl.textContent = completedCount;
+                console.log('[DASHBOARD] Updated completed-count to:', completedCount);
+            } else {
+                console.log('[DASHBOARD] ERROR: completed-count element not found');
+            }
+            
+            if (totalSimulatorsEl) {
+                totalSimulatorsEl.textContent = totalCount;
+                console.log('[DASHBOARD] Updated total-simulators to:', totalCount);
+            } else {
+                console.log('[DASHBOARD] ERROR: total-simulators element not found');
+            }
+            
+            // Legacy elements for compatibility
             const progressBar = document.getElementById('dashboard-progress-bar');
             const progressText = document.getElementById('dashboard-progress-text');
-            const completedList = document.getElementById('dashboard-completed-list');
             
             if (progressBar) progressBar.style.width = progressPercent + '%';
             if (progressText) progressText.textContent = `${completedCount}/${totalCount} Simulations (${progressPercent}%)`;
-            
-            if (completedList) {
-                const machineNames = {
-                    synchronous: 'Synchronous Machine',
-                    induction: 'Induction Machine',
-                    dcMotor: 'DC Motor',
-                    transformer: 'Transformer',
-                    pmsm: 'PMSM',
-                    construction: 'Machine Construction',
-                    windTurbine: 'Wind Turbine',
-                    solarPanel: 'Solar Panel',
-                    v2g: 'V2G System',
-                    evtol: 'EVTOL Aviation',
-                    powerElec: 'Power Electronics',
-                    widebandgap: 'Widebandgap Semiconductors',
-                    communication: 'Communication Systems',
-                    learn: 'Learning Center'
-                };
-                
-                completedList.innerHTML = Object.entries(progress)
-                    .filter(([_, completed]) => completed)
-                    .map(([key, _]) => `<li>✅ ${machineNames[key] || key}</li>`)
-                    .join('') || '<li>No simulations completed yet. Start exploring!</li>';
-            }
         } else {
             authSection.style.display = 'block';
             dashboardSection.style.display = 'none';
@@ -620,25 +631,38 @@ class AuthSystem {
     
     // Learning progress tracking
     markComplete(section) {
-        if (!this.currentUser) return;
+        console.log('[PROGRESS] markComplete called with section:', section);
+        
+        if (!this.currentUser) {
+            console.log('[PROGRESS] ERROR: No current user logged in - progress not tracked');
+            return;
+        }
+        
+        console.log('[PROGRESS] Current user:', this.currentUser.username);
         
         // Ensure progress object has all keys
         if (!this.currentUser.progress) {
+            console.log('[PROGRESS] Initializing progress object');
             this.currentUser.progress = {};
         }
         
         // Initialize all progress keys if not present
         const allKeys = ['synchronous', 'induction', 'dcMotor', 'transformer', 'pmsm', 
                         'construction', 'windTurbine', 'solarPanel', 'v2g', 'powerElec', 
-                        'widebandgap', 'communication', 'learn'];
+                        'widebandgap', 'communication', 'learn', 'evtol', 'ledlighting', 
+                        'circuitbreaker', 'bldcfan', 'compressor', 'lift'];
         allKeys.forEach(key => {
             if (this.currentUser.progress[key] === undefined) {
                 this.currentUser.progress[key] = false;
             }
         });
         
+        console.log('[PROGRESS] Current progress state:', this.currentUser.progress);
+        
         this.currentUser.progress[section] = true;
         this.currentUser.lastVisit = new Date().toISOString();
+        
+        console.log('[PROGRESS] After marking complete:', section, '=', this.currentUser.progress[section]);
         
         // Update localStorage
         const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
@@ -647,6 +671,7 @@ class AuthSystem {
             users[userIndex] = this.currentUser;
             localStorage.setItem('emlab_users', JSON.stringify(users));
             localStorage.setItem('emlab_user', JSON.stringify(this.currentUser));
+            console.log('[PROGRESS] Saved to localStorage');
         }
         
         // Update dashboard display
