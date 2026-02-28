@@ -19,9 +19,8 @@ const SUBSCRIPTION_PLANS = {
         priceId: 'price_yearly_subscription', // Replace with actual Stripe price ID
         duration: 365 * 24 * 60 * 60 * 1000, // 1 year in milliseconds
         features: [
-            'Access to all premium content',
-            'PMSM simulator',
-            'Widebandgap simulator',
+            'Access to all 20+ premium simulators',
+            'DC Motor, PMSM, eVTOL, Wind Turbine',
             'Priority support',
             'No advertisements'
         ]
@@ -44,16 +43,17 @@ const SUBSCRIPTION_PLANS = {
 
 // Content access levels
 const CONTENT_ACCESS = {
-    // Free content - no login required
-    free: ['home', 'synchronous', 'induction', 'dc-motor', 'solarpanel', 'windturbine', 'v2g', 
-           'construction', 'communication', 'ledlighting', 'circuitbreaker', 'bldcfan', 
-           'compressor', 'lift', 'catfollower', 'blog', 'learn'],
+    // Free content - no login required (only home page is free)
+    free: ['home'],
     
     // Login required content
-    login: ['transformer', 'powerelectronics', 'evtol'],
+    login: [],
     
-    // Premium content - subscription required
-    premium: ['pmsm', 'widebandgap']
+    // Premium content - subscription required (all topics)
+    premium: ['synchronous', 'induction', 'dc-motor', 'transformer', 'pmsm', 'solarpanel', 
+              'windturbine', 'v2g', 'evtol', 'powerelectronics', 'widebandgap', 
+              'construction', 'communication', 'ledlighting', 'circuitbreaker', 
+              'bldcfan', 'compressor', 'lift', 'catfollower', 'learn']
 };
 
 class SubscriptionSystem {
@@ -354,8 +354,26 @@ class SubscriptionSystem {
             const lockedInfo = modal.querySelector('.locked-content-info');
             if (lockedInfo) {
                 const contentNames = {
+                    'synchronous': 'Synchronous Machine Simulator',
+                    'induction': 'Induction Motor Simulator',
+                    'dc-motor': 'DC Motor Simulator',
+                    'transformer': 'Transformer Simulator',
                     'pmsm': 'PMSM Simulator',
-                    'widebandgap': 'Widebandgap (SiC/GaN) Simulator'
+                    'solarpanel': 'Solar Panel Simulator',
+                    'windturbine': 'Wind Turbine Simulator',
+                    'v2g': 'V2G (Vehicle-to-Grid) Simulator',
+                    'evtol': 'eVTOL Aircraft Simulator',
+                    'powerelectronics': 'Power Electronics Simulator',
+                    'widebandgap': 'Widebandgap (SiC/GaN) Simulator',
+                    'construction': 'Construction Simulator',
+                    'communication': 'Communication System Simulator',
+                    'ledlighting': 'LED Lighting Simulator',
+                    'circuitbreaker': 'Circuit Breaker Simulator',
+                    'bldcfan': 'BLDC Fan Simulator',
+                    'compressor': 'Compressor Simulator',
+                    'lift': 'Elevator/Lift Simulator',
+                    'catfollower': 'CAT Follower Simulator',
+                    'learn': 'Learning Module'
                 };
                 lockedInfo.textContent = `Unlock: ${contentNames[contentType] || contentType}`;
                 lockedInfo.style.display = 'block';
@@ -384,8 +402,8 @@ class SubscriptionSystem {
                             <div class="plan-price">€10<span>/year</span></div>
                         </div>
                         <ul class="plan-features">
-                            <li>✓ Full access to PMSM Simulator</li>
-                            <li>✓ Full access to Widebandgap Simulator</li>
+                            <li>✓ Full access to ALL 20+ Simulators</li>
+                            <li>✓ DC Motor, PMSM, eVTOL, Wind Turbine & more</li>
                             <li>✓ No advertisements</li>
                             <li>✓ Priority support</li>
                         </ul>
