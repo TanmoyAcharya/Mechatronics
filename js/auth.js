@@ -251,7 +251,11 @@ class AuthSystem {
             this.updateDashboard();
             this.showMessage('Login successful!', 'success');
             this.closeModal('login-modal');
-        } else {
+            
+            // Update subscription UI after login
+            if (window.subscriptionSystem) {
+                window.subscriptionSystem.updateSubscriptionUI();
+            } else {
             this.recordFailedAttempt();
             const remainingAttempts = this.maxLoginAttempts - parseInt(localStorage.getItem('emlab_failed_attempts') || '0');
             this.showMessage(`Invalid username or password. ${remainingAttempts} attempts remaining.`, 'error');
@@ -512,6 +516,11 @@ class AuthSystem {
         this.updateUI();
         this.updateDashboard();
         this.showMessage('Logged out successfully', 'success');
+        
+        // Update subscription UI after logout
+        if (window.subscriptionSystem) {
+            window.subscriptionSystem.updateSubscriptionUI();
+        }
     }
     
     updateUI() {
@@ -524,10 +533,27 @@ class AuthSystem {
                 userInfo.style.display = 'flex';
                 const usernameEl = document.getElementById('display-username');
                 if (usernameEl) usernameEl.textContent = this.currentUser.username;
+                
+                // Show subscription status if available
+                const subscriptionBadge = document.getElementById('subscription-badge');
+                if (subscriptionBadge && window.subscriptionSystem) {
+                    const status = window.subscriptionSystem.getSubscriptionStatus();
+                    if (status.active) {
+                        subscriptionBadge.textContent = status.label;
+                        subscriptionBadge.style.display = 'inline-block';
+                    } else {
+                        subscriptionBadge.style.display = 'none';
+                    }
+                }
             }
         } else {
             if (authButtons) authButtons.style.display = 'flex';
             if (userInfo) userInfo.style.display = 'none';
+        }
+        
+        // Update subscription UI
+        if (window.subscriptionSystem) {
+            window.subscriptionSystem.updateSubscriptionUI();
         }
     }
     

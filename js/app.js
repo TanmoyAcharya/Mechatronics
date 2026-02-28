@@ -130,11 +130,40 @@ class App {
                 this.navigateTo(page);
             });
         });
+        
+        // Also handle dropdown items
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (!item.dataset.page) return;
+                const page = item.dataset.page;
+                this.navigateTo(page);
+            });
+        });
     }
     
     navigateTo(page) {
         // Skip if no page specified
         if (!page) return;
+        
+        // Check content access before navigating
+        if (window.subscriptionSystem) {
+            const access = window.subscriptionSystem.canAccessContent(page);
+            if (!access.allowed) {
+                if (access.reason === 'login_required') {
+                    // Show login required message and open login modal
+                    if (window.authSystem) {
+                        window.authSystem.showMessage(access.message, 'info');
+                        window.authSystem.openModal('login-modal');
+                    }
+                    return;
+                } else if (access.reason === 'subscription_required') {
+                    // Show subscription modal
+                    window.subscriptionSystem.showSubscriptionModal(page);
+                    return;
+                }
+            }
+        }
         
         console.log('Navigating to:', page);
         
