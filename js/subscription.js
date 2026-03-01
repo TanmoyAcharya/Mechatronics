@@ -81,7 +81,7 @@ class SubscriptionSystem {
         if (typeof Stripe !== 'undefined' && STRIPE_PUBLISHABLE_KEY !== 'pk_test_YOUR_STRIPE_PUBLISHABLE_KEY') {
             this.stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
         } else {
-            console.log('Stripe not configured - running in demo mode');
+            console.log('Stripe not configured - subscriptions unavailable');
         }
     }
     
@@ -213,10 +213,9 @@ class SubscriptionSystem {
             return;
         }
         
-        // For demo/testing mode without Stripe
+        // Stripe must be configured for subscriptions to work
         if (!this.stripe) {
-            // Demo mode - directly activate subscription
-            this.activateDemoSubscription(planId);
+            this.showMessage('Payment system not configured. Please contact support.', 'error');
             return;
         }
         
@@ -232,10 +231,15 @@ class SubscriptionSystem {
             //     body: JSON.stringify({ planId, userId: user.username })
             // });
             // const session = await response.json();
+            // const { sessionId } = session;
             
-            // For demo, we'll simulate the checkout
-            const sessionId = 'demo_session_' + Date.now();
+            // Note: Backend must implement checkout session creation
+            // Without backend, subscriptions cannot be processed
+            this.showMessage('Payment system error. Please try again later.', 'error');
+            this.isLoading = false;
+            return;
             
+            /*
             const result = await this.stripe.redirectToCheckout({
                 sessionId: sessionId
             });
@@ -243,6 +247,7 @@ class SubscriptionSystem {
             if (result.error) {
                 this.showMessage(result.error.message, 'error');
             }
+            */
         } catch (error) {
             console.error('Subscription error:', error);
             this.showMessage('Payment failed. Please try again.', 'error');
@@ -251,8 +256,16 @@ class SubscriptionSystem {
         }
     }
     
-    // Demo subscription activation (for testing without Stripe)
-    activateDemoSubscription(planId) {
+    // Demo subscription activation (DEPRECATED - only for internal testing with explicit flag)
+    // Premium content now requires actual payment through Stripe
+    activateDemoSubscription(planId, isInternalTesting = false) {
+        // This method is disabled - subscriptions require payment
+        this.showMessage('Payment required. Please configure Stripe to enable subscriptions.', 'error');
+        return;
+        
+        /* Legacy demo code removed - was allowing free access to premium content */
+        /* This was a security issue as it allowed bypassing payment */
+        /*
         const plan = SUBSCRIPTION_PLANS[planId];
         const user = this.getCurrentUser();
         
@@ -278,6 +291,7 @@ class SubscriptionSystem {
         
         // Trigger custom event for UI update
         window.dispatchEvent(new CustomEvent('subscriptionUpdated', { detail: subscriptionData }));
+        */
     }
     
     // Process webhook (for real Stripe implementation)
@@ -433,9 +447,6 @@ class SubscriptionSystem {
                 
                 <div class="payment-info">
                     <p>🔒 Secure payment powered by Stripe</p>
-                    <p class="demo-note" style="color: #666; font-size: 0.9em;">
-                        <em>Note: Demo mode - subscription activates immediately without payment</em>
-                    </p>
                 </div>
             </div>
         `;
