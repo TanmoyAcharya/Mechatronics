@@ -50,8 +50,9 @@ const CONTENT_ACCESS = {
     login: [],
     
     // Premium content - subscription required (all topics)
+    // Note: Must match the actual page IDs used in HTML and navigation
     premium: ['synchronous', 'induction', 'dc-motor', 'transformer', 'pmsm', 'solarpanel', 
-              'windturbine', 'v2g', 'evtol', 'powerelectronics', 'widebandgap', 
+              'windturbine', 'v2g', 'evtol', 'powerelec', 'widebandgap', 
               'construction', 'communication', 'ledlighting', 'circuitbreaker', 
               'bldcfan', 'compressor', 'lift', 'catfollower', 'learn']
 };
@@ -190,8 +191,12 @@ class SubscriptionSystem {
             };
         }
         
-        // Default - allow access
-        return { allowed: true, reason: null };
+        // Default - require subscription for any unknown pages (security default)
+        return { 
+            allowed: false, 
+            reason: 'subscription_required',
+            message: 'This content requires a subscription.'
+        };
     }
     
     // Initiate subscription process
@@ -377,7 +382,7 @@ class SubscriptionSystem {
                     'windturbine': 'Wind Turbine Simulator',
                     'v2g': 'V2G (Vehicle-to-Grid) Simulator',
                     'evtol': 'eVTOL Aircraft Simulator',
-                    'powerelectronics': 'Power Electronics Simulator',
+                    'powerelec': 'Power Electronics Simulator',
                     'widebandgap': 'Widebandgap (SiC/GaN) Simulator',
                     'construction': 'Construction Simulator',
                     'communication': 'Communication System Simulator',
