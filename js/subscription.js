@@ -43,18 +43,18 @@ const SUBSCRIPTION_PLANS = {
 
 // Content access levels
 const CONTENT_ACCESS = {
-    // Free content - no login required (only home page is free)
-    free: ['home'],
+    // Free content - no login required (home and about)
+    free: ['home', 'about'],
     
     // Login required content
     login: [],
     
-    // Premium content - subscription required (all topics)
+    // Premium content - subscription required (all topics except home and about)
     // Note: Must match the actual page IDs used in HTML and navigation
     premium: ['synchronous', 'induction', 'dc-motor', 'transformer', 'pmsm', 'solarpanel', 
               'windturbine', 'v2g', 'evtol', 'powerelec', 'widebandgap', 
               'construction', 'communication', 'ledlighting', 'circuitbreaker', 
-              'bldcfan', 'compressor', 'lift', 'catfollower', 'learn']
+              'bldcfan', 'compressor', 'lift', 'catfollower', 'learn', 'blog']
 };
 
 class SubscriptionSystem {
@@ -392,7 +392,9 @@ class SubscriptionSystem {
                     'compressor': 'Compressor Simulator',
                     'lift': 'Elevator/Lift Simulator',
                     'catfollower': 'CAT Follower Simulator',
-                    'learn': 'Learning Module'
+                    'learn': 'Learning Module',
+                    'about': 'About Page',
+                    'blog': 'Tech Blog'
                 };
                 lockedInfo.textContent = `Unlock: ${contentNames[contentType] || contentType}`;
                 lockedInfo.style.display = 'block';

@@ -208,6 +208,25 @@ body::before {
     border-bottom: none;
 }
 
+/* Locked dropdown items - Premium content */
+.dropdown-item.locked {
+    opacity: 0.7;
+    color: var(--text-muted, #888);
+}
+
+.dropdown-item.locked::after {
+    content: '🔒';
+    margin-left: auto;
+    font-size: 0.9rem;
+}
+
+.dropdown-item.locked:hover {
+    background: linear-gradient(90deg, rgba(255, 107, 107, 0.15), transparent);
+    color: #ff6b6b;
+    border-bottom: 1px solid rgba(255, 107, 107, 0.3);
+    cursor: pointer;
+}
+
 .dropdown-icon {
     font-size: 1.3rem;
     width: 32px;
@@ -1276,6 +1295,55 @@ main {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--primary-color);
+}
+
+/* Subscription Banner (replaces donation in About page) */
+.subscription-banner {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(99, 102, 241, 0.15));
+    border: 2px solid var(--primary-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-2xl);
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto var(--space-2xl);
+}
+
+.subscription-banner .banner-content h2 {
+    color: var(--text-primary);
+    margin-bottom: var(--space-md);
+}
+
+.subscription-banner .banner-content p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+.subscription-banner .banner-content ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: var(--space-lg);
+}
+
+.subscription-banner .banner-content ul li {
+    color: var(--text-secondary);
+    padding: var(--space-xs) 0;
+}
+
+.subscription-banner .subscribe-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    padding: var(--space-md) var(--space-xl);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.subscription-banner .subscribe-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
 }
 
 .donation-buttons {

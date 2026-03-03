@@ -227,10 +227,10 @@
                 <div class="dropdown">
                     <button class="nav-btn dropdown-toggle">Power ▾</button>
                     <div class="dropdown-menu">
-                        <button class="dropdown-item" data-page="powerelec">📊 Power Electronics</button>
-                        <button class="dropdown-item" data-page="widebandgap">⚡ Widebandgap</button>
-                        <button class="dropdown-item" data-page="v2g">🚗 V2G</button>
-                        <button class="dropdown-item" data-page="evtol">🚁 EVTOL</button>
+                        <button class="dropdown-item locked" data-page="powerelec">📊 Power Electronics 🔒</button>
+                        <button class="dropdown-item locked" data-page="widebandgap">⚡ Widebandgap 🔒</button>
+                        <button class="dropdown-item locked" data-page="v2g">🚗 V2G 🔒</button>
+                        <button class="dropdown-item locked" data-page="evtol">🚁 EVTOL 🔒</button>
                     </div>
                 </div>
                 <div class="dropdown">
@@ -250,12 +250,12 @@
                 <div class="dropdown">
                     <button class="nav-btn dropdown-toggle">Systems ▾</button>
                     <div class="dropdown-menu">
-                        <button class="dropdown-item" data-page="communication">📡 Communication Protocols</button>
-                        <button class="dropdown-item" data-page="ledlighting">💡 LED Lighting</button>
-                        <button class="dropdown-item" data-page="circuitbreaker">🔌 Circuit Breaker</button>
-                        <button class="dropdown-item" data-page="bldcfan">🌀 BLDC Fan</button>
-                        <button class="dropdown-item" data-page="compressor">🔧 Compressor</button>
-                        <button class="dropdown-item" data-page="lift">🏢 Lift/Elevator</button>
+                        <button class="dropdown-item locked" data-page="communication">📡 Communication Protocols 🔒</button>
+                        <button class="dropdown-item locked" data-page="ledlighting">💡 LED Lighting 🔒</button>
+                        <button class="dropdown-item locked" data-page="circuitbreaker">🔌 Circuit Breaker 🔒</button>
+                        <button class="dropdown-item locked" data-page="bldcfan">🌀 BLDC Fan 🔒</button>
+                        <button class="dropdown-item locked" data-page="compressor">🔧 Compressor 🔒</button>
+                        <button class="dropdown-item locked" data-page="lift">🏢 Lift/Elevator 🔒</button>
                     </div>
                 </div>
             </nav>
@@ -2819,7 +2819,7 @@
         </section>
     </main>
 
-    <!-- About Section -->
+    <!-- About Section (Premium) -->
     <section id="about-page" class="page">
         <div class="page-header">
             <div class="about-hero-animation">
@@ -2867,33 +2867,28 @@
                 </div>
             </div>
             
-            <div class="donation-section">
-                <div class="donation-card">
-                    <h2>💝 Support This Project</h2>
-                    <p>ElectroMachines Lab is free for everyone to use. If you've learned something valuable, please consider supporting my studies and website maintenance costs.</p>
-                    <p class="donation-amounts">Any amount helps! 💰</p>
-                    <div class="donation-buttons">
-                        <button class="donation-btn" data-amount="5" onclick="processDonation(5)">$5</button>
-                        <button class="donation-btn" data-amount="10" onclick="processDonation(10)">$10</button>
-                        <button class="donation-btn" data-amount="25" onclick="processDonation(25)">$25</button>
-                        <button class="donation-btn custom" onclick="showCustomAmount()">Custom</button>
-                    </div>
-                    <div id="custom-amount-input" class="custom-amount" style="display:none;">
-                        <input type="number" id="donation-custom-amount" placeholder="Enter amount" min="1">
-                        <button class="donation-btn" onclick="processDonation(document.getElementById('donation-custom-amount').value)">Donate</button>
-                    </div>
-                    <p class="stripe-note">🔒 Secure payment powered by Stripe</p>
+            <div class="subscription-banner">
+                <div class="banner-content">
+                    <h2>🔓 Premium Subscription</h2>
+                    <p>Unlock full access to all simulators and learning content with a subscription.</p>
+                    <ul>
+                        <li>✓ Access to all 20+ premium simulators</li>
+                        <li>✓ DC Motor, PMSM, eVTOL, Wind Turbine & more</li>
+                        <li>✓ No advertisements</li>
+                        <li>✓ Priority support</li>
+                    </ul>
+                    <button class="btn-primary subscribe-btn" data-plan="yearly">Subscribe for €10/year</button>
                 </div>
             </div>
             
             <div class="about-features">
                 <div class="feature-card">
-                    <h3>🎓 Free Education</h3>
-                    <p>All simulators and learning materials are completely free</p>
+                    <h3>🎓 Interactive Learning</h3>
+                    <p>Hands-on simulations for deep understanding</p>
                 </div>
                 <div class="feature-card">
                     <h3>🌍 Accessible Everywhere</h3>
-                    <p>Learn from anywhere in the world with internet access</p>
+                    <p>Learn from anywhere in the world</p>
                 </div>
                 <div class="feature-card">
                     <h3>🚀 Always Improving</h3>
