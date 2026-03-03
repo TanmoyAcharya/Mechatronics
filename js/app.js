@@ -136,6 +136,16 @@ class App {
         dropdownItems.forEach(item => {
             item.addEventListener('click', (e) => {
                 if (!item.dataset.page) return;
+                
+                // Check if this is a locked item
+                if (item.classList.contains('locked')) {
+                    // Show subscription modal for locked content
+                    if (window.subscriptionSystem) {
+                        window.subscriptionSystem.showSubscriptionModal(item.dataset.page);
+                    }
+                    return;
+                }
+                
                 const page = item.dataset.page;
                 this.navigateTo(page);
             });
