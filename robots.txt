@@ -2,6 +2,8 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /private
+Disallow: /js/app.js
+Disallow: /js/auth.js
 
 # Sitemap
 Sitemap: https://electromachinelab.com/sitemap.xml

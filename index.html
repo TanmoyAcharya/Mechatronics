@@ -3,9 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ElectroMachines Lab | Learn and Enjoy the World of Machines</title>
-    <meta name="description" content="Interactive electrical machines simulations - learn and enjoy the world of machines">
-    <meta name="keywords" content="electrical machines, simulations, motors, transformers, induction, synchronous, PMSM, V2G, power electronics, wind turbine, solar panel, learning, education">
+    <title>Electrical Machines Lab | Electrical Engineering Simulations - Motors, Transformers, Power Electronics</title>
+    <meta name="description" content="Free interactive electrical machines simulator for engineering students. Learn DC motors, AC motors, transformers, PMSM, induction machines, synchronous generators, power electronics, renewable energy systems. Perfect for electrical engineering education.">
+    <meta name="keywords" content="electrical machines, electrical engineering, electronics engineering, motor simulator, transformer simulator, DC motor, AC motor, induction motor, synchronous machine, PMSM, power electronics, wind turbine, solar panel, V2G, electrical education, engineering simulations, electric machines, generator, mechatronics, electrical machines learning, engineering student, online simulator, free electrical engineering courses, electrical machines fundamentals">
+    <meta name="subject" content="Electrical Engineering Education">
+    <meta name="classification" content="Education">
+    <meta name="rating" content="General">
+    <meta name="distribution" content="Global">
+    <meta name="language" content="en-US">
+    <meta name="revisit-after" content="7 days">
+    <meta name="expires" content="never">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ElectroMachines Lab">
+    <meta name="msapplication-TileColor" content="#2563eb">
+    <meta name="msapplication-navbutton-color" content="#2563eb">
     
     <!-- Security Headers -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://accounts.google.com https://js.stripe.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.emailjs.com https://*.google-analytics.com https://analytics.google.com; frame-src https://accounts.google.com; upgrade-insecure-requests;">
@@ -13,8 +25,9 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">
-    <meta name="robots" content="index, follow">
-    <meta name="googlebot" content="index, follow">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow">
     
     <link rel="canonical" href="https://electromachineslab.com/">
     <meta name="author" content="ElectroMachines Lab">
@@ -23,21 +36,34 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="ElectroMachines Lab">
     <link rel="icon" type="image/svg+xml" href="./og-image.svg">
+    <link rel="shortcut icon" type="image/svg+xml" href="./og-image.svg">
+    <link rel="mask-icon" color="#2563eb" href="./og-image.svg">
     <link rel="apple-touch-icon" href="./og-image.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="./og-image.svg">
+    <link rel="apple-touch-icon" sizes="152x152" href="./og-image.svg">
+    <link rel="apple-touch-icon" sizes="120x120" href="./og-image.svg">
     <link rel="alternate" hreflang="en" href="https://electromachinelab.com/">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://electromachinelab.com/">
-    <meta property="og:title" content="ElectroMachines Lab | Interactive Electrical Machines Simulations">
-    <meta property="og:description" content="Master electrical machines through interactive simulations - DC motors, AC machines, transformers, power electronics, and renewable energy systems.">
+    <meta property="og:title" content="Electrical Machines Lab | Free Interactive Engineering Simulator">
+    <meta property="og:description" content="Free electrical machines simulator for engineering students. Learn DC motors, AC motors, transformers, PMSM, induction machines, power electronics, wind turbines, solar panels. Interactive online education.">
     <meta property="og:image" content="./og-image.svg">
+    <meta property="og:image:alt" content="ElectroMachines Lab - Interactive Electrical Engineering Simulations">
+    <meta property="og:image:type" content="image/svg+xml">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="en_GB">
     <meta property="og:site_name" content="ElectroMachines Lab">
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@electromachineslab">
-    <meta name="twitter:title" content="ElectroMachines Lab | Interactive Electrical Machines Simulations">
-    <meta name="twitter:description" content="Master electrical machines through interactive simulations - DC motors, AC machines, transformers, power electronics, and renewable energy systems.">
+    <meta name="twitter:creator" content="@electromachineslab">
+    <meta name="twitter:title" content="Electrical Machines Lab | Free Interactive Engineering Simulator">
+    <meta name="twitter:description" content="Free electrical machines simulator for engineering students. Learn DC motors, AC motors, transformers, PMSM, power electronics, renewable energy.">
     <meta name="twitter:image" content="./og-image.svg">
+    <meta name="twitter:image:alt" content="ElectroMachines Lab - Interactive Electrical Engineering Simulations for Students">
     
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
@@ -144,6 +170,159 @@
         "name": "Home",
         "item": "https://electromachinelab.com/"
       }]
+    }
+    </script>
+    
+    <!-- FAQ Schema for SEO - Electrical Machines Questions -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the best free online electrical machine simulator?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ElectroMachines Lab offers free interactive simulations for DC motors, AC motors, transformers, PMSM, induction machines, synchronous generators, and more. Perfect for electrical engineering students."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I learn electrical machines online?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use our interactive simulators to learn DC motors, AC motors, transformers, and power electronics. Each simulator includes real-time parameter control and visual waveforms."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a DC motor simulator?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Our DC motor simulator allows you to explore shunt, series, and compound motor characteristics. Adjust voltage, current, field resistance, and see real-time speed-torque curves."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does an induction motor work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use our induction machine simulator to understand slip, torque-speed characteristics, and rotor behavior. Visualize magnetic field rotation and stator-rotor interaction."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is synchronous machine simulation?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Our synchronous machine simulator demonstrates generator and motor operation with field excitation control, phasor diagrams, and power factor adjustment."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do power electronics converters work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Learn DC-DC converters and inverters with our interactive power electronics simulator. Explore buck, boost, buck-boost topologies and PWM control."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is PMSM control?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Permanent Magnet Synchronous Machine (PMSM) simulator with vector control. Understand d-q axis transformation, torque control, and field-oriented control."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do wind turbines generate electricity?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Explore wind turbine power generation with our simulator. Understand Betz limit, blade pitch control, and power curve analysis."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is solar panel simulation?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Learn about PV system power generation, I-V curves, MPPT algorithms, and how temperature and irradiance affect solar panel output."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is V2G technology?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Vehicle-to-Grid (V2G) simulator demonstrates how electric vehicles can provide grid services, frequency regulation, and bidirectional power flow."
+          }
+        }
+      ]
+    }
+    </script>
+    
+    <!-- HowTo Schema for Learning Electrical Machines -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to Learn Electrical Machines Online",
+      "description": "Step-by-step guide to learning electrical machines through interactive simulations",
+      "url": "https://electromachinelab.com/#learn",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "name": "Start with DC Motor Basics",
+          "text": "Begin by exploring the DC motor simulator to understand fundamental concepts like voltage, current, magnetic fields, and speed-torque relationships.",
+          "url": "https://electromachinelab.com/#dc-motor"
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Learn AC Machine Principles",
+          "text": "Move to induction and synchronous machine simulators to understand AC motor operation, slip, and alternating field principles.",
+          "url": "https://electromachinelab.com/#induction"
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Study Transformers",
+          "text": "Use the transformer simulator to understand electromagnetic induction, voltage transformation, and equivalent circuits.",
+          "url": "https://electromachinelab.com/#transformer"
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Explore Power Electronics",
+          "text": "Learn about converters and inverters that control electrical machines using our power electronics simulator.",
+          "url": "https://electromachinelab.com/#powerelec"
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Apply to Renewable Energy",
+          "text": "Apply your knowledge to wind turbine and solar panel simulators to understand renewable energy systems.",
+          "url": "https://electromachinelab.com/#windturbine"
+        }
+      ]
+    }
+    </script>
+    
+    <!-- Organization Schema for Local SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "ElectroMachines Lab",
+      "url": "https://electromachinelab.com",
+      "logo": "https://electromachinelab.com/og-image.svg",
+      "description": "Free interactive electrical machines simulator for engineering students. Learn DC motors, AC motors, transformers, PMSM, induction machines, and power electronics.",
+      "sameAs": [
+        "https://twitter.com/electromachineslab"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Service",
+        "email": "support@electromachinelab.com"
+      }
     }
     </script>
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
