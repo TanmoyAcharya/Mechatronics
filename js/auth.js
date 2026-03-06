@@ -281,74 +281,74 @@ class AuthSystem {
                 this.showMessage('Please fill all fields', 'error');
                 return;
             }
-        
-        if (!this.validateEmail(email)) {
-            this.showMessage('Please enter a valid email address', 'error');
-            return;
-        }
-        
-        if (password !== confirmPassword) {
-            this.showMessage('Passwords do not match', 'error');
-            return;
-        }
-        
-        // Improved password validation (at least 8 characters)
-        if (password.length < 8) {
-            this.showMessage('Password must be at least 8 characters', 'error');
-            return;
-        }
-        
-        // Check password strength
-        const strength = this.checkPasswordStrength(password);
-        if (strength.strength < 3) {
-            this.showMessage(`Password too weak. Add: ${strength.feedback.join(', ')}`, 'error');
-            return;
-        }
-        
-        // Get existing users
-        const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
-        
-        // Check if username or email exists
-        if (users.find(u => u.username === username)) {
-            this.showMessage('Username already exists', 'error');
-            return;
-        }
-        
-        if (users.find(u => u.email === email)) {
-            this.showMessage('Email already registered', 'error');
-            return;
-        }
-        
-        // Generate OTP
-        const otp = this.generateOTP();
-        
-        // Hash the password with unique salt
-        const passwordResult = await this.hashPassword(password);
-        
-        // Store pending registration with hashed password and salt
-        this.pendingRegistration = {
-            username,
-            email,
-            passwordHash: passwordResult.hash,
-            salt: passwordResult.salt,
-            otp,
-            otpExpiry: Date.now() + this.otpExpiry
-        };
-        
-        // Store OTP for verification
-        localStorage.setItem('emlab_pending_otp', JSON.stringify({
-            otp,
-            email,
-            expiry: Date.now() + this.otpExpiry
-        }));
-        
-        // Send OTP via email
-        this.showMessage('Sending OTP to your email...', 'info');
-        const emailResult = await this.sendOTPByEmail(email, otp);
-        
-        // Show OTP modal
-        this.closeModal('register-modal');
-        this.showOTPModal(email, otp, emailResult);
+            
+            if (!this.validateEmail(email)) {
+                this.showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                this.showMessage('Passwords do not match', 'error');
+                return;
+            }
+            
+            // Improved password validation (at least 8 characters)
+            if (password.length < 8) {
+                this.showMessage('Password must be at least 8 characters', 'error');
+                return;
+            }
+            
+            // Check password strength
+            const strength = this.checkPasswordStrength(password);
+            if (strength.strength < 3) {
+                this.showMessage(`Password too weak. Add: ${strength.feedback.join(', ')}`, 'error');
+                return;
+            }
+            
+            // Get existing users
+            const users = JSON.parse(localStorage.getItem('emlab_users') || '[]');
+            
+            // Check if username or email exists
+            if (users.find(u => u.username === username)) {
+                this.showMessage('Username already exists', 'error');
+                return;
+            }
+            
+            if (users.find(u => u.email === email)) {
+                this.showMessage('Email already registered', 'error');
+                return;
+            }
+            
+            // Generate OTP
+            const otp = this.generateOTP();
+            
+            // Hash the password with unique salt
+            const passwordResult = await this.hashPassword(password);
+            
+            // Store pending registration with hashed password and salt
+            this.pendingRegistration = {
+                username,
+                email,
+                passwordHash: passwordResult.hash,
+                salt: passwordResult.salt,
+                otp,
+                otpExpiry: Date.now() + this.otpExpiry
+            };
+            
+            // Store OTP for verification
+            localStorage.setItem('emlab_pending_otp', JSON.stringify({
+                otp,
+                email,
+                expiry: Date.now() + this.otpExpiry
+            }));
+            
+            // Send OTP via email
+            this.showMessage('Sending OTP to your email...', 'info');
+            const emailResult = await this.sendOTPByEmail(email, otp);
+            
+            // Show OTP modal
+            this.closeModal('register-modal');
+            this.showOTPModal(email, otp, emailResult);
         } catch (error) {
             console.error('Registration error:', error);
             this.showMessage('Registration failed. Please try again.', 'error');
