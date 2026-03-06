@@ -172,6 +172,7 @@ class AuthSystem {
     
     setupEventListeners() {
         console.log('Setting up auth event listeners...');
+        alert('Auth system initializing...');
         // Login form
         const loginBtn = document.getElementById('login-btn');
         console.log('Login button found:', !!loginBtn);
