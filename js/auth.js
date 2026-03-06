@@ -3,10 +3,10 @@
  * Secure localStorage-based authentication with OTP verification and email sending
  */
 
-// EmailJS configuration - Replace with your own credentials
-const EMAILJS_PUBLIC_KEY = 'YOUR_EMAILJS_PUBLIC_KEY';
-const EMAILJS_SERVICE_ID = 'YOUR_EMAILJS_SERVICE_ID';
-const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_OTP_TEMPLATE_ID';
+// EmailJS configuration
+const EMAILJS_PUBLIC_KEY = 'CjK7fc4KNKyslZzN1';
+const EMAILJS_SERVICE_ID = 'service_u914mn7';
+const EMAILJS_TEMPLATE_ID = 'template_at24gvm';
 
 class AuthSystem {
     constructor() {
@@ -384,7 +384,9 @@ class AuthSystem {
             } else if (emailResult && emailResult.demo) {
                 statusEl.style.display = 'block';
                 statusEl.style.color = 'orange';
-                statusEl.textContent = '⚠ Demo mode: OTP shown below for testing';
+                statusEl.textContent = '⚠ Demo mode: Use OTP below for testing';
+                // Auto-fill OTP in demo mode so user can test
+                document.getElementById('otp-input').value = otp || '';
             } else {
                 statusEl.style.display = 'none';
             }
