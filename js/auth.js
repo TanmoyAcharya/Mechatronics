@@ -887,6 +887,7 @@ async function handleGoogleLogin(response) {
 }
 
 // Initialize auth system
+alert('Auth.js is loading!');
 document.addEventListener('DOMContentLoaded', () => {
     window.authSystem = new AuthSystem();
 });
