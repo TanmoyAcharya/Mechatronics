@@ -180,7 +180,14 @@ class AuthSystem {
         // Register form
         const registerBtn = document.getElementById('register-btn');
         if (registerBtn) {
-            registerBtn.addEventListener('click', () => this.startRegistration());
+            registerBtn.addEventListener('click', async () => {
+                try {
+                    await this.startRegistration();
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    this.showMessage('Registration failed. Please try again.', 'error');
+                }
+            });
         }
         
         // OTP verification
@@ -263,16 +270,17 @@ class AuthSystem {
     }
     
     async startRegistration() {
-        const username = this.sanitizeInput(document.getElementById('reg-username')?.value || document.getElementById('home-reg-username')?.value || '');
-        const email = this.sanitizeInput(document.getElementById('reg-email')?.value || document.getElementById('home-reg-email')?.value || '');
-        const password = document.getElementById('reg-password')?.value || document.getElementById('home-reg-password')?.value || '';
-        const confirmPassword = document.getElementById('reg-confirm-password')?.value || document.getElementById('home-reg-confirm-password')?.value || '';
-        
-        // Validation
-        if (!username || !email || !password) {
-            this.showMessage('Please fill all fields', 'error');
-            return;
-        }
+        try {
+            const username = this.sanitizeInput(document.getElementById('reg-username')?.value || document.getElementById('home-reg-username')?.value || '');
+            const email = this.sanitizeInput(document.getElementById('reg-email')?.value || document.getElementById('home-reg-email')?.value || '');
+            const password = document.getElementById('reg-password')?.value || document.getElementById('home-reg-password')?.value || '';
+            const confirmPassword = document.getElementById('reg-confirm-password')?.value || document.getElementById('home-reg-confirm-password')?.value || '';
+            
+            // Validation
+            if (!username || !email || !password) {
+                this.showMessage('Please fill all fields', 'error');
+                return;
+            }
         
         if (!this.validateEmail(email)) {
             this.showMessage('Please enter a valid email address', 'error');
@@ -341,6 +349,10 @@ class AuthSystem {
         // Show OTP modal
         this.closeModal('register-modal');
         this.showOTPModal(email, otp, emailResult);
+        } catch (error) {
+            console.error('Registration error:', error);
+            this.showMessage('Registration failed. Please try again.', 'error');
+        }
     }
     
     showOTPModal(email, otp, emailResult = null) {
@@ -507,9 +519,15 @@ class AuthSystem {
         this.showMessage('Account created and verified successfully!', 'success');
     }
     
-    register() {
-        // Legacy method - redirect to OTP flow
-        this.startRegistration();
+    async register() {
+        console.log('Register button clicked');
+        try {
+            // Legacy method - redirect to OTP flow
+            await this.startRegistration();
+        } catch (error) {
+            console.error('Registration error:', error);
+            this.showMessage('Registration failed. Please try again.', 'error');
+        }
     }
     
     logout() {
