@@ -171,10 +171,15 @@ class AuthSystem {
     }
     
     setupEventListeners() {
+        console.log('Setting up auth event listeners...');
         // Login form
         const loginBtn = document.getElementById('login-btn');
+        console.log('Login button found:', !!loginBtn);
         if (loginBtn) {
-            loginBtn.addEventListener('click', () => this.login());
+            loginBtn.addEventListener('click', () => {
+                console.log('Login button clicked');
+                this.login();
+            });
         }
         
         // Register form
