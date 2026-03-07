@@ -172,7 +172,6 @@ class AuthSystem {
     
     setupEventListeners() {
         console.log('Setting up auth event listeners...');
-        alert('Auth system initializing...');
         // Login form
         const loginBtn = document.getElementById('login-btn');
         console.log('Login button found:', !!loginBtn);
@@ -261,7 +260,8 @@ class AuthSystem {
             // Update subscription UI after login
             if (window.subscriptionSystem) {
                 window.subscriptionSystem.updateSubscriptionUI();
-            } else {
+            }
+        } else {
             this.recordFailedAttempt();
             const remainingAttempts = this.maxLoginAttempts - parseInt(localStorage.getItem('emlab_failed_attempts') || '0');
             this.showMessage(`Invalid username or password. ${remainingAttempts} attempts remaining.`, 'error');

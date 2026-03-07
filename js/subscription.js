@@ -43,18 +43,18 @@ const SUBSCRIPTION_PLANS = {
 
 // Content access levels
 const CONTENT_ACCESS = {
-    // Free content - no login required (home and about)
-    free: ['home', 'about'],
+    // Free content - no login/subscription required
+    free: ['home', 'about', 'learn', 'blog'],
     
-    // Login required content
+    // Login required content (can be added later if needed)
     login: [],
     
-    // Premium content - subscription required (all topics except home and about)
+    // Premium content - subscription required (systems/simulators only)
     // Note: Must match the actual page IDs used in HTML and navigation
     premium: ['synchronous', 'induction', 'dc-motor', 'transformer', 'pmsm', 'solarpanel', 
               'windturbine', 'v2g', 'evtol', 'powerelec', 'widebandgap', 
               'construction', 'communication', 'ledlighting', 'circuitbreaker', 
-              'bldcfan', 'compressor', 'lift', 'catfollower', 'learn', 'blog']
+              'bldcfan', 'compressor', 'lift']
 };
 
 class SubscriptionSystem {
