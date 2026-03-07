@@ -43,16 +43,18 @@ const SUBSCRIPTION_PLANS = {
 
 // Content access levels
 const CONTENT_ACCESS = {
-    // Free content - no login/subscription required
-    free: ['home', 'about', 'learn', 'blog'],
+    // Free content - no login/subscription required (home, about, learn, blog + AC/DC/Energy sections)
+    free: ['home', 'about', 'learn', 'blog', 
+           'synchronous', 'induction', 'pmsm',  // AC Machines
+           'dc-motor', 'transformer',           // DC & Transformer
+           'windturbine', 'solarpanel'],         // Energy
     
     // Login required content (can be added later if needed)
     login: [],
     
-    // Premium content - subscription required (systems/simulators only)
+    // Premium content - subscription required (remaining systems/simulators)
     // Note: Must match the actual page IDs used in HTML and navigation
-    premium: ['synchronous', 'induction', 'dc-motor', 'transformer', 'pmsm', 'solarpanel', 
-              'windturbine', 'v2g', 'evtol', 'powerelec', 'widebandgap', 
+    premium: ['v2g', 'evtol', 'powerelec', 'widebandgap', 
               'construction', 'communication', 'ledlighting', 'circuitbreaker', 
               'bldcfan', 'compressor', 'lift']
 };
