@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>ElectroMachines Lab - Interactive Electrical Engineering Simulations</title>
+    <link>https://electromachineslab.com</link>
+    <description>Free interactive electrical machines simulator for engineering students. Learn DC motors, AC motors, transformers, PMSM, induction machines, synchronous generators, power electronics, renewable energy systems.</description>
+    <language>en-us</language>
+    <copyright>2024 ElectroMachines Lab</copyright>
+    <managingEditor>support@electromachinelab.com</managingEditor>
+    <lastBuildDate>Tue, 01 Jan 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://electromachineslab.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <category>Education</category>
+    <category>Engineering</category>
+    <category>Electrical Machines</category>
+    <image>
+      <url>https://electromachineslab.com/og-image.svg</url>
+      <title>ElectroMachines Lab</title>
+      <link>https://electromachineslab.com</link>
+    </image>
+    
+    <!-- DC Motor -->
+    <item>
+      <title>DC Motor Simulator</title>
+      <link>https://electromachineslab.com/#dc-motor</link>
+      <description>Interactive DC motor simulator for learning shunt, series, and compound motor characteristics. Adjust voltage, current, field resistance, and see real-time speed-torque curves.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#dc-motor</guid>
+      <category>DC Motor</category>
+      <category>Electrical Machines</category>
+      <category>Motor Simulator</category>
+    </item>
+    
+    <!-- Synchronous Machine -->
+    <item>
+      <title>Synchronous Machine Simulator</title>
+      <link>https://electromachineslab.com/#synchronous</link>
+      <description>Explore synchronous motor and generator operation with field excitation control, phasor diagrams, and power factor adjustment. Interactive 3D simulations.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#synchronous</guid>
+      <category>Synchronous Machine</category>
+      <category>AC Machines</category>
+      <category>Generator</category>
+    </item>
+    
+    <!-- Induction Machine -->
+    <item>
+      <title>Induction Machine Simulator</title>
+      <link>https://electromachineslab.com/#induction</link>
+      <description>Deep dive into asynchronous motors and generators with slip analysis. Visualize magnetic field rotation and stator-rotor interaction.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#induction</guid>
+      <category>Induction Motor</category>
+      <category>AC Machines</category>
+      <category>Asynchronous</category>
+    </item>
+    
+    <!-- PMSM -->
+    <item>
+      <title>PMSM Simulator - Permanent Magnet Synchronous Motor</title>
+      <link>https://electromachineslab.com/#pmsm</link>
+      <description>Learn permanent magnet synchronous motor control techniques with vector control. Understand d-q axis transformation, torque control, and field-oriented control.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#pmsm</guid>
+      <category>PMSM</category>
+      <category>Motor Control</category>
+      <category>Vector Control</category>
+    </item>
+    
+    <!-- Transformer -->
+    <item>
+      <title>Transformer Simulator</title>
+      <link>https://electromachineslab.com/#transformer</link>
+      <description>Understand transformer operation, equivalent circuits, and applications. Interactive simulations for step-up, step-down, and isolation transformers.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#transformer</guid>
+      <category>Transformer</category>
+      <category>Power Systems</category>
+      <category>Electromagnetic</category>
+    </item>
+    
+    <!-- Power Electronics -->
+    <item>
+      <title>Power Electronics Simulator</title>
+      <link>https://electromachineslab.com/#powerelectronics</link>
+      <description>Learn DC-DC converters and inverters with our interactive power electronics simulator. Explore buck, boost, buck-boost topologies and PWM control.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#powerelectronics</guid>
+      <category>Power Electronics</category>
+      <category>Converters</category>
+      <category>Inverters</category>
+    </item>
+    
+    <!-- Wind Turbine -->
+    <item>
+      <title>Wind Turbine Simulator</title>
+      <link>https://electromachineslab.com/#windturbine</link>
+      <description>Explore wind turbine power generation with our simulator. Understand Betz limit, blade pitch control, and power curve analysis.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#windturbine</guid>
+      <category>Wind Turbine</category>
+      <category>Renewable Energy</category>
+      <category>Wind Power</category>
+    </item>
+    
+    <!-- Solar Panel -->
+    <item>
+      <title>Solar Panel Simulator</title>
+      <link>https://electromachineslab.com/#solarpanel</link>
+      <description>Learn about PV system power generation, I-V curves, MPPT algorithms, and how temperature and irradiance affect solar panel output.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#solarpanel</guid>
+      <category>Solar Panel</category>
+      <category>Renewable Energy</category>
+      <category>Photovoltaic</category>
+    </item>
+    
+    <!-- V2G -->
+    <item>
+      <title>V2G Technology Simulator - Vehicle-to-Grid</title>
+      <link>https://electromachineslab.com/#v2g</link>
+      <description>Vehicle-to-Grid (V2G) simulator demonstrates how electric vehicles can provide grid services, frequency regulation, and bidirectional power flow.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#v2g</guid>
+      <category>V2G</category>
+      <category>Electric Vehicles</category>
+      <category>Grid Integration</category>
+    </item>
+    
+    <!-- eVTOL -->
+    <item>
+      <title>eVTOL Simulations - Electric Vertical Takeoff and Landing</title>
+      <link>https://electromachineslab.com/#evtol</link>
+      <description>Explore electric vertical takeoff and landing aircraft simulations including propulsion systems, battery management, and flight control.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#evtol</guid>
+      <category>eVTOL</category>
+      <category>Electric Aviation</category>
+      <category>Aerospace</category>
+    </item>
+    
+    <!-- BLDC Fan -->
+    <item>
+      <title>BLDC Fan Simulator</title>
+      <link>https://electromachineslab.com/#bldcfan</link>
+      <description>Brushless DC fan simulator for understanding electronic commutation, motor control, and cooling system design.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#bldcfan</guid>
+      <category>BLDC</category>
+      <category>Fan</category>
+      <category>Motor Control</category>
+    </item>
+    
+    <!-- Circuit Breaker -->
+    <item>
+      <title>Circuit Breaker Simulator</title>
+      <link>https://electromachineslab.com/#circuitbreaker</link>
+      <description>Learn about circuit breaker operation, fault detection, protection coordination, and interrupting ratings.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#circuitbreaker</guid>
+      <category>Circuit Breaker</category>
+      <category>Power Protection</category>
+      <category>Electrical Safety</category>
+    </item>
+    
+    <!-- Compressor -->
+    <item>
+      <title>Compressor Simulator</title>
+      <link>https://electromachineslab.com/#compressor</link>
+      <description>Interactive compressor simulations for understanding compression cycles, motor drives, and HVAC systems.</description>
+      <pubDate>Tue, 01 Jan 2025 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#compressor</guid>
+      <category>Compressor</category>

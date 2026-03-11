@@ -1,0 +1,327 @@
+{
+  "@context": "https://schema.org",
+  "@type": "DataFeed",
+  "name": "ElectroMachines Lab API",
+  "description": "Machine-readable data feed of all available electrical machine simulators and educational content",
+  "url": "https://electromachineslab.com/api.json",
+  "version": "1.0.0",
+  "license": "https://creativecommons.org/licenses/by-nc/4.0/",
+  "dateModified": "2025-01-01T00:00:00Z",
+  "publisher": {
+    "@type": "Organization",
+    "name": "ElectroMachines Lab",
+    "url": "https://electromachineslab.com",
+    "email": "support@electromachinelab.com"
+  },
+  "about": {
+    "@type": "Thing",
+    "name": "Electrical Machines",
+    "description": "Interactive simulations for learning DC motors, AC motors, transformers, PMSM, induction machines, power electronics, and renewable energy systems"
+  },
+  "audience": {
+    "@type": "EducationalAudience",
+    "educationalRole": "student",
+    "educationalLevel": "Undergraduate to Professional"
+  },
+  "dataset": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "DC Motor Simulator",
+      "url": "https://electromachineslab.com/#dc-motor",
+      "description": "Interactive DC motor simulator for learning shunt, series, and compound motor characteristics. Adjust voltage, current, field resistance, and see real-time speed-torque curves.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Speed-Torque Curves", "Field Control", "Armature Control", "Shunt Motor", "Series Motor", "Compound Motor"],
+      "keywords": ["DC motor", "direct current motor", "motor simulator", "electrical machines", "speed control"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Synchronous Machine Simulator",
+      "url": "https://electromachineslab.com/#synchronous",
+      "description": "Explore synchronous motor and generator operation with field excitation control, phasor diagrams, and power factor adjustment.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Phasor Diagrams", "Field Excitation", "Power Factor", "Generator Mode", "Motor Mode"],
+      "keywords": ["synchronous machine", "synchronous motor", "synchronous generator", "alternator", "power factor"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Induction Machine Simulator",
+      "url": "https://electromachineslab.com/#induction",
+      "description": "Deep dive into asynchronous motors and generators with slip analysis. Visualize magnetic field rotation and stator-rotor interaction.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Slip Analysis", "Torque-Speed Curve", "Magnetic Field Visualization", "Rotor Analysis"],
+      "keywords": ["induction motor", "asynchronous motor", "squirrel cage", "wound rotor", "slip"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "PMSM Simulator",
+      "url": "https://electromachineslab.com/#pmsm",
+      "description": "Learn permanent magnet synchronous motor control techniques with vector control. Understand d-q axis transformation, torque control, and field-oriented control.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Vector Control", "d-q Transformation", "Field Oriented Control", "Torque Control"],
+      "keywords": ["PMSM", "permanent magnet synchronous motor", "vector control", "FOC", "motor control"],
+      "educationalLevel": "Graduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Transformer Simulator",
+      "url": "https://electromachineslab.com/#transformer",
+      "description": "Understand transformer operation, equivalent circuits, and applications. Interactive simulations for step-up, step-down, and isolation transformers.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Equivalent Circuit", "Voltage Transformation", "Impedance Matching", "Efficiency Analysis"],
+      "keywords": ["transformer", "power transformer", "step-up", "step-down", "isolation transformer"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Power Electronics Simulator",
+      "url": "https://electromachineslab.com/#powerelectronics",
+      "description": "Learn DC-DC converters and inverters with our interactive power electronics simulator. Explore buck, boost, buck-boost topologies and PWM control.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Buck Converter", "Boost Converter", "Buck-Boost", "PWM Control", "Inverters"],
+      "keywords": ["power electronics", "converter", "inverter", "PWM", "DC-DC converter", "motor drive"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Wind Turbine Simulator",
+      "url": "https://electromachineslab.com/#windturbine",
+      "description": "Explore wind turbine power generation with our simulator. Understand Betz limit, blade pitch control, and power curve analysis.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Betz Limit", "Blade Pitch Control", "Power Curve", "Wind Power", "CP Curve"],
+      "keywords": ["wind turbine", "wind power", "renewable energy", "Betz limit", "wind energy"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Solar Panel Simulator",
+      "url": "https://electromachineslab.com/#solarpanel",
+      "description": "Learn about PV system power generation, I-V curves, MPPT algorithms, and how temperature and irradiance affect solar panel output.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["I-V Curves", "MPPT Algorithm", "Temperature Effects", "Irradiance Effects", "PV System"],
+      "keywords": ["solar panel", "photovoltaic", "PV", "MPPT", "solar power", "renewable energy"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "V2G Technology Simulator",
+      "url": "https://electromachineslab.com/#v2g",
+      "description": "Vehicle-to-Grid (V2G) simulator demonstrates how electric vehicles can provide grid services, frequency regulation, and bidirectional power flow.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Bidirectional Flow", "Frequency Regulation", "Grid Services", "EV Battery", "Smart Grid"],
+      "keywords": ["V2G", "vehicle to grid", "electric vehicle", "EV", "grid services", "smart grid"],
+      "educationalLevel": "Graduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "eVTOL Simulations",
+      "url": "https://electromachineslab.com/#evtol",
+      "description": "Explore electric vertical takeoff and landing aircraft simulations including propulsion systems, battery management, and flight control.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Propulsion Systems", "Battery Management", "Flight Control", "VTOL", "Electric Aviation"],
+      "keywords": ["eVTOL", "electric aviation", "VTOL", "electric aircraft", "urban air mobility"],
+      "educationalLevel": "Graduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "BLDC Fan Simulator",
+      "url": "https://electromachineslab.com/#bldcfan",
+      "description": "Brushless DC fan simulator for understanding electronic commutation, motor control, and cooling system design.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Electronic Commutation", "Motor Control", "Speed Control", "BLDC"],
+      "keywords": ["BLDC", "brushless DC", "fan", "electronic commutation", "cooling"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Circuit Breaker Simulator",
+      "url": "https://electromachineslab.com/#circuitbreaker",
+      "description": "Learn about circuit breaker operation, fault detection, protection coordination, and interrupting ratings.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Fault Detection", "Protection Coordination", "Interrupting Rating", "Time-Current Characteristic"],
+      "keywords": ["circuit breaker", "protection", "fault detection", "power system protection"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Compressor Simulator",
+      "url": "https://electromachineslab.com/#compressor",
+      "description": "Interactive compressor simulations for understanding compression cycles, motor drives, and HVAC systems.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Compression Cycle", "Motor Drive", "HVAC", "Reciprocating", "Rotary"],
+      "keywords": ["compressor", "HVAC", "refrigeration", "motor drive", "compression"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Elevator/Lift Simulator",
+      "url": "https://electromachineslab.com/#lift",
+      "description": "Interactive elevator simulations including motor control, braking systems, and traffic analysis.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Motor Control", "Braking System", "Traffic Analysis", "Variable Voltage"],
+      "keywords": ["elevator", "lift", "motor control", "braking", "vertical transport"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Wide Bandgap Semiconductors",
+      "url": "https://electromachineslab.com/#widebandgap",
+      "description": "Learn about SiC and GaN semiconductors, their advantages, and applications in power electronics.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["SiC", "GaN", "Semiconductor Properties", "Power Electronics Applications"],
+      "keywords": ["wide bandgap", "SiC", "GaN", "silicon carbide", "gallium nitride", "semiconductor"],
+      "educationalLevel": "Graduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "LED Lighting Simulator",
+      "url": "https://electromachineslab.com/#ledlighting",
+      "description": "Interactive LED lighting simulations including driver circuits, dimming, and color mixing.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["LED Driver", "Dimming", "Color Mixing", "Efficiency Analysis"],
+      "keywords": ["LED", "lighting", "driver", "dimming", "solid state lighting"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Communication Systems",
+      "url": "https://electromachineslab.com/#communication",
+      "description": "Learn about communication systems, modulation techniques, and signal processing in power electronics.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Modulation", "Signal Processing", "Communication Protocols", "Digital Communication"],
+      "keywords": ["communication", "modulation", "signal processing", "digital communication"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Construction Equipment",
+      "url": "https://electromachineslab.com/#construction",
+      "description": "Simulations for electric construction equipment including motors, hydraulic systems, and control systems.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Electric Machinery", "Hydraulic Control", "System Integration", "Heavy Equipment"],
+      "keywords": ["construction", "heavy equipment", "electric machinery", "hydraulics"],
+      "educationalLevel": "Undergraduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  ],
+  "learningResources": [
+    {
+      "@type": "Course",
+      "name": "DC Motor Fundamentals",
+      "description": "Learn the fundamentals of DC motor operation, control, and applications"
+    },
+    {
+      "@type": "Course",
+      "name": "Synchronous Machines",
+      "description": "Explore synchronous motors and generators with field excitation control"
+    },
+    {
+      "@type": "Course",
+      "name": "Induction Machines",
+      "description": "Deep dive into asynchronous motors and generators with slip analysis"
+    },
+    {
+      "@type": "Course",
+      "name": "Power Transformers",
+      "description": "Understand transformer operation, equivalent circuits, and applications"
+    },
+    {
+      "@type": "Course",
+      "name": "PMSM Control",
+      "description": "Learn permanent magnet synchronous motor control techniques"
+    },
+    {
+      "@type": "Course",
+      "name": "Renewable Energy Systems",
+      "description": "Study wind turbines, solar panels, and grid integration"
+    }
+  ],
+  "faq": [
+    {
+      "question": "What is the best free online electrical machine simulator?",
+      "answer": "ElectroMachines Lab offers free interactive simulations for DC motors, AC motors, transformers, PMSM, induction machines, synchronous generators, and more. Perfect for electrical engineering students."
+    },
+    {
+      "question": "How do I learn electrical machines online?",
+      "answer": "Use our interactive simulators to learn DC motors, AC motors, transformers, and power electronics. Each simulator includes real-time parameter control and visual waveforms."
+    },
+    {
+      "question": "What is a DC motor simulator?",
+      "answer": "Our DC motor simulator allows you to explore shunt, series, and compound motor characteristics. Adjust voltage, current, field resistance, and see real-time speed-torque curves."
+    },
+    {
+      "question": "How does an induction motor work?",
+      "answer": "Use our induction machine simulator to understand slip, torque-speed characteristics, and rotor behavior. Visualize magnetic field rotation and stator-rotor interaction."
+    },
+    {
+      "question": "What is synchronous machine simulation?",
+      "answer": "Our synchronous machine simulator demonstrates generator and motor operation with field excitation control, phasor diagrams, and power factor adjustment."
+    },
+    {
+      "question": "How do power electronics converters work?",
+      "answer": "Learn DC-DC converters and inverters with our interactive power electronics simulator. Explore buck, boost, buck-boost topologies and PWM control."
+    },
+    {
+      "question": "What is PMSM control?",
+      "answer": "Permanent Magnet Synchronous Machine (PMSM) simulator with vector control. Understand d-q axis transformation, torque control, and field-oriented control."
+    },
+    {
+      "question": "How do wind turbines generate electricity?",
+      "answer": "Explore wind turbine power generation with our simulator. Understand Betz limit, blade pitch control, and power curve analysis."
+    },
+    {
+      "question": "What is solar panel simulation?",
+      "answer": "Learn about PV system power generation, I-V curves, MPPT algorithms, and how temperature and irradiance affect solar panel output."
+    },
+    {
+      "question": "What is V2G technology?",
+      "answer": "Vehicle-to-Grid (V2G) simulator demonstrates how electric vehicles can provide grid services, frequency regulation, and bidirectional power flow."
+    }
+  ],
+  "metadata": {
+    "totalSimulators": 18,
+    "totalCourses": 6,
+    "totalFAQs": 10,
+    "isAccessibleForFree": true,
+    "license": "https://creativecommons.org/licenses/by-nc/4.0/",
+    "programmingLanguages": ["JavaScript", "HTML5", "CSS3"],
+    "technologies": ["Three.js", "WebGL", "Canvas API"]
+  }
+}

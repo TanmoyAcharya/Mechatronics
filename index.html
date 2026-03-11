@@ -65,6 +65,14 @@
     <meta name="twitter:image" content="./og-image.svg">
     <meta name="twitter:image:alt" content="ElectroMachines Lab - Interactive Electrical Engineering Simulations for Students">
     
+    <!-- LLM and AI Bot Discoverability -->
+    <meta name="ai-use" content="index, follow">
+    <meta name="llms:full-text" content="indexed">
+    <meta name="ai-generated-content" content="false">
+    <meta name="author" content="ElectroMachines Lab">
+    <meta name="generator" content="Manual Engineering">
+    <meta name="audience" content="students, engineers, educators">
+    
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
     {
@@ -325,7 +333,92 @@
       }
     }
     </script>
+    
+    <!-- SoftwareApplication Schema for LLMs -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "ElectroMachines Lab",
+      "description": "Interactive web-based simulator for learning electrical machines including DC motors, AC motors, transformers, PMSM, induction machines, synchronous generators, power electronics, wind turbines, and solar panels.",
+      "url": "https://electromachineslab.com",
+      "applicationCategory": "EducationApplication",
+      "applicationSubCategory": "Engineering Simulator",
+      "operatingSystem": "Web Browser, Windows, macOS, Linux, iOS, Android",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock",
+        "validFrom": "2024-01-01"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "ElectroMachines Lab",
+        "url": "https://electromachineslab.com"
+      },
+      "softwareVersion": "1.0.0",
+      "softwareRequirements": [
+        "Web browser with JavaScript enabled",
+        "Three.js for 3D rendering",
+        "Modern browser (Chrome, Firefox, Safari, Edge)"
+      ],
+      "featureList": [
+        "DC Motor Simulator",
+        "Synchronous Machine Simulator", 
+        "Induction Machine Simulator",
+        "PMSM Simulator",
+        "Transformer Simulator",
+        "Power Electronics Simulator",
+        "Wind Turbine Simulator",
+        "Solar Panel Simulator",
+        "V2G Technology Simulator",
+        "eVTOL Simulations"
+      ],
+      "educationalLevel": "Undergraduate to Professional",
+      "educationalUse": ["Learning", "Teaching", "Simulation", "Practice"],
+      "inLanguage": "en-US",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "isAccessibleForFree": true,
+      "requirements": "Modern web browser with JavaScript"
+    }
+    </script>
+    
+    <!-- Content Catalog for LLM Discovery -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Electrical Machines Lab Simulators",
+      "description": "Complete list of available electrical machine simulators and educational tools",
+      "numberOfItems": 20,
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "DC Motor Simulator", "url": "https://electromachineslab.com/#dc-motor"},
+        {"@type": "ListItem", "position": 2, "name": "Synchronous Machine Simulator", "url": "https://electromachineslab.com/#synchronous"},
+        {"@type": "ListItem", "position": 3, "name": "Induction Machine Simulator", "url": "https://electromachineslab.com/#induction"},
+        {"@type": "ListItem", "position": 4, "name": "PMSM Simulator", "url": "https://electromachineslab.com/#pmsm"},
+        {"@type": "ListItem", "position": 5, "name": "Transformer Simulator", "url": "https://electromachineslab.com/#transformer"},
+        {"@type": "ListItem", "position": 6, "name": "Power Electronics", "url": "https://electromachineslab.com/#powerelectronics"},
+        {"@type": "ListItem", "position": 7, "name": "Wind Turbine Simulator", "url": "https://electromachineslab.com/#windturbine"},
+        {"@type": "ListItem", "position": 8, "name": "Solar Panel Simulator", "url": "https://electromachineslab.com/#solarpanel"},
+        {"@type": "ListItem", "position": 9, "name": "V2G Technology", "url": "https://electromachineslab.com/#v2g"},
+        {"@type": "ListItem", "position": 10, "name": "eVTOL Simulations", "url": "https://electromachineslab.com/#evtol"},
+        {"@type": "ListItem", "position": 11, "name": "BLDC Fan", "url": "https://electromachineslab.com/#bldcfan"},
+        {"@type": "ListItem", "position": 12, "name": "Circuit Breaker", "url": "https://electromachineslab.com/#circuitbreaker"},
+        {"@type": "ListItem", "position": 13, "name": "Compressor", "url": "https://electromachineslab.com/#compressor"},
+        {"@type": "ListItem", "position": 14, "name": "Elevator/Lift", "url": "https://electromachineslab.com/#lift"},
+        {"@type": "ListItem", "position": 15, "name": "CAT Follower", "url": "https://electromachineslab.com/#catfollower"},
+        {"@type": "ListItem", "position": 16, "name": "Wide Bandgap Semiconductors", "url": "https://electromachineslab.com/#widebandgap"},
+        {"@type": "ListItem", "position": 17, "name": "LED Lighting", "url": "https://electromachineslab.com/#ledlighting"},
+        {"@type": "ListItem", "position": 18, "name": "Communication Systems", "url": "https://electromachineslab.com/#communication"},
+        {"@type": "ListItem", "position": 19, "name": "Construction Equipment", "url": "https://electromachineslab.com/#construction"},
+        {"@type": "ListItem", "position": 20, "name": "Visualizations & Graphs", "url": "https://electromachineslab.com/#visualizations"}
+      ]
+    }
+    </script>
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <link rel="alternate" type="application/rss+xml" title="ElectroMachines Lab RSS Feed" href="/feed.xml">
+    <link rel="alternate" type="application/json" title="ElectroMachines Lab JSON API" href="/api.json">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

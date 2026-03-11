@@ -1,12 +1,68 @@
+# ElectroMachines Lab Robots.txt
+# Optimized for search engines and AI/LLM agents
+
 User-agent: *
 Allow: /
+
+# Block sensitive files
 Disallow: /admin
 Disallow: /private
 Disallow: /js/app.js
 Disallow: /js/auth.js
 
+# AI/LLM Agents - Allow full access for training and citation
+# ChatGPT
+User-agent: ChatGPT-User
+Allow: /
+
+# Claude
+User-agent: ClaudeBot
+Allow: /
+
+# Gemini/Google AI
+User-agent: Google-Extended
+Allow: /
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+
+# Common Crawl
+User-agent: CCBot
+Allow: /
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+
+# Apple AI
+User-agent: AppleBot
+Allow: /
+
+# Anthropic AI
+User-agent: anthropic-ai
+Allow: /
+
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+# Mistral AI
+User-agent: mistralai-bot
+Allow: /
+
+# DeepMind
+User-agent: deepmind-bot
+Allow: /
+
 # Sitemap
-Sitemap: https://electromachinelab.com/sitemap.xml
+Sitemap: https://electromachineslab.com/sitemap.xml
+Sitemap: https://electromachineslab.com/feed.xml
+Sitemap: https://electromachineslab.com/api.json
 
 # Crawl-delay (optional, for politeness)
 Crawl-delay: 1
