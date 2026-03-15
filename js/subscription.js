@@ -163,6 +163,9 @@ class SubscriptionSystem {
     
     // Check if user can access specific content
     canAccessContent(pageName) {
+        // TEMPORARY: bypass premium gate for debugging
+        return { allowed: true, reason: null };
+
         // Free content - always accessible
         if (CONTENT_ACCESS.free.includes(pageName)) {
             return { allowed: true, reason: null };
