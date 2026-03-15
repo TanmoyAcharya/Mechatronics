@@ -3286,3 +3286,180 @@ main {
         grid-template-columns: 1fr;
     }
 }
+
+/* ================================================
+   Quantum Computer Simulator Styles
+   ================================================ */
+
+.quantum-gates-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.quantum-gate-btn {
+    padding: 12px 8px;
+    border: 2px solid rgba(0, 212, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(0, 212, 255, 0.08);
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.quantum-gate-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(0, 212, 255, 0.1));
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.quantum-gate-btn:hover {
+    border-color: var(--accent-cyan);
+    background: rgba(0, 212, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
+}
+
+.quantum-gate-btn:hover::before {
+    opacity: 1;
+}
+
+.quantum-gate-btn:active {
+    transform: translateY(0);
+}
+
+.quantum-gate-btn.gate-h { border-color: rgba(0, 212, 255, 0.5); color: #00d4ff; }
+.quantum-gate-btn.gate-x { border-color: rgba(255, 107, 107, 0.5); color: #ff6b6b; }
+.quantum-gate-btn.gate-y { border-color: rgba(81, 207, 102, 0.5); color: #51cf66; }
+.quantum-gate-btn.gate-z { border-color: rgba(255, 159, 67, 0.5); color: #ff9f43; }
+.quantum-gate-btn.gate-t { border-color: rgba(139, 92, 246, 0.5); color: #8b5cf6; }
+.quantum-gate-btn.gate-s { border-color: rgba(236, 72, 153, 0.5); color: #ec4899; }
+.quantum-gate-btn.gate-cnot {
+    grid-column: span 2;
+    border-color: rgba(59, 130, 246, 0.5);
+    color: #3b82f6;
+    font-size: 0.85rem;
+}
+
+.quantum-circuit-section {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.quantum-circuit-section h4 {
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.quantum-circuit-display {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    padding: 8px 0;
+}
+
+.quantum-wire {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 0;
+}
+
+.wire-label {
+    color: var(--accent-cyan);
+    font-weight: 700;
+    min-width: 30px;
+}
+
+.wire-line {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.gate-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 30px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.gate-chip.gate-H { background: rgba(0, 212, 255, 0.2); color: #00d4ff; border: 1px solid rgba(0, 212, 255, 0.4); }
+.gate-chip.gate-X { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; border: 1px solid rgba(255, 107, 107, 0.4); }
+.gate-chip.gate-Y { background: rgba(81, 207, 102, 0.2); color: #51cf66; border: 1px solid rgba(81, 207, 102, 0.4); }
+.gate-chip.gate-Z { background: rgba(255, 159, 67, 0.2); color: #ff9f43; border: 1px solid rgba(255, 159, 67, 0.4); }
+.gate-chip.gate-T { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.4); }
+.gate-chip.gate-S { background: rgba(236, 72, 153, 0.2); color: #ec4899; border: 1px solid rgba(236, 72, 153, 0.4); }
+.gate-chip.gate-CNOT { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.4); }
+.gate-chip.gate-ctrl { background: rgba(59, 130, 246, 0.15); color: #3b82f6; font-size: 1.1rem; }
+.gate-chip.gate-wire { background: transparent; color: rgba(255, 255, 255, 0.15); min-width: 20px; }
+
+.quantum-state-text {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+}
+
+.quantum-action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.quantum-action-buttons .btn-primary,
+.quantum-action-buttons .btn-secondary {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.quantum-action-buttons .btn-primary {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+    color: #fff;
+    border: none;
+}
+
+.quantum-action-buttons .btn-primary:hover {
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.quantum-action-buttons .btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.quantum-action-buttons .btn-secondary:hover {
+    border-color: var(--accent-cyan);
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .quantum-gates-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .quantum-gate-btn.gate-cnot {
+        grid-column: span 3;
+    }
+}

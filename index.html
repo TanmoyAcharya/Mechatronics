@@ -544,6 +544,7 @@
                     <button class="nav-btn dropdown-toggle">Learn ▾</button>
                     <div class="dropdown-menu">
                         <button class="dropdown-item" data-page="construction">🏗️ Construction</button>
+                        <button class="dropdown-item" data-page="quantumcomputer">🔮 Quantum Computer</button>
                         <button class="dropdown-item" data-page="learn">📚 Learn & Quiz</button>
                         <button class="dropdown-item" data-page="blog">📰 Tech Blog</button>
                     </div>
@@ -3230,6 +3231,106 @@
                 </div>
             </div>
         </section>
+
+        <!-- Quantum Computer Simulator -->
+        <section id="quantumcomputer-page" class="page">
+            <div class="page-header">
+                <h1>🔮 Quantum Computer Simulator</h1>
+                <p>Explore quantum computing — manipulate qubits, apply quantum gates, and visualize states on the Bloch sphere</p>
+            </div>
+            <div class="simulator-container">
+                <div class="sim-main">
+                    <div class="simulation-view">
+                        <canvas id="quantum-canvas" width="800" height="450"></canvas>
+                    </div>
+                    <div class="visualization-panels">
+                        <div class="viz-panel wide">
+                            <h4>📊 Probability Evolution</h4>
+                            <canvas id="quantum-viz-canvas" width="780" height="250"></canvas>
+                        </div>
+                    </div>
+                    <div class="quantum-circuit-section">
+                        <h4>🔗 Quantum Circuit</h4>
+                        <div id="quantum-circuit-display" class="quantum-circuit-display"></div>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <div class="control-section">
+                        <h3>🎛️ Quantum Controls</h3>
+                        <div class="control-group">
+                            <label>Number of Qubits: <span class="value" id="quantum-qubits-value">2</span></label>
+                            <input type="range" id="quantum-qubits-slider" min="1" max="4" value="2">
+                        </div>
+                        <div class="control-group">
+                            <label>Target Qubit: <span class="value" id="quantum-target-value">0</span></label>
+                            <input type="range" id="quantum-target-slider" min="0" max="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <label>Control Qubit (CNOT): <span class="value" id="quantum-control-value">0</span></label>
+                            <input type="range" id="quantum-control-slider" min="0" max="1" value="0">
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h3>⚡ Quantum Gates</h3>
+                        <div class="quantum-gates-grid">
+                            <button class="quantum-gate-btn gate-h" data-gate="H" title="Hadamard — creates superposition">H</button>
+                            <button class="quantum-gate-btn gate-x" data-gate="X" title="Pauli-X — NOT gate">X</button>
+                            <button class="quantum-gate-btn gate-y" data-gate="Y" title="Pauli-Y gate">Y</button>
+                            <button class="quantum-gate-btn gate-z" data-gate="Z" title="Pauli-Z — phase flip">Z</button>
+                            <button class="quantum-gate-btn gate-t" data-gate="T" title="T gate (π/8)">T</button>
+                            <button class="quantum-gate-btn gate-s" data-gate="S" title="S gate (phase)">S</button>
+                            <button class="quantum-gate-btn gate-cnot" data-gate="CNOT" title="CNOT — entanglement">CNOT</button>
+                        </div>
+                    </div>
+                    <div class="readings-panel">
+                        <h3>📊 Quantum State</h3>
+                        <div class="reading"><span class="reading-label">State:</span><span class="reading-value quantum-state-text" id="quantum-state-reading">q0: 1.00|0⟩ + 0.00|1⟩</span></div>
+                        <div class="reading"><span class="reading-label">Measurement:</span><span class="reading-value" id="quantum-measurement-reading">Not measured</span></div>
+                        <div class="reading"><span class="reading-label">Circuit Depth:</span><span class="reading-value" id="quantum-depth-reading">0</span></div>
+                    </div>
+                    <div class="quantum-action-buttons">
+                        <button class="btn-primary" id="quantum-measure-btn">📏 Measure</button>
+                        <button class="btn-secondary" id="quantum-reset-btn">🔄 Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theory Section -->
+            <div class="theory-panel">
+                <div class="theory-tabs">
+                    <button class="theory-tab active" data-theory="basics">Quantum Basics</button>
+                    <button class="theory-tab" data-theory="gates">Gates</button>
+                    <button class="theory-tab" data-theory="applications">Applications</button>
+                </div>
+                <div class="theory-content" id="quantum-theory">
+                    <div class="theory-panel-content active" data-content="basics">
+                        <h4>Quantum Computing Fundamentals</h4>
+                        <p>Unlike classical bits (0 or 1), a <strong>qubit</strong> can exist in a <strong>superposition</strong> of both states simultaneously: |ψ⟩ = α|0⟩ + β|1⟩, where |α|² + |β|² = 1.</p>
+                        <p>The <strong>Bloch sphere</strong> is a geometric representation of a single qubit state. The north pole represents |0⟩, the south pole represents |1⟩, and points on the equator represent equal superpositions with different phases.</p>
+                        <p><strong>Measurement</strong> collapses the superposition — you get |0⟩ with probability |α|² and |1⟩ with probability |β|². This is the fundamental randomness of quantum mechanics.</p>
+                        <p><strong>Entanglement</strong> links qubits so measuring one instantly determines the other, enabling quantum teleportation and superdense coding.</p>
+                    </div>
+                    <div class="theory-panel-content" data-content="gates">
+                        <h4>Quantum Gates Reference</h4>
+                        <p><strong>H (Hadamard):</strong> Creates equal superposition. H|0⟩ = (|0⟩+|1⟩)/√2. The most important single-qubit gate.</p>
+                        <p><strong>X (Pauli-X / NOT):</strong> Flips |0⟩ ↔ |1⟩. Equivalent to a classical NOT gate. Rotation of π around X-axis.</p>
+                        <p><strong>Y (Pauli-Y):</strong> Rotation of π around Y-axis. Y|0⟩ = i|1⟩.</p>
+                        <p><strong>Z (Pauli-Z):</strong> Phase flip. Leaves |0⟩ unchanged, maps |1⟩ → −|1⟩. Rotation of π around Z-axis.</p>
+                        <p><strong>T (π/8 gate):</strong> Adds a phase of e^(iπ/4) to |1⟩. Essential for universal quantum computation.</p>
+                        <p><strong>S (Phase gate):</strong> Adds a phase of i to |1⟩. S = T². Quarter-turn around Z-axis.</p>
+                        <p><strong>CNOT:</strong> Two-qubit gate — flips target qubit if control is |1⟩. Creates entanglement when combined with H.</p>
+                    </div>
+                    <div class="theory-panel-content" data-content="applications">
+                        <h4>Quantum Computing Applications</h4>
+                        <p><strong>Shor's Algorithm:</strong> Factors large numbers exponentially faster than classical — threatens RSA encryption.</p>
+                        <p><strong>Grover's Algorithm:</strong> Searches unsorted databases in O(√N) vs O(N) classical — quadratic speedup.</p>
+                        <p><strong>Quantum Chemistry:</strong> Simulates molecular interactions for drug discovery and materials science.</p>
+                        <p><strong>Quantum Machine Learning:</strong> Potential exponential speedups for certain ML tasks using quantum kernels and variational circuits.</p>
+                        <p><strong>Quantum Cryptography (QKD):</strong> Provably secure communication using quantum key distribution — any eavesdropping disturbs the quantum states.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- About Section (Premium) -->
@@ -3338,6 +3439,7 @@
     <script src="js/bldcfan.js"></script>
     <script src="js/compressor.js"></script>
     <script src="js/lift.js"></script>
+    <script src="js/quantumcomputer.js"></script>
     <script src="js/catfollower.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/subscription.js"></script>

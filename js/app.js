@@ -16,6 +16,9 @@ class App {
     }
     
     init() {
+        // Setup browser back/forward button handling
+        this.setupHistoryNavigation();
+        
         this.setupNavigation();
         this.setupFeatureCards();
         this.setupCTAButtons();
@@ -27,6 +30,24 @@ class App {
         
         this.isInitialized = true;
         console.log('ElectroMachines Lab initialized');
+    }
+    
+    // Setup browser history navigation (back/forward buttons)
+    setupHistoryNavigation() {
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', (event) => {
+            if (event.state && event.state.page) {
+                const page = event.state.page;
+                // Navigate to the page without pushing to history again
+                this.navigateTo(page, false);
+            } else {
+                // Default to home if no state
+                this.navigateTo('home', false);
+            }
+        });
+        
+        // Set initial history state
+        history.replaceState({ page: 'home' }, '', '#home');
     }
     
     initAllSimulators() {
@@ -106,6 +127,10 @@ class App {
                     window.liftSimulator = new LiftSimulator();
                     console.log('LiftSimulator created');
                 }
+                if (typeof QuantumComputerSimulator === 'function') {
+                    window.quantumComputerSimulator = new QuantumComputerSimulator();
+                    console.log('QuantumComputerSimulator created');
+                }
                 
                 // Start the simulation for the current page
                 this.onPageChange(this.currentPage);
@@ -152,9 +177,14 @@ class App {
         });
     }
     
-    navigateTo(page) {
+    navigateTo(page, pushToHistory = true) {
         // Skip if no page specified
         if (!page) return;
+        
+        // Check if already on this page
+        if (page === this.currentPage && pushToHistory === false) {
+            return;
+        }
         
         // Check content access before navigating
         if (window.subscriptionSystem) {
@@ -193,6 +223,12 @@ class App {
             targetPage.classList.add('active');
             this.currentPage = page;
             
+            // Push to browser history (unless explicitly disabled)
+            if (pushToHistory) {
+                // Update browser URL and history
+                history.pushState({ page: page }, '', `#${page}`);
+            }
+            
             // Trigger page-specific initialization
             this.onPageChange(page);
         } else {
@@ -223,6 +259,8 @@ class App {
                 window.evtolSimulator.stop();
             } else if (this.currentPage === 'construction' && window.constructionViewer) {
                 // Don't stop construction viewer
+            } else if (this.currentPage === 'quantumcomputer' && window.quantumComputerSimulator) {
+                window.quantumComputerSimulator.stop();
             }
         }
         
@@ -351,6 +389,13 @@ class App {
                         if (window.authSystem) window.authSystem.markComplete('lift');
                     }
                     break;
+                case 'quantumcomputer':
+                    if (window.quantumComputerSimulator) {
+                        window.quantumComputerSimulator.resize();
+                        window.quantumComputerSimulator.start();
+                        if (window.authSystem) window.authSystem.markComplete('quantumcomputer');
+                    }
+                    break;
             }
             // Update dashboard after marking complete
             if (window.authSystem) {
@@ -397,6 +442,15 @@ class App {
             tab.addEventListener('click', () => {
                 const content = tab.dataset.theory;
                 this.switchTheoryTab('ind-theory', content);
+            });
+        });
+        
+        // Quantum computer theory tabs
+        const quantumTabs = document.querySelectorAll('#quantumcomputer-page .theory-tab');
+        quantumTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const content = tab.dataset.theory;
+                this.switchTheoryTab('quantum-theory', content);
             });
         });
     }
