@@ -1,184 +1,192 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://electromachinelab.com/</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <!-- DC Motor Simulator -->
   <url>
-    <loc>https://electromachinelab.com/#dc-motor</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#dc-motor</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <!-- Synchronous Machine Simulator -->
   <url>
-    <loc>https://electromachinelab.com/#synchronous</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#synchronous</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <!-- Induction Machine Simulator -->
   <url>
-    <loc>https://electromachinelab.com/#induction</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#induction</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <!-- Transformer Simulator -->
   <url>
-    <loc>https://electromachinelab.com/#transformer</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#transformer</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <!-- PMSM Simulator -->
   <url>
-    <loc>https://electromachinelab.com/#pmsm</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#pmsm</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Power Electronics Simulator -->
   <url>
-    <loc>https://electromachinelab.com/#powerelec</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#powerelec</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Learning Center -->
   <url>
-    <loc>https://electromachinelab.com/#learn</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#learn</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <!-- Wind Turbine Simulator -->
   <url>
-    <loc>https://electromachinelab.com/#windturbine</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#windturbine</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Solar Panel Simulator -->
   <url>
-    <loc>https://electromachinelab.com/#solarpanel</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#solarpanel</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- V2G Technology -->
   <url>
-    <loc>https://electromachinelab.com/#v2g</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#v2g</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <!-- EVTOL Simulator -->
   <url>
-    <loc>https://electromachinelab.com/#evtol</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#evtol</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <!-- Widebandgap Semiconductors -->
   <url>
-    <loc>https://electromachinelab.com/#widebandgap</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#widebandgap</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <!-- Communication Protocols -->
   <url>
-    <loc>https://electromachinelab.com/#communication</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#communication</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <!-- Machine Construction -->
   <url>
-    <loc>https://electromachinelab.com/#construction</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#construction</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <!-- LED Lighting -->
   <url>
-    <loc>https://electromachinelab.com/#ledlighting</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#ledlighting</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <!-- Circuit Breaker -->
   <url>
-    <loc>https://electromachinelab.com/#circuitbreaker</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#circuitbreaker</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <!-- BLDC Fan -->
   <url>
-    <loc>https://electromachinelab.com/#bldcfan</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#bldcfan</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <!-- Compressor -->
   <url>
-    <loc>https://electromachinelab.com/#compressor</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#compressor</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <!-- Lift/Elevator -->
   <url>
-    <loc>https://electromachinelab.com/#lift</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#lift</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
+  <!-- Quantum Computer Simulator -->
+  <url>
+    <loc>https://electromachineslab.com/#quantumcomputer</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
   <!-- About -->
   <url>
-    <loc>https://electromachinelab.com/#about</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#about</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <!-- Blog -->
   <url>
-    <loc>https://electromachinelab.com/#blog</loc>
-    <lastmod>2026-03-04</lastmod>
+    <loc>https://electromachineslab.com/#blog</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- RSS Feed for LLM Discovery -->
   <url>
-    <loc>https://electromachinelab.com/feed.xml</loc>
-    <lastmod>2026-03-11</lastmod>
+    <loc>https://electromachineslab.com/feed.xml</loc>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -186,7 +194,7 @@
   <!-- JSON API for LLM Discovery -->
   <url>
     <loc>https://electromachineslab.com/api.json</loc>
-    <lastmod>2026-03-11</lastmod>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>

@@ -3,12 +3,12 @@
 
 User-agent: *
 Allow: /
+Allow: /js/
+Allow: /styles.css
 
-# Block sensitive files
+# Block only truly sensitive files
 Disallow: /admin
 Disallow: /private
-Disallow: /js/app.js
-Disallow: /js/auth.js
 
 # AI/LLM Agents - Allow full access for training and citation
 # ChatGPT

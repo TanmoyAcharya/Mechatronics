@@ -5,9 +5,9 @@
     <link>https://electromachineslab.com</link>
     <description>Free interactive electrical machines simulator for engineering students. Learn DC motors, AC motors, transformers, PMSM, induction machines, synchronous generators, power electronics, renewable energy systems.</description>
     <language>en-us</language>
-    <copyright>2024 ElectroMachines Lab</copyright>
-    <managingEditor>support@electromachinelab.com</managingEditor>
-    <lastBuildDate>Tue, 01 Jan 2025 00:00:00 +0000</lastBuildDate>
+    <copyright>2024-2026 ElectroMachines Lab</copyright>
+    <managingEditor>support@electromachineslab.com</managingEditor>
+    <lastBuildDate>Sun, 15 Mar 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://electromachineslab.com/feed.xml" rel="self" type="application/rss+xml"/>
     <category>Education</category>
     <category>Engineering</category>
@@ -183,3 +183,22 @@
       <author>ElectroMachines Lab</author>
       <guid>https://electromachineslab.com/#compressor</guid>
       <category>Compressor</category>
+      <category>HVAC</category>
+      <category>Motor Drive</category>
+    </item>
+    
+    <!-- Quantum Computer -->
+    <item>
+      <title>Quantum Computer Simulator</title>
+      <link>https://electromachineslab.com/#quantumcomputer</link>
+      <description>Interactive quantum computer simulator with qubit manipulation, quantum gates (Hadamard, Pauli-X/Y/Z, CNOT, T, S), Bloch sphere visualization, circuit builder, and measurement. Learn quantum computing fundamentals including superposition, entanglement, and quantum algorithms.</description>
+      <pubDate>Sat, 15 Mar 2026 00:00:00 +0000</pubDate>
+      <author>ElectroMachines Lab</author>
+      <guid>https://electromachineslab.com/#quantumcomputer</guid>
+      <category>Quantum Computing</category>
+      <category>Quantum Gates</category>
+      <category>Qubit Simulator</category>
+      <category>Bloch Sphere</category>
+    </item>
+  </channel>
+</rss>

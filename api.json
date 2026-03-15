@@ -6,12 +6,12 @@
   "url": "https://electromachineslab.com/api.json",
   "version": "1.0.0",
   "license": "https://creativecommons.org/licenses/by-nc/4.0/",
-  "dateModified": "2025-01-01T00:00:00Z",
+  "dateModified": "2026-03-15T00:00:00Z",
   "publisher": {
     "@type": "Organization",
     "name": "ElectroMachines Lab",
     "url": "https://electromachineslab.com",
-    "email": "support@electromachinelab.com"
+    "email": "support@electromachineslab.com"
   },
   "about": {
     "@type": "Thing",
@@ -239,6 +239,18 @@
       "keywords": ["construction", "heavy equipment", "electric machinery", "hydraulics"],
       "educationalLevel": "Undergraduate",
       "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Quantum Computer Simulator",
+      "url": "https://electromachineslab.com/#quantumcomputer",
+      "description": "Interactive quantum computer simulator with qubit manipulation, quantum gates (Hadamard, Pauli-X/Y/Z, CNOT, T, S), Bloch sphere visualization, circuit builder, and measurement. Learn superposition, entanglement, and quantum algorithms.",
+      "applicationCategory": "EducationApplication",
+      "programmingLanguage": "JavaScript",
+      "featureList": ["Bloch Sphere", "Quantum Gates", "Circuit Builder", "Measurement", "Multi-Qubit", "Entanglement"],
+      "keywords": ["quantum computer", "qubit", "quantum gates", "Bloch sphere", "superposition", "entanglement", "quantum computing simulator"],
+      "educationalLevel": "Undergraduate to Graduate",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/"
     }
   ],
   "learningResources": [
@@ -313,12 +325,20 @@
     {
       "question": "What is V2G technology?",
       "answer": "Vehicle-to-Grid (V2G) simulator demonstrates how electric vehicles can provide grid services, frequency regulation, and bidirectional power flow."
+    },
+    {
+      "question": "What is a quantum computer simulator?",
+      "answer": "Our quantum computer simulator lets you manipulate qubits using quantum gates like Hadamard, Pauli-X/Y/Z, CNOT, T, and S gates. Visualize quantum states on the Bloch sphere, build quantum circuits, and perform measurements to observe superposition and entanglement."
+    },
+    {
+      "question": "How do quantum gates work?",
+      "answer": "Quantum gates are the fundamental operations in quantum computing. The Hadamard gate creates superposition, Pauli gates rotate qubit states on the Bloch sphere, and the CNOT gate creates entanglement between qubits. These gates form the building blocks of quantum algorithms."
     }
   ],
   "metadata": {
-    "totalSimulators": 18,
+    "totalSimulators": 19,
     "totalCourses": 6,
-    "totalFAQs": 10,
+    "totalFAQs": 12,
     "isAccessibleForFree": true,
     "license": "https://creativecommons.org/licenses/by-nc/4.0/",
     "programmingLanguages": ["JavaScript", "HTML5", "CSS3"],
